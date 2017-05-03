@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?> <!DOCTYPE language SYSTEM "language.dtd"> 
+<language name="Fermi" version="2.00" kateversion="2.4" section="Scientific" extensions="*.fermi" >
+    <highlighting> 
+	<list name="principal">
+	    <item>$mesh</item>
+	    <item>$end_mesh</item>
+	    <item>$groups</item>
+	    <item>$end_groups</item>
+	    <item>$nuclear_data</item>
+	    <item>$end_nuclear_data</item>
+	    <item>$mode</item>
+	    <item>$end_mode</item>
+	    <item>$cross_sections</item>
+	    <item>$end_cross_sections</item>
+	    <item>$velocities</item>
+	    <item>$end_velocities</item>
+	    <item>$precursor_constants</item>
+	    <item>$end_precursor_constants</item>
+	</list>
+	<list name="secondary">
+	    <item>mesh_file</item>
+	    <item>parfile_e</item>
+	    <item>parfile_n</item>
+	    <item>cross_sections_file</item>
+	    <item>xsfile</item>
+	    <item>dimension</item>
+	    <item>static</item>
+	    <item>numenergy</item>
+	    <item>numprecur</item>
+	</list>
+	<list name="var1">
+	    <item>list_physe</item>
+	    <item>list_elemv</item>
+	    <item>list_elems</item>
+	    <item>list_coord</item>
+	</list>
+	<list name="var2">
+	    <item>coord</item>
+	    <item>npe</item>
+	    <item>gmshid</item>
+	    <item>node</item>
+	</list>
+	<list name="options">
+	    <item>GMSH_FILE</item>
+	    <item>ONLY_ONE</item>
+	    <item>PARAMETRIC</item>
+	    <item>SIMULATOR</item>
+	    <item>SEQUENCIAL</item>
+	    <item>ON</item>
+	</list>
+	
+	
+	<contexts>
+<!--	    <context attribute="Normal Text" lineEndContext="#pop" name="Normal Text" > 
+		<keyword attribute="Keyword" context="#stay" String="principal" />
+		<DetectChar attribute="String" context="string" char="&quot;" /> 
+	    </context> -->
+	    <context attribute="Normal Text" lineEndContext="#pop" name="Principal_words" > 
+		<keyword attribute="Primary"   context="#stay"  String="principal" />
+		<keyword attribute="Secondary" context="#stay"  String="secondary" />
+		<keyword attribute="Var1" context="#stay"  String="var1" />
+		<keyword attribute="Var2" context="#stay"  String="var2" />
+		<keyword attribute="Options"    context="#stay" String="options" />
+		<DetectChar attribute="Comment" context="Comment"   char="#"/>
+		<DetectChar attribute="String" context="string" char="&quot;" /> 
+	    </context> 
+	    <context attribute="String" lineEndContext="#stay" name="string" >
+		<DetectChar attribute="String" context="#pop" char="&quot;" />
+	    </context> 
+	    <context name="Comment" attribute="Comment" lineEndContext="#pop"/>
+	</contexts>
+	<itemDatas>
+	    <itemData name="Normal Text" defStyleNum="dsNormal" />
+	    <itemData name="Primary"   defStyleNum="dsKeyword" />
+	    <itemData name="Secondary" defStyleNum="dsFunction" color="#008000" bold="1" italic="0"/>
+	    <itemData name="Var1" defStyleNum="dsFunction" color="#A52A2A" bold="1" italic="0"/>
+	    <itemData name="Var2" defStyleNum="dsFunction" color="#008000" bold="1" italic="0"/>
+	    <itemData name="Options"   defStyleNum="dsFunction" color="#40E0D0" bold="0" italic="1"/>
+	    <itemData name="Comment"   defStyleNum="dsComment"/>
+	    <itemData name="String" defStyleNum="dsString" />
+	</itemDatas>
+    </highlighting> 
+    
+    <general> 
+	<comments>
+	    <comment name="singleLine" start="#"/> 
+	</comments> 
+	<keywords casesensitive="1"/>
+    </general> 
+</language> 
