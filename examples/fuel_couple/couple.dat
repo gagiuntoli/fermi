@@ -1,0 +1,16 @@
+###################################################
+# FERMI COUPLING FILE 
+#
+
+# world context name all the coupling code should have 
+# the same name
+acople
+
+# number of friends in world and myID
+1 1
+
+# friends names and IDs
+control 2
+
+#
+###################################################

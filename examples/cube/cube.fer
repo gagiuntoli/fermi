@@ -1,0 +1,23 @@
+$Mesh 
+    mesh_file   cube.msh
+#    parfile_n   cube_vol.metismesh.npart.4
+#    parfile_e   cube_vol.metismesh.epart.4
+$EndMesh 
+
+$Mode
+  timedep QSTATIC 
+  p0 2.5e6  
+  t0 0.0
+  tf 1.0
+  dt 1.0
+$EndMode
+
+$Xs
+  egn 1
+#      F D   XA  nXF eXF CHI
+  "MAT1" 0 1.5 0.2 0.3 0.4 1.0                            
+$EndXs
+
+$Boundary
+  "SURF" 1 0
+$EndBoundary

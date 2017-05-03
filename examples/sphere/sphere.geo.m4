@@ -1,0 +1,44 @@
+R = R_m4;
+Mesh.CharacteristicLengthMin = E_m4;
+
+Point(1) = {0, 0, 0, 1.0};
+Point(2) = {R, 0, 0, 1.0};
+Point(3) = {0, R, 0, 1.0};
+Point(4) = {-R, 0, 0, 1.0};
+Point(5) = {0, -R, 0, 1.0};
+Point(6) = {0, 0, R, 1.0};
+Point(7) = {0, 0, -R, 1.0};
+
+Circle(1) = {2, 1, 3};
+Circle(2) = {3, 1, 6};
+Circle(3) = {6, 1, 2};
+Circle(4) = {6, 1, 5};
+Circle(5) = {5, 1, 2};
+Circle(6) = {6, 1, 4};
+Circle(7) = {4, 1, 7};
+Circle(8) = {7, 1, 2};
+Circle(9) = {3, 1, 4};
+Circle(10) = {7, 1, 3};
+Circle(11) = {7, 1, 5};
+Circle(12) = {4, 1, 5};
+Line Loop(13) = {10, 9, 7};
+Ruled Surface(14) = {13};
+Line Loop(15) = {6, -9, 2};
+Ruled Surface(16) = {15};
+Line Loop(17) = {2, 3, 1};
+Ruled Surface(18) = {17};
+Line Loop(19) = {1, -10, 8};
+Ruled Surface(20) = {19};
+Line Loop(21) = {8, -5, -11};
+Ruled Surface(22) = {21};
+Line Loop(23) = {5, -3, 4};
+Ruled Surface(24) = {23};
+Line Loop(25) = {4, -12, -6};
+Ruled Surface(26) = {25};
+Line Loop(27) = {11, -12, 7};
+Ruled Surface(28) = {27};
+Surface Loop(29) = {14, 20, 18, 16, 26, 24, 22, 28};
+Volume(30) = {29};
+
+Physical Surface("SURF") = {14, 28, 26, 24, 18, 16, 20, 22};
+Physical Volume("FUEL") = {30};

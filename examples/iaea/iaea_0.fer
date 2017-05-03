@@ -1,0 +1,40 @@
+$Mesh 
+    mesh_file   iaea.msh
+$EndMesh 
+
+$Mode
+#  timedep QSTATIC 
+  timedep DYNAMIC
+  p0 2.5e6  
+  t0 0.0
+  tf 10.0
+  dt 0.01
+$EndMode
+
+$Xs
+  egn 1
+  pgn 1
+  vel 10.0
+  # kynetic constants
+  #   b1    l1
+  kyn 0.001 1.0e-6 1.0
+  # cross sections
+  #         F D   XA  nXF eXF CHI
+  "MAT0"    0 1.5 0.5 0.1 5.4e-6 1.0                            
+  "MAT1"    0 1.5 0.2 0.2 5.4e-6 1.0 
+  "MAT2"    0 1.5 0.3 0.2 5.4e-6 1.0 
+  "MAT3"    0 1.5 0.2 0.0 5.4e-6 1.0 
+$EndXs
+
+$Boundary
+  "EXT" 1 0
+  "INT" 2 1
+  "TOP" 3 1
+  "BOT" 4 1
+$EndBoundary
+
+$Ctrlrod
+  name "ROD1"
+  func 1
+  norm 0.0 0.0 -1.0
+$EndCtrlrod

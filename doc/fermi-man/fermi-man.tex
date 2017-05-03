@@ -23,6 +23,10 @@
 \usepackage{amsmath}
 \usepackage{breqn}   % Breaks the equations into linea automatically
 \usepackage{amsmath} % Breaks the equations into lines manually putting ``//''
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tikz
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 'dedication' environment: To add a dedication paragraph at the start of book %
 % Source: http://www.tug.org/pipermail/texhax/2010-June/015184.html            %
@@ -56,6 +60,35 @@
 \makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FERMI command
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\fermi}{\texttt{FERMI} }
+%\newcommand{\myverb}[1]{\begin{alltt}{#1}\end{alltt}}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\makeatletter
+\newcommand*{\textalltt}{}
+\DeclareRobustCommand*{\textalltt}{%
+  \begingroup
+    \let\do\@makeother
+    \dospecials
+    \catcode`\\=\z@
+    \catcode`\{=\@ne
+    \catcode`\}=\tw@
+    \verbatim@font\@noligs
+    \@vobeyspaces
+    \frenchspacing
+    \@textalltt
+}
+\newcommand*{\@textalltt}[1]{%
+#1%
+  \endgroup
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % First page of book which contains 'stuff' like: %
 %  - Book title, subtitle                         %
 %  - Book author name                             %
@@ -64,7 +97,10 @@
 % Book's title and subtitle
 \title{\Huge \textbf{FERMI}\\ \huge Code for nuclear reactor calculations }
 % Author
-\author{\textsc{Guido Giuntoli}}
+\author{\textsc{Federico Caccia}\\ \textsc{Guido Giuntoli}\\ \textsc{Miguel Zavala}}
+
+% Images path
+\graphicspath{{images/}}
 
 \begin{document}
 
@@ -114,6 +150,7 @@ Dedicated to my mum Patricia, dad Miguel, sister Julia and dog Jenny.
 \input{chapter0.tex}
 \input{chapter1.tex}
 \input{chapter2.tex}
+\input{chapter3.tex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Sample table                                        %
 % Source: www1.maths.leeds.ac.uk/latex/TableHelp1.pdf %
