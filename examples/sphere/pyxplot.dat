@@ -1,0 +1,8 @@
+set terminal landscape pdf enlarge
+set output 'mc.pdf'
+
+set xlabel "Mc [kg]"
+set ylabel "Keff"
+set key above
+
+plot 'crit.dat' u ($2/1000):($3) w lp title "Critical Mass"

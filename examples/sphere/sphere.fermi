@@ -1,0 +1,19 @@
+$Mesh 
+    mesh_file   sphere.msh
+$EndMesh 
+
+$Mode
+  timedep QSTATIC 
+  p0 2.5e6  
+$EndMode
+
+$Xs
+  egn 1
+  # cross sections
+  #         F D      XA    nXF    eXF    CHI
+  "FUEL"    0 1.72   7.322496e-02 1.757399e-01 5.4e-6 1.0  
+$EndXs
+
+$Boundary
+  "SURF" 1 0
+$EndBoundary

@@ -1,0 +1,79 @@
+Info    : Running 'gmsh -3 sphere.geo' [Gmsh 2.8.5, 1 node, max. 1 thread]
+Info    : Started on Wed May  3 10:36:40 2017
+Info    : Reading 'sphere.geo'...
+Info    : Done reading 'sphere.geo'
+Info    : Meshing 1D...
+Info    : Meshing curve 1 (Circle)
+Info    : Meshing curve 2 (Circle)
+Info    : Meshing curve 3 (Circle)
+Info    : Meshing curve 4 (Circle)
+Info    : Meshing curve 5 (Circle)
+Info    : Meshing curve 6 (Circle)
+Info    : Meshing curve 7 (Circle)
+Info    : Meshing curve 8 (Circle)
+Info    : Meshing curve 9 (Circle)
+Info    : Meshing curve 10 (Circle)
+Info    : Meshing curve 11 (Circle)
+Info    : Meshing curve 12 (Circle)
+Info    : Done meshing 1D (0.004 s)
+Info    : Meshing 2D...
+Info    : Meshing surface 14 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 16 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 18 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 20 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 22 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 24 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 26 (Ruled surface, MeshAdapt)
+Info    : Meshing surface 28 (Ruled surface, MeshAdapt)
+Info    : Done meshing 2D (0.380677 s)
+Info    : Meshing 3D...
+Info    : Delaunay Meshing 1 volumes with 1 connected components
+Info    : Meshing volume 30 (Delaunay)
+Delaunizing vertices...
+Delaunay seconds:  0.079455
+Creating surface mesh ...
+Surface mesh seconds:  0.00069
+Recovering boundaries...
+Boundary recovery seconds:  0.000939
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0.000107
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.020849
+Optimizing mesh...
+Optimization seconds:  0.00057
+
+Writing nodes.
+Writing elements.
+Writing faces.
+Writing edges.
+
+Output seconds:  0.000563
+Total running seconds:  0.10334
+
+Statistics:
+
+  Input points: 387
+  Input facets: 770
+  Input segments: 1155
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 387
+  Mesh tetrahedra: 1073
+  Mesh faces: 2531
+  Mesh edges: 1844
+  Mesh faces on facets: 770
+  Mesh edges on segments: 1155
+
+Info    : 387 points 1844 edges and 770 faces in the initial mesh
+Info    : Found region 30
+Info    : 0 points created - Worst tet radius is 5.32632 (PTS removed 0 0)
+Info    : 3D point insertion terminated (568 points created):
+Info    :  - 0 Delaunay cavities modified for star shapeness
+Info    :  - 0 points could not be inserted
+Info    :  - 2201 tetrahedra created in 0.024 sec. (91708 tets/sec.)
+Info    : Done meshing 3D (0.156 s)
+Info    : 569 vertices 3074 elements
+Info    : Writing 'sphere.msh'...
+Info    : Done writing 'sphere.msh'
+Info    : Stopped on Wed May  3 10:36:41 2017

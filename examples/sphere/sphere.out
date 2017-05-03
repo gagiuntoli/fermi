@@ -1,0 +1,8 @@
+Parcing input file.
+Reading mesh.
+Printing structures 1.
+Constructing mesh.
+Initializing control rods.
+Assemblying BCs.
+Allocating Matrices/Vectors.
+Printing structures 2.
