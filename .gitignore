@@ -1,0 +1,24 @@
+syntax: glob
+
+obj/*.o
+*.vtk
+*.msh
+*.png
+kspinfo.*
+doc/fermi-man/*.log
+doc/fermi-man/*.lot
+doc/fermi-man/*.lof
+*.pdf
+doc/fermi-man/*.backup
+doc/fermi-man/*.toc
+doc/fermi-man/*.aux
+doc/fermi-man/*.idx
+doc/fermi-man/*.out
+examples/*
+examples/cube/*
+examples/iaea/*
+examples/sphere/*
+fermi
+*epart*
+*npart*
+*metismesh

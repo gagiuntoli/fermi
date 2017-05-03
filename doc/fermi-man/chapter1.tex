@@ -1,0 +1,114 @@
+\chapter{Nuclear Reactor Modeling}
+
+\section{Introduction}
+
+% \begin{chapquote}{Author's name, \textit{Source of this quote}}
+% ``This is a quote and I don't know who said this.''
+% \end{chapquote}
+
+\par
+Modeling the behavior of a nuclear reactor is not, in most of the cases, an easy thing to do. The complexity in geometry, coupled variables and cross sections databases convert this field in a complete challenge. The errors in results are impossible to avoid but the practice can help to reduce them obtaining good results. The people who dominate this world are the ones who design nuclear reactors and the ones who assume the responsibility building a reliable machine.
+
+\section{Neutron diffusion equation}
+
+The main variable of interest in engineering at the time of simulating a nuclear reactor is the scalar flux $\phi$, it represents the quantity of neutrons that are traveling in all directions at a certain position in the system. Generally the diffusion equation is a considerable good way for representing the behavior because of it reduced computational cost and it reliability representing the physic of the problem. The disadvantage of it is that, for working correctly, the macroscopic set of cross sections $\Sigma$ should be correctly calculated. Having in mind that we have a good set of macroscopic cross sections, the time dependent neutron diffusion equation is:
+
+\begin{equation}
+\begin{split}
+\frac{1}{\nu_{g}}\frac{\partial \phi_{g}}{\partial t}   =  &         
+D_{g} \nabla^{2}                                                      \phi_{g} 
+-\sigma_{g}^{r}                                                       \phi_{g} \\
+& + \sum_{g\prime\neq g} \sigma_{g'\rightarrow g }^{r}                  \phi_{g\prime} 
++ (1-\beta)\sum_{g\prime} \chi_{g}\nu\sigma_{g'}^{f}                  \phi_{g\prime}   
++ \sum_{i=1}^{I} \chi_{g,i}\lambda_{i} C_{i} 
+\end{split} 
+\end{equation}
+\begin{equation}
+\frac{\partial C_{i}}{\partial t}   = \sum_{g\prime}\beta_{i} \nu \sigma_{g'}^{f} \phi_{g\prime} - \lambda_{i} C_{i}
+\end{equation}
+
+\subsection{Stationary equation}
+\begin{equation}
+\begin{split}         
+D_{g} \nabla^{2}                                                      \phi_{g} 
+-\sigma_{g}^{r}                                                       \phi_{g} 
++ \sum_{g\prime\neq g} \sigma_{g'\rightarrow g }^{r}                  \phi_{g\prime}  =
+\frac{1}{k_{eff}}\sum_{g\prime} \chi_{g}\nu\sigma_{g'}^{f}                  \phi_{g\prime}    
+\end{split} 
+\end{equation}
+
+
+\subsection{Time discretization}
+
+\begin{equation}
+ \frac{\partial \phi_{g}}{\partial t}   \simeq \frac{\phi_{g}^{n+1}-\phi_{g}^{n}}{\Delta t}  \quad \quad
+ \frac{\partial C_{i}}{\partial t}   \simeq \frac{C_{i}^{n+1}-C_{i}^{n}}{\Delta t}  
+\end{equation}
+
+\subsection{Crank Nicholson Scheme}
+\begin{equation}
+\frac{\phi^{n+1}-\phi^{n}}{\Delta t} = (1-\theta) f_{1}(\phi^{n},C_{i}^{n}) + \theta f_{1}(\phi^{n+1},C_{i}^{n+1})  
+\end{equation}
+\begin{equation}
+\frac{C_{i}^{n+1}-C_{i}^{n}}{\Delta t} = (1-\theta) f_{2}(\phi^{n},C_{i}^{n}) + \theta f_{2}(\phi^{n+1},C_{i}^{n+1})  
+\end{equation}
+
+\subsection{Explicit Scheme $\theta=0$}
+\begin{equation}
+\frac{\phi^{n+1}-\phi^{n}}{\Delta t} = f(\phi^{n})   
+\end{equation}
+
+
+\begin{equation}
+   \begin{split} 
+       \phi_{g}^{n+1}  = & 
+       \phi_{g}^{n}           
+        + \nu_{g}\Delta t 
+       \bigg[
+         D_{g} \nabla^{2}                                                      \phi_{g}^{n}  
+         -\sigma_{g}^{r}                                                       \phi_{g}^{n} 
+        \\
+       & 
+         + \sum_{g\prime\neq g} \sigma_{g'\rightarrow g }^{r}                  \phi_{g\prime}^{n} 
+         + (1-\beta)\sum_{g\prime} \chi_{g}\nu\sigma_{g'}^{f}                  \phi_{g\prime}^{n}   
+         + \sum_{i=1}^{I} \chi_{g,i}\lambda_{i} C_{i}^{n}
+         + \sum_{i=1}^{I} \chi_{g,i}\lambda_{i} C_{i}^{n}
+       \bigg]
+   \end{split} 
+\end{equation}
+\begin{equation}
+C_{i}^{n+1} = C_{i}^{n} + \Delta \bigg[ \sum_{g\prime}\beta_{i} \nu \sigma_{g'}^{f} \phi_{g\prime}^{n} - \lambda_{i} C_{i}^{n} \bigg]
+\end{equation}
+
+\begin{equation}
+   \begin{split} 
+       \int_{\Omega} \phi_{g}^{n+1} w  = & 
+       \int_{\Omega} \phi_{g}^{n}   w           
+        + \nu_{g}\Delta t 
+       \bigg[
+         \int_{\Omega} D_{g} \nabla^{2}                                        \phi_{g}^{n}  
+         -\sigma_{g}^{r}                                                       \phi_{g}^{n} 
+        \\
+       & 
+         + \sum_{g\prime\neq g} \sigma_{g'\rightarrow g }^{r}                  \phi_{g\prime}^{n} 
+         + (1-\beta)\sum_{g\prime} \chi_{g}\nu\sigma_{g'}^{f}                  \phi_{g\prime}^{n}   
+         + \sum_{i=1}^{I} \chi_{g,i}\lambda_{i} C_{i}^{n}
+       \bigg] 
+   \end{split} 
+\end{equation}
+\begin{equation}
+C_{i}^{n+1} = C_{i}^{n} + \Delta t \bigg[ \sum_{g\prime}\beta_{i} \nu \sigma_{g'}^{f} \phi_{g\prime}^{n} - \lambda_{i} C_{i}^{n} \bigg]
+\end{equation}
+
+
+\begin{equation}
+\int_{\Omega} D_{g} \nabla                                                       \phi_{g}\cdot \nabla v_{g} +
+\int_{\Omega}\sigma_{g}^{r}                                                      \phi_{g}             v_{g} +
+\sum_{g\prime\neq g} \int_{\Omega}\sigma_{g'\rightarrow g }^{r}                  \phi_{g\prime}       v_{g} -
+\int_{\Gamma_{N}}\nabla                                                          \phi_{g\prime}       v_{g} =                          
+\frac{1}{K_{\text{eff}}} \chi_{g}\sum_{g\prime} \int_{\Omega} \nu\sigma_{g'}^{f} \phi_{g\prime}       v_{g}
+\end{equation}
+
+\section{Computational implementation}
+
+\subsection{Paralelization}
