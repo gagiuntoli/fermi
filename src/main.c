@@ -1,4 +1,4 @@
-/* Bathe main program*/
+/* Fermi main program*/
 
 #include "funct.h"
 
