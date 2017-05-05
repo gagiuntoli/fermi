@@ -8,27 +8,27 @@ $Mode
   timedep QSTATIC 
   p0 2.5e6  
   t0 0.0
-  tf 1.05
-  dt 0.005
+  tf 0.05
+  dt 0.05
 $EndMode
 
 $Xs
   egn 1
 #          F D   XA  nXF eXF CHI
-  "fuel_z1"  0 1.5 0.2 0.3 0.4 1.0
-  "fuel_z2"  0 1.5 0.2 0.3 0.4 1.0
-  "fuel_z3"  0 1.5 0.2 0.3 0.4 1.0
-  "fuel_z4"  0 1.5 0.2 0.3 0.4 1.0
-  "fuel_z5"  0 1.5 0.2 0.3 0.4 1.0
-  "fluid_z1" 0 1.5 0.2 0.3 0.4 1.0
-  "fluid_z2" 0 1.5 0.2 0.3 0.4 1.0
-  "fluid_z3" 0 1.5 0.2 0.3 0.4 1.0
-  "fluid_z4" 0 1.5 0.2 0.3 0.4 1.0
-  "fluid_z5" 0 1.5 0.2 0.3 0.4 1.0
+  "fuel_z1"  0 1.5 0.4 0.5 0.4 1.0
+  "fuel_z2"  0 1.5 0.4 0.5 0.4 1.0
+  "fuel_z3"  0 1.5 0.4 0.5 0.4 1.0
+  "fuel_z4"  0 1.5 0.4 0.5 0.4 1.0
+  "fuel_z5"  0 1.5 0.4 0.5 0.4 1.0
+  "fluid_z1" 0 1.5 0.3 0.0 0.4 1.0
+  "fluid_z2" 0 1.5 0.3 0.0 0.0 1.0
+  "fluid_z3" 0 1.5 0.3 0.0 0.0 1.0
+  "fluid_z4" 0 1.5 0.3 0.0 0.0 1.0
+  "fluid_z5" 0 1.5 0.3 0.0 0.0 1.0
 $EndXs
 
 $Boundary
-  "TOP_SURF" 1 0
+  "TOP_SURF"    1 1
   "BOTTOM_SURF" 2 0
-  "LAT_SURF" 3 1
+  "LAT_SURF"    3 1
 $EndBoundary
