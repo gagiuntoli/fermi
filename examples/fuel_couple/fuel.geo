@@ -1,6 +1,7 @@
 lc=100;
 nn=10;
 r =5;
+Mesh.CharacteristicLengthMin = 15.00;
 
 Point(1) = {0, 0, 0, 1};
 Point(2) = {lc, 0, 0, 1};

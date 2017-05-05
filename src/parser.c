@@ -15,13 +15,13 @@
 
 #define NBUF 128
 
-int parse_input(void)
-{
-  if(access(inputfile,F_OK) == -1)
-  {
+int parse_input(void){
+
+  if(access(inputfile,F_OK) == -1){
     PetscPrintf(PETSC_COMM_WORLD,"parser.c: file %s not found.\n",inputfile);
     return 1;
   }
+
   if(parse_mesh())return 1; 
   if(parse_mats())return 2;
   if(parse_mode())return 3;

@@ -84,6 +84,7 @@ int ferbouset(void){
       for(d=0;d<egn;d++){
         index = *(int*)pna->data * egn + d;
         if( ((bound_t*)pba->data)->kind == 0 )
+          /* kind = 0 es dirichlet */
           list_insertlast(&dirIndexL,(void*)&index);
       }     
       pna=pna->next;
@@ -102,6 +103,12 @@ int ferbouset(void){
     i++;
     pna=pna->next;
   }
+  //
+  //==============================    
+  //   NEUMANN INDECES
+  //==============================    
+  //
+  /* por ahora no le hacemos nada*/
   return 0;
 }
 
