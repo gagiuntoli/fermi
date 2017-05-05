@@ -1,5 +1,5 @@
 $Mesh 
-    mesh_file   cube.msh
+    mesh_file   fuel.msh
 #    parfile_n   cube_vol.metismesh.npart.4
 #    parfile_e   cube_vol.metismesh.epart.4
 $EndMesh 
