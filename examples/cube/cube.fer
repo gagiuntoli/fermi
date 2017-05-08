@@ -6,6 +6,10 @@ $EndMesh
 
 $Mode
   timedep QSTATIC 
+  p0 2.5e6  
+  t0 0.0
+  tf 1.0
+  dt 1.0
 $EndMode
 
 $Xs
