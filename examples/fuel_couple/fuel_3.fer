@@ -1,0 +1,26 @@
+$Mesh 
+    mesh_file   fuel_3.msh
+#    parfile_n   cube_vol.metismesh.npart.4
+#    parfile_e   cube_vol.metismesh.epart.4
+$EndMesh 
+
+$Mode
+  timedep QSTATIC 
+  p0 2.5e6  
+  t0 0.0
+  tf 0.05
+  dt 0.05
+$EndMode
+
+$Xs
+  egn 1
+#          F D   XA  nXF eXF CHI
+  "FUEL"     0 1.5 0.4 0.5 0.4 1.0
+  "FLUID"    0 1.5 0.0 0.0 0.4 1.0
+$EndXs
+
+$Boundary
+  "TOP_SURF"    1 0
+  "BOT_SURF"    2 0
+  "LAT_SURF"    3 1
+$EndBoundary
