@@ -1,5 +1,3 @@
-/* frees all the memory */
-
 #include "funct.h"
 
 /*************************************************************/
@@ -26,7 +24,8 @@ int ferpowe(double *fpower){
 
   int      e,g,gp,i,d;
   int      error,npe,ngp,locind;
-  double   power_l,det,phival;
+  double   power_l;                /* potencia local dentro de este proceso */ 
+  double   det,phival;
   pv_t   * pv;
 
   power_l=0.0;
@@ -59,11 +58,11 @@ int ferpowe(double *fpower){
       /* Recorremos cada una de las energias del neutron */
       for(g=0;g<egn;g++){
 
-        /* calculamos el indice donde estÃ¡ el valor del flujo en el vector distribuido y lo pedimos */
+        /* calculamos el indice donde está el valor del flujo en el vector distribuido y lo pedimos */
         locind=mesh.elemv[e].nodel[i]*egn+g;
         VecGetValues(xlocal,1,&locind,&phival);
 
-        /* sumamos la contribuciÃ³n al la integral total */
+        /* sumamos la contribución a la integral total */
         for(gp=0;gp<ngp;gp++){
           fem_caljac(coor, ode, npe, gp, DIM, jac);
           fem_invjac(jac, DIM, ijac, &det);
