@@ -68,14 +68,39 @@ typedef struct _pvl_t
 
 }pvl_t;
 
+/*************************************************************/
+typedef struct _kind_1_t
+{
+  char     phys[16];
+}
+kind_1_t;
+
+/* this is used to print localized powers on physical entities on a file */
+typedef struct _kind_2_t
+{
+  FILE     * fp;
+  char       file[16];
+  int        nz;
+  int      * gmshids;
+  double   * powers
+}
+kind_2_t;
+
 typedef struct _output_t
 {
+  /* esto va a volar pronto */
   char   file[16];
   char   phys[16];
-  int    kind;
   double norm[3];
 
+  int        kind;
+
+  kind_1_t   kind_1;
+  kind_2_t   kind_2;
+
 }output_t;
+
+/*************************************************************/
 
 typedef struct _tcontrol_t
 {
