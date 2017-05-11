@@ -75,7 +75,7 @@ int main(int argc,char **argv){
 
 error:
 
-  ferfini();
+  ferfini();  
 
   return 0;
 }
