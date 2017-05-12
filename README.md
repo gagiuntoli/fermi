@@ -85,7 +85,7 @@ we recommend to put them in `.bashrc` or in some start up file
 ###`Fermi`:
 
 ```bash
-    make
+   make
 ```
 
 ##Running `Fermi` on multiple processors
