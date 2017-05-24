@@ -1,4 +1,4 @@
-#include "funct.h"
+#include "fermi.h"
 
 int ferinit(int argc,char **argv)
 {

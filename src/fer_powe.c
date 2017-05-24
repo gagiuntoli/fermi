@@ -1,4 +1,4 @@
-#include "funct.h"
+#include "fermi.h"
 
 /*************************************************************/
 int fernorm(void){
