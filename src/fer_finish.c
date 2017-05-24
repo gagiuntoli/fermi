@@ -1,6 +1,6 @@
 /* frees all the memory */
 
-#include "funct.h"
+#include "fermi.h"
 
 int ferfini(void){
     // In case that the process was spawned by a parent, he is waiting for fermi to finish with an MPI_Barrier

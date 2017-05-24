@@ -2,7 +2,7 @@
  * 
  */
 
-#include "funct.h"
+#include "fermi.h"
 
 int ferbouset(void){
 

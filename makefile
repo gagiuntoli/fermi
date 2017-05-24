@@ -6,11 +6,11 @@ PWD:= $(shell pwd)
 
 SRC_DIR=./src
 OBJ_DIR=./obj
-DEP_DIR=${PWD}/headers
+DEP_DIR=${PWD}/inc
 
 CFLAGS=-g -O0
 	
-DEPS = ${DEP_DIR}/funct.h              \
+DEPS = ${DEP_DIR}/fermi.h              \
        ${DEP_DIR}/gmsh.h               \
        ${DEP_DIR}/mesh.h               \
        ${DEP_DIR}/fem.h                \
@@ -20,33 +20,36 @@ DEPS = ${DEP_DIR}/funct.h              \
        ${DEP_DIR}/global.h             \
        ${DEP_DIR}/utils.h              
 
-OBJ  = ${OBJ_DIR}/main.o               \
+OBJ  = ${OBJ_DIR}/fer_main.o           \
        ${OBJ_DIR}/mesh.o               \
        ${OBJ_DIR}/list.o               \
        ${OBJ_DIR}/gmsh.o               \
        ${OBJ_DIR}/fem.o                \
        ${OBJ_DIR}/fun.o                \
-       ${OBJ_DIR}/ferassm.o            \
-       ${OBJ_DIR}/ferinit.o            \
-       ${OBJ_DIR}/ferfini.o            \
-       ${OBJ_DIR}/ferboun.o            \
-       ${OBJ_DIR}/ferstep.o            \
-       ${OBJ_DIR}/ferelem.o            \
-       ${OBJ_DIR}/fersolv.o            \
-       ${OBJ_DIR}/ferpowe.o            \
-       ${OBJ_DIR}/ferrods.o            \
+       ${OBJ_DIR}/fer_assm.o           \
+       ${OBJ_DIR}/fer_init.o           \
+       ${OBJ_DIR}/fer_finish.o           \
+       ${OBJ_DIR}/fer_boun.o           \
+       ${OBJ_DIR}/fer_step.o           \
+       ${OBJ_DIR}/fer_elem.o           \
+       ${OBJ_DIR}/fer_solv.o           \
+       ${OBJ_DIR}/fer_powe.o           \
+       ${OBJ_DIR}/fer_rods.o           \
        ${OBJ_DIR}/lst2msh.o            \
        ${OBJ_DIR}/utils.o              \
-       ${OBJ_DIR}/output.o             \
-       ${OBJ_DIR}/parser.o             
+       ${OBJ_DIR}/fer_output.o         \
+       ${OBJ_DIR}/fer_parser.o             
 
 .PHONY: clean_
 	
 all: ${OBJ} 
 	gcc -o fermi $^ ${SLEPC_EPS_LIB} 
 	
-${OBJ_DIR}/%.o: ${SRC_DIR}/%.c $(DEPS)
+${OBJ_DIR}/%.o: ${SRC_DIR}/%.c $(DEPS) ${OBJ_DIR}
 	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $< -I${DEP_DIR}
+
+${OBJ_DIR}:
+	mkdir $@
 
 clean_:	    
 	rm -f $(OBJ) fermi

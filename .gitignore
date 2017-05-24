@@ -1,6 +1,6 @@
 syntax: glob
 
-obj/*.o
+obj/*
 *.vtk
 *.msh
 *.png

@@ -1,6 +1,6 @@
 /* Newton - Raphson iterations*/
 
-#include "funct.h"
+#include "fermi.h"
 
 int ferstep_ST(void)
 {

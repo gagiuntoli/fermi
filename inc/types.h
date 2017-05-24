@@ -82,7 +82,7 @@ typedef struct _kind_2_t
   char       file[16];
   int        nz;
   int      * gmshids;
-  double   * powers
+  double   * powers;
 }
 kind_2_t;
 

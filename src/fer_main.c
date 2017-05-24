@@ -1,6 +1,6 @@
 /* Fermi main program*/
 
-#include "funct.h"
+#include "fermi.h"
 
 int main(int argc,char **argv){
 

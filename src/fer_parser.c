@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "global.h"
-#include "funct.h"
+#include "fermi.h"
 #include "list.h"
 #include "types.h"
 #include "matlaw.h"
