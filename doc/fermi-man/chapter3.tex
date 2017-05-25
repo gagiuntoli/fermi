@@ -38,7 +38,7 @@ the amount of time steps, the amount of variables that are necessary to receive 
 After that, Fermi compares this values with data laoded from input.
 If it is necessary change the local values printing $WARNING$ advise.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
@@ -134,7 +134,7 @@ In transitory evolutions this strategy is clear.
 If there is not a clear initial condition, it could be calculated from a quasi-stationary step.
 In quasi-stationary evolutions, it has not sense to define $\Delta t_{local}$ different from $\Delta t_{coup}$.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
@@ -148,7 +148,7 @@ Pseudocode of this instance:
 
   \textcolor{Gray}{Receiving data}
   if(coupledTimeStep)\{
-    error = MPI_Recv (&\textcolor{OliveGreen}{input_var}, \textcolor{OliveGreen}{N_output_var},
+    error = MPI_Recv (&\textcolor{OliveGreen}{input_var}, \textcolor{OliveGreen}{N_input_var},
     MPI_DOUBLE_PRECISION, 0, tag, Comp_Comm, &status)
   \}
   
@@ -163,12 +163,18 @@ Pseudocode of this instance:
 At the end of each coupled time step, it is necessary to send calculated variables of interest.
 Also, Fermi has to wait to the master instruction, which could be: restart, continue or abort.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
+  \textcolor{Gray}{Sending data}
 
-
+  error = MPI_Send (&\textcolor{OliveGreen}{output_var}, \textcolor{OliveGreen}{N_output_var}, 
+  MPI_DOUBLE_PRECISION, 0, tag, (Comp_Comm[iCode]))
+  
+  \textcolor{Gray}{Order reception}
+  
+  error = MPI_Recv (&order, 1, MPI_INTEGER, 0, tag, Comp_Comm, &status)
 
 
 \end{Verbatim}
@@ -178,7 +184,7 @@ Pseudocode of this instance:
 
 Before end the program, it is necessary to finish connection with master.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
