@@ -1,0 +1,188 @@
+\chapter{Coupling Fermi}
+
+\section{Introduction}
+
+There are complex problems, like termohydraulic-neutronic coupled problems, in which different codes can solve with detail differents equations of the global system.
+For example, there are codes that are benchmarked in neutronic calculations and others that are specialized solving termohydraulics.
+For these reason, when the equations are coupled it is neccesary the communication between them.
+
+\section{Communication via standard MPI}
+
+Standard MPI allows users to share data between different codes.
+The strategy proposed is that the particular codes that solves some equations of the global system (like Fermi) are slaves of a master code.
+All slaves are connected only to the master, and they don't share data between them.
+The master code sends orders to the codes: to begin calculations in a particular time step, to restart the calculation, to abort, etc.
+It also sends values of variables of interest and receives anothers.
+
+The slaves can run in serial or in parallel mode.
+If multiple processes of some slave are running, only the root process of each code stablishes the MPI communication with the master code.
+
+\section{MPI implementation on Fermi}
+
+The architecture mounted on Fermi described in this section allows the code to communicate with a master code in a succesfull way.
+The coupling actions are called in 4 instances:
+\begin{enumerate}
+\item at the beginning of the program;
+\item at the beginning of each local step after coupled time step;
+\item at the end of each coupled time step;
+\item at the end of the program.
+\end{enumerate}
+
+Once the code is running, if the switch $COUPLING$ is set to $1$ in the input of fermi, the following actions are called:
+
+\subsection*{Coupling at instance 1: at the beginning of the program}
+At this stage it is necessary to stablish the MPI connection between the root process of Fermi and the master code.
+Also, it is necessary to check the consistency in data between them.
+For these reason, Fermi receives important parameters like the initial time value, 
+the amount of time steps, the amount of variables that are necessary to receive in each time step and the amount of variables that are necessary to send after calculations.
+After that, Fermi compares this values with data laoded from input.
+If it is necessary change the local values printing $WARNING$ advise.
+
+Pseudocode of this instance:
+
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+
+  \textcolor{Gray}{iCode is the code ID}
+  
+  print(" MPI connection with code: ", iCode)
+
+  \textcolor{Gray}{Service Name is constructed in base of code ID iCode}
+  
+  Srvc_Name = "Coupling_C" + iCode
+  print(" Looking for service: ", Srvc_Name)
+
+  \textcolor{Gray}{Connection tries with master code via Coupling_Comm MPI communicator}
+  
+  nTries = 0
+  while (nTries < 5)\{
+    error = MPI_Lookup_name (Srvc_Name, MPI_INFO_NULL, Port_Name)
+    if (error == 0) \{
+      print(" Can't find service, trying again")
+    \}
+    nTries++
+  \}
+  if (error == 0)\{
+    print(" Service found at port: ", Port_Name, " After"<< nTries+1<<" tries.")
+    nTries = 0
+  \}
+  while (nTries < 5)\{
+    print(" Connecting...")
+    error = MPI_Comm_connect(Port_Name, MPI_INFO_NULL, 0, MPI_COMM_SELF, Coupling_Comm)
+    if (error == 0)\{
+      print(" Can't connect to service, re-trying")
+    \}
+    nTries = nTries + 1
+  \}
+
+  if (error != 0)\{
+    print(" ERROR: "<<error<<" connecting to server.")
+    exit()
+  \}
+
+  print(" ...connected.")
+
+  \textcolor{Gray}{Receiving data from master}
+
+  print(" Receiving general parameters ")  
+  tag = 100
+  int status
+  
+  error = MPI_Recv (&\textcolor{OliveGreen}{t_0}, 1, MPI_DOUBLE_PRECISION, 0, tag, Comp_Comm, &status)
+  error = MPI_Recv (&\textcolor{OliveGreen}{N_t}, 1, MPI_INTEGER, 0, tag, Comp_Comm, &status)
+  error = MPI_Recv (&\textcolor{OliveGreen}{N_input_var}, 1, MPI_INTEGER, 0, tag, Comp_Comm, &status)
+  error = MPI_Recv (&\textcolor{OliveGreen}{N_output_var}, 1, MPI_INTEGER, 0, tag, Comp_Comm, &status)
+
+  \textcolor{Gray}{Modifying master code, it is possible to add another lines here,}
+  \textcolor{Gray}{in order to share other parameters.}    
+    
+  print(" General parameters received.")
+
+  \textcolor{Gray}{Check consistency in data}
+
+  checkConsistency(\textcolor{OliveGreen}{t_0, N_t, N_input_var, N_output_var})
+  
+  \textcolor{Gray}{Receiving control instruction:}
+  \textcolor{Gray}{0: restart step / 1: continue / 2: abort}
+
+
+  error = MPI_Recv (&\textcolor{OliveGreen}{order}, 1, MPI_DOUBLE_PRECISION, 0, tag, Comp_Comm, &status)
+
+\end{Verbatim}
+
+
+\subsection*{Coupling at instance 2: at the beginning of each local step after coupled time step}
+
+At the beginning of the first time step, Fermi receives guesses to input variables from master code.
+These guesses corresponds to $t_{coup_1}$, which is not necessary $t_{local_1}$ 
+($\Delta t_{local}$ could be smaller than $\Delta t_{coup}$, but never greater).
+For these reason, the input variables set at $t_{local_1}$ are the interpolation between the initial condition and the variables received.
+Note that in case that $\Delta t_{coup}$ is equal to $\Delta t_{local}$, the interpolation results in the variables received.
+$\Delta t_{local}$ could be used smaller than $\Delta t_{coup}$ 
+in order to catch cinetics effects that have orders of magnitude of time smallers than time constants in termohydralics, for example,
+or in order to achieve accurancy in numerical calculations.
+
+So, after calculations in each coupled time step, output variables are sended to master (see stage 3).
+Master code evaluates convergency in calculations and after that, sends and order.
+This order is received by Fermi.
+It could restart all the calculation of the coupled step (which means restart from last $t_{coup}$), 
+continue with new $t_{local}$ or abort calculations.
+Input coupled variables are received after that (at this stage), 
+and corresponds to the actual $t_{coup}$ in case of restart (because it is necessary to recalculate the time step),
+or to the next $t_{coup}$ in case of continue.
+
+In transitory evolutions this strategy is clear.
+If there is not a clear initial condition, it could be calculated from a quasi-stationary step.
+In quasi-stationary evolutions, it has not sense to define $\Delta t_{local}$ different from $\Delta t_{coup}$.
+
+Pseudocode of this instance:
+
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+
+  \textcolor{Gray}{Check if it is coupled time step}
+  if(mod(iStep-1, coupFrecuency)==0)\{
+    coupledTimeStep = true
+  \}
+  else\{
+    coupledTimeStep = false
+  \}
+
+  \textcolor{Gray}{Receiving data}
+  if(coupledTimeStep)\{
+    error = MPI_Recv (&\textcolor{OliveGreen}{input_var}, \textcolor{OliveGreen}{N_output_var},
+    MPI_DOUBLE_PRECISION, 0, tag, Comp_Comm, &status)
+  \}
+  
+  \textcolor{Gray}{Interpolate data}
+  input_var_local_step = interpolate(input_var(coup_step_i-1), input_var(coup_step_i))
+
+\end{Verbatim}
+
+
+\subsection*{Coupling at instance 3: at the end of each coupled time step}
+
+At the end of each coupled time step, it is necessary to send calculated variables of interest.
+Also, Fermi has to wait to the master instruction, which could be: restart, continue or abort.
+
+Pseudocode of this instance:
+
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+
+
+
+
+
+\end{Verbatim}
+
+
+\subsection*{Coupling at instance 4: at the end of the program}
+
+Before end the program, it is necessary to finish connection with master.
+
+Pseudocode of this instance:
+
+\begin{Verbatim}[frame=single,commandchars=\\\{\}]
+
+  \textcolor{Gray}{Disconnecting}
+  error = MPI_Comm_disconnect(&(Comp_Comm))
+  
+\end{Verbatim}
