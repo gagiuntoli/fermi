@@ -38,7 +38,7 @@ the amount of time steps, the amount of variables that are necessary to receive 
 After that, Fermi compares this values with data laoded from input.
 If it is necessary change the local values printing $WARNING$ advise.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
@@ -112,17 +112,17 @@ Pseudocode of this instance:
 
 \subsection*{Coupling at instance 2: at the beginning of each local step after coupled time step}
 
-At the beginning of the first time step, Fermi receives guesses to input variables from master code.
+At the beginning of the first time step, Fermi receives guesses to input variables (cross sections) from master code.
 These guesses corresponds to $t_{coup_1}$, which is not necessary $t_{local_1}$ 
 ($\Delta t_{local}$ could be smaller than $\Delta t_{coup}$, but never greater).
-For these reason, the input variables set at $t_{local_1}$ are the interpolation between the initial condition and the variables received.
+For these reason, the cross sections set at $t_{local_1}$ are the interpolation between the initial condition and the variables received.
 Note that in case that $\Delta t_{coup}$ is equal to $\Delta t_{local}$, the interpolation results in the variables received.
 $\Delta t_{local}$ could be used smaller than $\Delta t_{coup}$ 
 in order to catch cinetics effects that have orders of magnitude of time smallers than time constants in termohydralics, for example,
 or in order to achieve accurancy in numerical calculations.
 
-So, after calculations in each coupled time step, output variables are sended to master (see stage 3).
-Master code evaluates convergency in calculations and after that, sends and order.
+So, after calculations in each coupled time step, output variables (like power distribution) are sended to master (see stage 3).
+Master code evaluates convergency in calculations and after that sends an order.
 This order is received by Fermi.
 It could restart all the calculation of the coupled step (which means restart from last $t_{coup}$), 
 continue with new $t_{local}$ or abort calculations.
@@ -134,7 +134,7 @@ In transitory evolutions this strategy is clear.
 If there is not a clear initial condition, it could be calculated from a quasi-stationary step.
 In quasi-stationary evolutions, it has not sense to define $\Delta t_{local}$ different from $\Delta t_{coup}$.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
@@ -148,7 +148,7 @@ Pseudocode of this instance:
 
   \textcolor{Gray}{Receiving data}
   if(coupledTimeStep)\{
-    error = MPI_Recv (&\textcolor{OliveGreen}{input_var}, \textcolor{OliveGreen}{N_output_var},
+    error = MPI_Recv (&\textcolor{OliveGreen}{input_var}, \textcolor{OliveGreen}{N_input_var},
     MPI_DOUBLE_PRECISION, 0, tag, Comp_Comm, &status)
   \}
   
@@ -163,12 +163,18 @@ Pseudocode of this instance:
 At the end of each coupled time step, it is necessary to send calculated variables of interest.
 Also, Fermi has to wait to the master instruction, which could be: restart, continue or abort.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
+  \textcolor{Gray}{Sending data}
 
-
+  error = MPI_Send (&\textcolor{OliveGreen}{output_var}, \textcolor{OliveGreen}{N_output_var}, 
+  MPI_DOUBLE_PRECISION, 0, tag, (Comp_Comm[iCode]))
+  
+  \textcolor{Gray}{Order reception}
+  
+  error = MPI_Recv (&order, 1, MPI_INTEGER, 0, tag, Comp_Comm, &status)
 
 
 \end{Verbatim}
@@ -178,7 +184,7 @@ Pseudocode of this instance:
 
 Before end the program, it is necessary to finish connection with master.
 
-Pseudocode of this instance:
+Pseudocode for this instance:
 
 \begin{Verbatim}[frame=single,commandchars=\\\{\}]
 
@@ -186,3 +192,46 @@ Pseudocode of this instance:
   error = MPI_Comm_disconnect(&(Comp_Comm))
   
 \end{Verbatim}
+
+Figure \ref{couplingScheme} presents an example of the coupling strategy to solve a neutronic-termal-hydraulic coupled transitory problem.
+In this example material cross sections and power spatial distribution are unknowns at each time step, because both are coupled.
+To solve the problem, cross sections are inputs to the neutronic code and power spatial distribution is another input to the termal-hydraulic code,
+based on guesses proposed by the master code.
+Slave codes compute the conjugated variables, and after this calculations the master calculates the residuals.
+Each coupled time step is repeated until convergence, hence the evolution in time is stable due to this strong coupling.
+
+
+\begin{figure}['ht]
+\centering{}\includegraphics[scale = 0.5]{coupling.eps}
+\caption{Strategy scheme in evolution calculation using 2 codes coupled by a master code.
+Fermi solves the neutronic equations having as input material corss sections.
+The cross sections received from the master code corresponds at $t_{coup_1}$,
+hence Fermi has to interpolate at each local time step this values with the values of the initial condition.
+Once $t_{fermi}$ reaches $t_{coup_1}$, Fermi sends the calculations to the master code.
+In this example, these calculations are the power spatial distribution.
+At the same time that Fermi was running, a termal-hydraulic code was running too.
+It received power spatial distribution guesses and calculated termal-hydraulic values like temperatures and densities.
+In this example the termal-hydraulic code calculates the cross sections based on this variables.
+The master code computes residuals as the difference between all guesses and calculations.
+If the residuals are nonzeros, which are the common results in the first iterations, the master code has to propose new guesses,
+and both Fermi and termal-hydraulic code have to restart their calculations, starting from back-up solutions at previous $t_{coup}$
+(in the first coupled time step, this solution corresponds to initial conditions).
+When the residuals are zeros, the calculations are strong coupled and each code can continue its evolution, based on guesses at $t_{coup_2}$.
+}
+\label{couplingScheme} 
+\end{figure}
+
+\section{The master code Newton}
+Newton is a code designed to couple another codes that solve particular differential equations.
+It has implemented succesfully all necessary functions that corresponds to a master in the coupling strategy described above.
+Even when the user can't programm the necessary cocmmunication functions in the slave codes, 
+Newton design allows to easy implement functions that spawn process of the required code,
+writing their inputs and reading their outputs,
+circumventing the necessity of programming MPI communication functions.
+So, for example, Fermi can be coupled in a transitory problem with RELAP,
+and both communicates with Newton by different ways:
+Fermi communicates via MPI functions and RELAP communicates via input writing and output reading.
+
+Newton ha implemented several numerical methods to solve the residual equations.
+To go deeper into Newton, visit https://bitbucket.org/ibnuc/newton/overview.
+
