@@ -83,4 +83,12 @@ int printVector(char *name,double *vec, int m);
 int printMat(char *name,Mat *A, int m);
 int printVec(char *name,Vec *vec, int m);
 int vtkcode(int dim,int npe);
+
+//fer_couple.c
+int fer_couple(int order, MPI_Comm * couple_comm, char * server_n);
+int fer_coinit(MPI_Comm * couple_comm, char * server_n);
+int fer_corecv(MPI_Comm * couple_comm);
+int fer_cosend(MPI_Comm * couple_comm, int * control_fg);
+int fer_coends(MPI_Comm * couple_comm);
+
 #endif

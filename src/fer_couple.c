@@ -2,7 +2,8 @@
 
 Communications routines for Fermi throught MPI 
 
-Authors: Federico Caccia, 
+Authors: 
+Federico Caccia  (fedecaccia32@gmail.com)
 Guido Giuntoli   (guido.giuntoli@bsc.es)
 
 -> In this implementation Fermi can be connected with only one code
@@ -14,30 +15,34 @@ Guido Giuntoli   (guido.giuntoli@bsc.es)
 
 #define  NTRIES_MAX 5
 
-int fer_couple(int order)
+int fer_couple(int order, MPI_Comm * couple_comm, char * server_n)
 {
 
+    // Four simple and different orders available
     switch(order){
          
 	 /****************************************************************************************************/
 	 case COUPLE_INIT:
 
-             fer_coinit(
+             fer_coinit( couple_comm , server_n );
 	     break;
 
 	 /****************************************************************************************************/
 	 case COUPLE_RECV:
 
+             fer_corecv( couple_comm );
 	     break;
 	 
 	 /****************************************************************************************************/
 	 case COUPLE_SEND:
 
+             fer_cosend( couple_comm );
 	     break;
 
 	 /****************************************************************************************************/
 	 case COUPLE_ENDS:
 
+             fer_coends( couple_comm );
 	     break;
 
 	 /****************************************************************************************************/
@@ -46,8 +51,11 @@ int fer_couple(int order)
     return 0;
 }
 
+/****************************************************************************************************/
+
 int fer_coinit(MPI_Comm * couple_comm, char * server_n)
 {
+    // Stablish connection with server
 
     int  ntry, ierr;
     char port_n[MPI_MAX_PORT_NAME];
@@ -111,3 +119,42 @@ int fer_coinit(MPI_Comm * couple_comm, char * server_n)
 
     return 0;
 }
+
+/****************************************************************************************************/
+
+int fer_corecv(MPI_Comm * couple_comm)
+{
+    int        ierr;
+    MPI_Status status;
+
+    // Receive cross sections data from all materials specified on Input
+    ierr = MPI_Recv(&order, 1, MPI_INTEGER, 0, tag, couple_comm, &status)
+
+    return 0;
+} 
+
+/****************************************************************************************************/
+
+int fer_cosend(MPI_Comm * couple_comm, int * control_fg)
+{
+    // Sends data calculates and the waits for the server order for control flow
+
+    int ierr, tag = 0;
+
+    ierr = MPI_Send (&output_var, N_output_var,MPI_DOUBLE, 0, tag, couple_comm);
+
+    // Receive control_fg instruction
+    ierr = MPI_Recv(control_fg, 1, MPI_INTEGER, 0, tag, couple_comm, &status)
+
+    return 0;
+} 
+
+/****************************************************************************************************/
+
+int fer_coends(MPI_Comm * couple_comm)
+{
+    // Finish the communication with the server
+    MPI_Comm_disconnect(couple_comm);
+
+    return 0;
+} 
