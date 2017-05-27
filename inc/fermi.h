@@ -1,6 +1,9 @@
-/* structure types and constants
- * 
+/* 
+
+   Structure types and constants
+
  */
+
 #ifndef _FUNCT_H_
 #define _FUNCT_H_
 
@@ -16,6 +19,21 @@
 #include "fem.h"
 #include "fun.h"
 #include "utils.h"
+
+/*
+
+   Constants definition
+
+*/
+
+// Coupling orders used for external communication
+
+#define COUPLE_INIT  0    
+#define COUPLE_RECV  1
+#define COUPLE_SEND  2
+#define COUPLE_ENDS  3
+
+
 //parser.c
 int parse_input(void);
 int parse_mesh(void);
