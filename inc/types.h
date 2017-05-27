@@ -80,9 +80,9 @@ typedef struct _kind_2_t
 {
   FILE     * fp;
   char       file[16];
-  int        nz;
-  int      * gmshids;
-  double   * powers;
+  int        n;
+  int      * ids ;
+  double   * pow;
 }
 kind_2_t;
 

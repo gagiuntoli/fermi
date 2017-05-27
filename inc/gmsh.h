@@ -27,6 +27,7 @@ typedef struct _gmshP_t{
     char   name[32];
     int    dim;
     int    gmshid;
+    list_t elem;
     
 }gmshP_t;
 
