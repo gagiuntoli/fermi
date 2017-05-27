@@ -45,11 +45,8 @@ OBJ  = ${OBJ_DIR}/fer_main.o           \
 all: ${OBJ} 
 	gcc -o fermi $^ ${SLEPC_EPS_LIB} 
 	
-${OBJ_DIR}/%.o: ${SRC_DIR}/%.c $(DEPS) ${OBJ_DIR}
+${OBJ_DIR}/%.o: ${SRC_DIR}/%.c $(DEPS) 
 	${PETSC_COMPILE} -c ${CFLAGS} -o $@ $< -I${DEP_DIR}
-
-${OBJ_DIR}:
-	mkdir $@
 
 clean_:	    
 	rm -f $(OBJ) fermi
