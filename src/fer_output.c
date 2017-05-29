@@ -331,6 +331,136 @@ int print_struct(int step)
   return 0;   
 }
 
+int print_out(Vec *phi, int step)
+{
+
+  /*
+  It travels all the list.outpu and determines if it has to print something
+  in this time step "step" the kind of the structure output_t means what it 
+  has to print 
+  */
+
+  int           i;
+  int           indeces[10];
+  int           step_o;
+  int           error;
+  double        values[10];
+  Vec           x_local;
+  node_list_t * pNod;
+  output_t    * po;
+        
+  VecGhostUpdateBegin(*phi,INSERT_VALUES,SCATTER_FORWARD);
+  VecGhostUpdateEnd(*phi,INSERT_VALUES,SCATTER_FORWARD);
+  VecGhostGetLocalForm(*phi,&x_local);
+
+  error = 0;
+
+  pNod = list_outpu.head;
+
+  while(pNod){
+
+    po=(output_t *)pNod->data;
+
+    switch(po->kind){
+
+      case 1:
+
+//        double        vloc[2], vglo[2];
+//
+//        bthdisf(po->phys, po->norm, vloc, u);
+//        MPI_Reduce(vloc, vglo, 2, MPI_DOUBLE, MPI_SUM, 0, PETSC_COMM_WORLD);
+//
+//        if(!rank){
+//          fl=fopen(po->file,"a");
+//        }
+//
+//        fprintf(fl,"%lf %lf \n",vglo[0],vglo[1]);
+//
+//        fclose(fl);
+        break;
+
+      case 2:
+
+        /* 
+
+           plots f_int(n) vs u(n) being n a node specified by phys 
+           the index is saved on po->params_i[0]  
+
+           $Output
+             file f_vs_u.dat
+             kind 2
+             phys "MOV_B"
+           $EndOutput
+
+        */
+
+//        for(i=0;i<3;i++){
+//          indeces[0+i] = po->kind_2.node * DIM + i;
+//        }
+
+//        VecGetValues(u_local,3,indeces,&values[0]);
+//        VecGetValues(f_local,3,indeces,&values[3]);
+//        fprintf(po->kind_2.fp,"%e %e %e %e %e %e\n",values[0],values[1],values[2],values[3],values[4],values[5]);
+        break;
+
+      case 3:
+
+        /* 
+           plots averange damage on elements on a vtk file, the total damage is printed on a file 
+           an is the total on those elements with physical entity physe 
+
+           $Output
+             kind 3
+             step 10
+             phys "MAT"
+           $EndOutput
+           
+           output : damage_s#_r#.vtk    d, tau on elements
+         */
+
+//        step_o = po->kind_3.step;
+//
+//        if(step % step_o == 0){
+//          error = print_vtk_damage(step, u);
+//        }
+//        break;
+//
+      case 4:
+
+        /* 
+           plots f_int, f_ext and u vectors in a vtk format
+
+           $Output
+             kind 4
+             step 10
+           $EndOutput
+           
+           output : ffu_s#_r#.vtk    d, tau on elements
+         */
+
+//        step_o = po->kind_4.step;
+//
+//        if(step % step_o == 0){
+//          error = print_vtk_forces( step, f_int, f_ext, u);
+//        }
+//        break;
+
+      default:
+        return 1;
+
+    }
+
+    if(error){
+      return 1;
+    }
+
+    pNod=pNod->next;
+  }
+
+  return 0;
+}
+
+/****************************************************************************************************/
 
 int print_vtk(const char *name) {
 
@@ -459,7 +589,7 @@ int print_vtk(const char *name) {
   fclose(vtkf);
   return 0;
 
-  }
+}   
 
 int printMatrixR(char *name,double *A, int m, int n){
 
