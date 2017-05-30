@@ -694,85 +694,200 @@ int parse_material(char *buff, pvl_t *mat){
   return 0;
 }
 
-int parse_outp(void){
+/*****************************************************************************************************/
 
-  FILE *file= fopen(inputfile,"r");
-  char *data,buf[NBUF];
-  int fl=0,com=0,ln=0,i;
-  output_t output;
+int parse_outp(void)
+{
 
+  /*
+     Parse for $Output word on parser
+     it could be repeated, each one has a different kind
+     which means what they want to output
+   */
 
+  FILE    * file= fopen(inputfile,"r");
+  char    * data,buf[NBUF];
+  int       fl, ln, i;
+  output_t  output;
+
+  ln = 0;
+  fl = 0;
   while(fgets(buf,NBUF,file)){
     ln++;
     data=strtok(buf," \n");
-    if(data){
+
+    if(data){ // if the line is not empty
+
       if(!strcmp(data,"$Output")){
-        fl=1;
-      }else if(!strcmp(data,"$EndOutput")){
-        if(output.kind==1){ 
-          if(com!=15){
-            PetscPrintf(PETSC_COMM_WORLD,"parser.c:incomplete $output section.\n");
-            return 1;    
-          }
-          list_insertlast(&list_outpu,(void*)&output);
-        }else{
-          PetscPrintf(PETSC_COMM_WORLD,"parser.c:BF line %d.\n",ln);
-          return 1;
-        }
-        fl=0;
+	fl=1;
       }
+      else if(!strcmp(data,"$EndOutput")){
+	if(output.kind==1){ 
+
+	  list_insertlast(&list_outpu,(void*)&output);
+
+	}
+	else if(output.kind==2){ 
+
+	  list_insertlast(&list_outpu,(void*)&output);
+
+	}
+	else{
+	  PetscPrintf(PETSC_COMM_WORLD,"parser.c:BF line %d.\n",ln);
+	  return 1;
+	}
+	fl = 0;
+      }
+
       if(fl==2){
-        if(strcmp(data,"file") == 0){    
-          data = strtok(NULL," \n");    
-          if(!data){
-            PetscPrintf(PETSC_COMM_WORLD,"parser.c:BF line %d.\n",ln);
-            return 1;
-          }
-          strcpy(output.file,data);   
-          com=com|1;  
-        }else if(strcmp(data,"kind") == 0){    
-          data = strtok(NULL," \n");    
-          if(!data){
-            PetscPrintf(PETSC_COMM_WORLD,"parser.c:BF line %d.\n",ln);
-            return 1;
-          }
-          output.kind = atoi(data);
-          com=com|2;
-        }else if(strcmp(data,"phys") == 0){    
-          data = strtok(NULL," \n");    
-          if(!data){
-            PetscPrintf(PETSC_COMM_WORLD,"parser.c:BF line %d.\n",ln);
-            return 1;
-          }
-          strcpy(output.phys,data);
-          com=com|4;     
-        }else if(strcmp(data,"norm") == 0){    
-          for(i=0;i<DIM;i++){
-            data = strtok(NULL," \n");    
-            if(!data){
-              PetscPrintf(PETSC_COMM_WORLD,"parser.c:BF line %d.\n",ln);
-              return 1;
-            }
-            output.norm[i]=atof(data);
-          }
-          com=com|8;
-        }else if(strcmp(data,"#") != 0){    
-          PetscPrintf(PETSC_COMM_WORLD,"parser.c: Unricognized word at line %d.\n",ln); 
-          return 1;
-        }    
+
+	// we are in the line after $Output
+
+	  switch(output.kind){
+
+	    case 1:
+	      break;
+
+	    case 2:
+
+	      /* 
+
+	      kind = 2  
+	      power on different physical entities on ASCII file
+	      file <file.dat>
+	      nphy <num_of_phys>
+	      "phys_1" "phys_2" ... "phys_n"
+
+	      */
+
+	      if(!fgets(buf,NBUF,file)) 
+		return 1;
+	      ln ++;
+
+	      if( get_char(buf,"file",output.kind_2.file)) 
+		return 1;
+
+	      if(!fgets(buf,NBUF,file)) 
+		return 1;
+	      ln ++;
+
+	      if( get_int(buf,"nphy",&output.kind_2.nphy)) 
+		return 1;
+
+	      // allocate memory for physical entities' names
+//	      output.kind_2.phys = (char *)malloc(output.kind_2.nphy * 16 * sizeof(char));
+
+	      if(!fgets(buf,NBUF,file)) 
+		return 1;
+	      ln ++;
+	     
+	      // now we read the physical entities names
+	      data = strtok(buf," \n");
+	      i = 0;
+	      while(i < output.kind_2.nphy && data != NULL){
+		  data = strtok(NULL," \n");
+		  strcpy( (output.kind_2.phys)[i],data);
+                  i++;
+	      }
+	      if( i != output.kind_2.nphy ){
+		return 1;
+	      }
+
+	      break;
+
+	    default:
+	      break;
+	  }
+
       }
       if(fl==1)
-        fl=2;
+	fl=2;
     }
   }
   fclose(file);
   return 0;
 }
 
+/*****************************************************************************************************/
+
+int get_int(char *buf, const char *name,int *a)
+{
+
+  /*
+     Looks in "buf" for :
+     "name" <(int) a>
+     returns 1 if this is not correct
+             0 if this is 0K
+   */
+
+  char *data;
+
+  data = strtok(buf," \n");    
+
+  if(!data){
+    PetscPrintf(PETSC_COMM_WORLD,"%s expected.\n",name);
+    return 1;
+  }
+
+  if(strcmp(data,name)){
+    PetscPrintf(PETSC_COMM_WORLD,"%s expected.\n",name);
+    return 1;
+  }
+
+  data = strtok(NULL," \n");    
+  if(!data){
+    PetscPrintf(PETSC_COMM_WORLD,"%s value expected.\n",name);
+    return 1;
+  }
+  *a = atoi(data);
+
+  return 0;
+}
+
+/*****************************************************************************************************/
+
+int get_char(char *buf, const char *name,char *a)
+{
+
+  /*
+     Looks in "buf" for :
+     "name" <(char) a>
+     returns 1 if this is not correct
+             0 if this is 0K
+   */
+
+  char *data;
+
+  data = strtok(buf," \n");    
+
+  if(!data){
+    PetscPrintf(PETSC_COMM_WORLD,"%s expected.\n",name);
+    return 1;
+  }
+
+  if(strcmp(data,name)){
+    PetscPrintf(PETSC_COMM_WORLD,"%s expected.\n",name);
+    return 1;
+  }
+
+  data = strtok(NULL," \n");    
+  if(!data){
+    PetscPrintf(PETSC_COMM_WORLD,"%s value expected.\n",name);
+    return 1;
+  }
+  strcpy(a,data);
+
+  return 0;
+}
+
+/*****************************************************************************************************/
+
 int cmp_mat(void *a, void *b){
 
   return (strcmp(((pvl_t*)a)->name,((pvl_t*)b)->name)==0)?0:-1;
 }
+
+/*****************************************************************************************************/
 
 int parse_boundary(char *buff, bound_t *bou){
 

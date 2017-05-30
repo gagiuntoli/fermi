@@ -24,3 +24,11 @@ $Boundary
   "BOT_SURF"    2 0
   "LAT_SURF"    3 1
 $EndBoundary
+
+$Output
+  # Power in physical entities
+  kind 2
+  file "pow_phys.dat"
+  nphy 2
+  "FUEL_Z1" "FUEL_Z1"
+$EndOutput

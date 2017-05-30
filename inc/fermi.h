@@ -48,6 +48,8 @@ int cmp_mat(void *a, void *b);
 int parse_boundary(char *bufcpy, bound_t *bou);
 int cmp_bou(void *a, void *b);
 int cmp_time(void *a, void *b);
+int get_int(char *buf, const char *name,int *a);
+int get_char(char *buf, const char *name,char *a);
 
 int ferass_TR(int step);
 int ferass_ST(void);
