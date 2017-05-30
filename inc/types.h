@@ -80,7 +80,7 @@ typedef struct _kind_2_t
 {
   FILE     * fp;
   char       file[16];
-  char     * phys[16]; // array of string where we are going to save the phys names
+  char    ** phys; // array of string where we are going to save the phys names
   int        nphy;
   int      * ids ;
   double   * pow;

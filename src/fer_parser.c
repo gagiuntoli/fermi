@@ -706,7 +706,7 @@ int parse_outp(void)
    */
 
   FILE    * file= fopen(inputfile,"r");
-  char    * data,buf[NBUF];
+  char    * data,buf[NBUF], buf_a[NBUF];
   int       fl, ln, i;
   output_t  output;
 
@@ -714,7 +714,8 @@ int parse_outp(void)
   fl = 0;
   while(fgets(buf,NBUF,file)){
     ln++;
-    data=strtok(buf," \n");
+    strcpy(buf_a, buf);
+    data=strtok(buf_a," \n");
 
     if(data){ // if the line is not empty
 
@@ -739,65 +740,68 @@ int parse_outp(void)
 	fl = 0;
       }
 
-      if(fl==2){
+      if(fl==2 && data[0]!='#'){
 
 	// we are in the line after $Output
+	if( get_int(buf,"kind",&output.kind)) 
+	  return 1;  
 
-	  switch(output.kind){
+	switch(output.kind){
 
-	    case 1:
-	      break;
+	  case 1:
+	    break;
 
-	    case 2:
+	  case 2:
 
-	      /* 
+	    /* 
 
-	      kind = 2  
-	      power on different physical entities on ASCII file
-	      file <file.dat>
-	      nphy <num_of_phys>
-	      "phys_1" "phys_2" ... "phys_n"
+	       kind = 2  
+	       power on different physical entities on ASCII file
+	       file <file.dat>
+	       nphy <num_of_phys>
+	       "phys_1" "phys_2" ... "phys_n"
 
-	      */
+	     */
 
-	      if(!fgets(buf,NBUF,file)) 
-		return 1;
-	      ln ++;
+	    if(!fgets(buf,NBUF,file)) 
+	      return 1;
+	    ln ++;
 
-	      if( get_char(buf,"file",output.kind_2.file)) 
-		return 1;
+	    if( get_char(buf,"file",output.kind_2.file)) 
+	      return 1;
 
-	      if(!fgets(buf,NBUF,file)) 
-		return 1;
-	      ln ++;
+	    if(!fgets(buf,NBUF,file)) 
+	      return 1;
+	    ln ++;
 
-	      if( get_int(buf,"nphy",&output.kind_2.nphy)) 
-		return 1;
+	    if( get_int(buf,"nphy",&output.kind_2.nphy)) 
+	      return 1;  
+	    output.kind_2.phys = (char **)malloc(output.kind_2.nphy*sizeof(char*));
+	    for(i = 0; i < output.kind_2.nphy; i++){
+	      output.kind_2.phys[i] = (char *)malloc(16*sizeof(char));
+	    }
 
-	      // allocate memory for physical entities' names
-//	      output.kind_2.phys = (char *)malloc(output.kind_2.nphy * 16 * sizeof(char));
+	    if(!fgets(buf,NBUF,file)) 
+	      return 1;
+	    ln ++;
 
-	      if(!fgets(buf,NBUF,file)) 
-		return 1;
-	      ln ++;
-	     
-	      // now we read the physical entities names
-	      data = strtok(buf," \n");
-	      i = 0;
-	      while(i < output.kind_2.nphy && data != NULL){
-		  data = strtok(NULL," \n");
-		  strcpy( (output.kind_2.phys)[i],data);
-                  i++;
-	      }
-	      if( i != output.kind_2.nphy ){
-		return 1;
-	      }
+	    // now we read the physical entities names
+	    data = strtok(buf," \n");
+	    i = 0;
+	    while(i < output.kind_2.nphy && data != NULL){
+	      strcpy( output.kind_2.phys[i],data);
+	      data = strtok(NULL," \n");
+	      i++;
+	    }
+	    if( i != output.kind_2.nphy ){
+	      return 1;
+	    }
 
-	      break;
+	    break;
 
-	    default:
-	      break;
-	  }
+	  default:
+	    break;
+	}
 
       }
       if(fl==1)

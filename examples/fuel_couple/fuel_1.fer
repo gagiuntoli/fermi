@@ -30,5 +30,5 @@ $Output
   kind 2
   file "pow_phys.dat"
   nphy 2
-  "FUEL_Z1" "FUEL_Z1"
+  "FUEL_Z1" "FLUID_Z1"
 $EndOutput
