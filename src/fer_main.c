@@ -57,7 +57,7 @@ int main(int argc,char **argv){
       if(ferstep_TR(step))
         goto error;
 
-      if(ferpowe(&power))
+      if(fer_pow(&power))
         goto error;
 
       PetscPrintf(PETSC_COMM_WORLD,"%lf %e %d \n",calcu.t,power,its);

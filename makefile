@@ -28,12 +28,12 @@ OBJ  = ${OBJ_DIR}/fer_main.o           \
        ${OBJ_DIR}/fun.o                \
        ${OBJ_DIR}/fer_assm.o           \
        ${OBJ_DIR}/fer_init.o           \
-       ${OBJ_DIR}/fer_finish.o           \
+       ${OBJ_DIR}/fer_finish.o         \
        ${OBJ_DIR}/fer_boun.o           \
        ${OBJ_DIR}/fer_step.o           \
        ${OBJ_DIR}/fer_elem.o           \
        ${OBJ_DIR}/fer_solv.o           \
-       ${OBJ_DIR}/fer_powe.o           \
+       ${OBJ_DIR}/fer_power.o          \
        ${OBJ_DIR}/fer_rods.o           \
        ${OBJ_DIR}/lst2msh.o            \
        ${OBJ_DIR}/utils.o              \

@@ -68,9 +68,13 @@ int cpyelems (node_list_t *elem_nl, elem_t *elems);
 //ferboun.c
 int ferbouset(void);
 int cmp_nod(void *a, void *b);
-//ferpower.c
-int fernorm(void);
-int ferpowe(double *fpower);
+
+//fer_power.c
+int fer_norm(void);
+int fer_pow(double *fpower);
+int fer_pow_phys(int n, int * ids, double *fpower);
+int fer_pow_elem(int e, double *fpower);
+
 //ferrods.c
 int ferirods(void);
 int fersrods(double t);
