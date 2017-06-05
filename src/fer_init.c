@@ -8,13 +8,20 @@ int ferinit(int argc,char **argv)
    * Allocs mamory for K, x, b
    */
   int error,i,d,*ghost;
+
   SlepcInitialize(&argc,&argv,(char*)0,NULL);
-  MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-  MPI_Comm_size(PETSC_COMM_WORLD, &nproc);  
+
+  // Coloring should go here
+  // PETSC_COMM_WORLD = FERMI_Comm should go before petscinitialize
+
+  FERMI_Comm = MPI_COMM_WORLD; // this should be change by a split
+
+  MPI_Comm_rank(FERMI_Comm, &rank);
+  MPI_Comm_size(FERMI_Comm, &nproc);  
   calcu.exec = (nproc>1)?PARALLEL:SEQUENCIAL;
   if(argc == 1)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:input file NS.\n\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:input file NS.\n\n"); 
     return 1;
   }
   //  
@@ -27,11 +34,11 @@ int ferinit(int argc,char **argv)
   list_init(&list_fun1d, sizeof(bound_t),cmp_f1d);
   list_init(&list_ctrlr, sizeof(ctrlrod_t),NULL);
   strcpy(inputfile,argv[1]);
-  PetscPrintf(PETSC_COMM_WORLD,"Parcing input file.\n");
+  PetscPrintf(FERMI_Comm,"Parcing input file.\n");
   error=parse_input();
   if(error!=0)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error parsing input file.\n");
+    PetscPrintf(FERMI_Comm,"main.c:error parsing input file.\n");
     return 1;
   }
   //
@@ -44,11 +51,11 @@ int ferinit(int argc,char **argv)
   list_init(&list_elemv, sizeof(gmshE_t), cmp_int);
   list_init(&list_elems, sizeof(gmshE_t), cmp_int);
   list_init(&list_physe, sizeof(gmshP_t), cmp_int);    
-  PetscPrintf(PETSC_COMM_WORLD,"Reading mesh.\n");
+  PetscPrintf(FERMI_Comm,"Reading mesh.\n");
   error=gmsh_read(meshfile,epartfile,npartfile,rank,DIM,&list_nodes,&list_ghost,&list_elemv,&list_elems,&list_physe,&loc2gold,&loc2gnew,&npp,nproc);    
   if(error!=0)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error reading mesh.\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error reading mesh.\n"); 
     return 1;
   }
   ntot=0;
@@ -59,10 +66,10 @@ int ferinit(int argc,char **argv)
   // PRINTING STRUCTURES
   //============================== 
   //     
-  PetscPrintf(PETSC_COMM_WORLD,"Printing structures 1.\n");
+  PetscPrintf(FERMI_Comm,"Printing structures 1.\n");
   error = print_struct(1);   
   if(error!=0){
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error printing structures.\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error printing structures.\n"); 
     return 1;
   }
 
@@ -71,23 +78,23 @@ int ferinit(int argc,char **argv)
   // CONSTRUCTING MESH
   //============================== 
   //      
-  PetscPrintf(PETSC_COMM_WORLD,"Constructing mesh.\n");
+  PetscPrintf(FERMI_Comm,"Constructing mesh.\n");
   error=mesh_alloc(&list_nodes, &list_ghost, cpynode, &list_elemv, cpyelemv, &list_elems, cpyelems, &mesh);
   if(error) 
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error allocating mesh.\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error allocating mesh.\n"); 
     return 1;
   }
   error=mesh_renum(&mesh,loc2gold,loc2gnew);
   if(error)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error renumbering mesh nodes.\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error renumbering mesh nodes.\n"); 
     return 1;
   }
 //  error=mesh_neigh(&mesh,loc2gnew);
 //  if(error)
 //  {
-//    PetscPrintf(PETSC_COMM_WORLD,"main.c: Error calculating mesh neightbors.\n",error); 
+//    PetscPrintf(FERMI_Comm,"main.c: Error calculating mesh neightbors.\n",error); 
 //    return 1;
 //  }
 
@@ -96,11 +103,11 @@ int ferinit(int argc,char **argv)
   // CONTROL RODS INIT
   //==============================      
   //      
-  PetscPrintf(PETSC_COMM_WORLD,"Initializing control rods.\n");
+  PetscPrintf(FERMI_Comm,"Initializing control rods.\n");
   error=ferirods();
   if(error)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error control rods initialization.\n",error); 
+    PetscPrintf(FERMI_Comm,"main.c:error control rods initialization.\n",error); 
     return 1;
   }
   //      
@@ -108,11 +115,11 @@ int ferinit(int argc,char **argv)
   // ASSEMBLY BOUNDARIES 
   //==============================      
   //      
-  PetscPrintf(PETSC_COMM_WORLD,"Assemblying BCs.\n");
+  PetscPrintf(FERMI_Comm,"Assemblying BCs.\n");
   error=ferbouset();
   if(error)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error assembling BCs.\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error assembling BCs.\n"); 
     return 1;
   }
   //      
@@ -120,7 +127,7 @@ int ferinit(int argc,char **argv)
   // ALLOCATING MATRICES/VECTORS 
   //==============================      
   //      
-  PetscPrintf(PETSC_COMM_WORLD,"Allocating Matrices/Vectors.\n");
+  PetscPrintf(FERMI_Comm,"Allocating Matrices/Vectors.\n");
   ghost=(int*)calloc(mesh.nghost*DIM,sizeof(int));
   for(i=0;i<mesh.nghost;i++)
   {
@@ -128,14 +135,14 @@ int ferinit(int argc,char **argv)
       ghost[i*egn+d]=loc2gnew[mesh.nnodes+i]*egn+d;
   }
 
-  VecCreateGhost(PETSC_COMM_WORLD,mesh.nnodes*egn,ntot*egn,mesh.nghost*egn,(PetscInt*)ghost,&phi_n); 
+  VecCreateGhost(FERMI_Comm,mesh.nnodes*egn,ntot*egn,mesh.nghost*egn,(PetscInt*)ghost,&phi_n); 
   VecDuplicate(phi_n,&phi_o);
   VecDuplicate(phi_n,&b);
   VecDuplicate(phi_n,&b_a);
-  MatCreateAIJ(PETSC_COMM_WORLD,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&A);
-  MatCreateAIJ(PETSC_COMM_WORLD,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&B);
-  MatCreateAIJ(PETSC_COMM_WORLD,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&M);
-  MatCreateAIJ(PETSC_COMM_WORLD,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&K);
+  MatCreateAIJ(FERMI_Comm,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&A);
+  MatCreateAIJ(FERMI_Comm,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&B);
+  MatCreateAIJ(FERMI_Comm,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&M);
+  MatCreateAIJ(FERMI_Comm,mesh.nnodes*egn,mesh.nnodes*egn,ntot*egn,ntot*egn,78,NULL,78,NULL,&K);
 
   Ae=(double*)calloc(NPE*egn*NPE*egn,sizeof(double));
   Be=(double*)calloc(NPE*egn*NPE*egn,sizeof(double));
@@ -158,7 +165,7 @@ int ferinit(int argc,char **argv)
   fem_inigau();
   if(error)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error gps init.\n\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error gps init.\n\n"); 
     return 1;
   }
 
@@ -167,7 +174,7 @@ int ferinit(int argc,char **argv)
   // SETTING SOLVER
   //==============================      
   //      
-  EPSCreate(PETSC_COMM_WORLD,&eps);
+  EPSCreate(FERMI_Comm,&eps);
   EPSSetProblemType(eps,EPS_GNHEP);    
   EPSSetOperators(eps,A,B);
   EPSSetWhichEigenpairs(eps,EPS_SMALLEST_MAGNITUDE);
@@ -175,15 +182,15 @@ int ferinit(int argc,char **argv)
   EPSSetDimensions(eps,1,PETSC_DEFAULT,PETSC_DEFAULT);
   EPSSetFromOptions(eps);
 
-  KSPCreate(PETSC_COMM_WORLD,&ksp);
+  KSPCreate(FERMI_Comm,&ksp);
   KSPSetType(ksp,KSPGMRES);
   KSPGetPC(ksp,&pc);
 //  PCSetType(pc,PCLU);
   KSPSetFromOptions(ksp);
-  PetscViewerASCIIOpen(PETSC_COMM_WORLD,"kspinfo.dat",&kspview);
+  PetscViewerASCIIOpen(FERMI_Comm,"kspinfo.dat",&kspview);
   KSPView(ksp,kspview);
 
- // EPSCreate(PETSC_COMM_WORLD,&eps);
+ // EPSCreate(FERMI_Comm,&eps);
  // EPSSetProblemType(eps,EPS_GNHEP);
 
   //      
@@ -191,11 +198,11 @@ int ferinit(int argc,char **argv)
   // PRINTING STRUCTURES
   //============================== 
   //     
-  PetscPrintf(PETSC_COMM_WORLD,"Printing structures 2.\n");
+  PetscPrintf(FERMI_Comm,"Printing structures 2.\n");
   error = print_struct(2);   
   if(error)
   {
-    PetscPrintf(PETSC_COMM_WORLD,"main.c:error printing structures.\n"); 
+    PetscPrintf(FERMI_Comm,"main.c:error printing structures.\n"); 
     return 1;
   }
   return 0;
