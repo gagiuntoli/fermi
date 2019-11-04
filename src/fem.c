@@ -1,7 +1,24 @@
-/* Routines to perform Finite Element Analisys
- * 
- * 
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+ 
 #include "fem.h"
 
 int fem_inigau(void){
@@ -20,8 +37,8 @@ int fem_inigau(void){
         for(j=0;j<1;j++)
             ds_segm_2[i][j]=(double *)calloc(2,sizeof(double));
     }
-    xp_segm_2[0][0]= -0.577350269189626;   wp_segm_2[0]= +1.0;          
-    xp_segm_2[1][0]= +0.577350269189626;   wp_segm_2[1]= +1.0;          
+    xp_segm_2[0][0]= -0.577350269189626;   wp_segm_2[0]= +1.0;
+    xp_segm_2[1][0]= +0.577350269189626;   wp_segm_2[1]= +1.0;
     for(gp=0;gp<2;gp++){
         sh_segm_2[0][gp]= +0.5*(1.0-xp_segm_2[gp][0]);
         ds_segm_2[0][0][gp]= -0.5;
@@ -42,22 +59,22 @@ int fem_inigau(void){
         for(j=0;j<2;j++)
             ds_tria_3[i][j]=(double *)calloc(3,sizeof(double));
     }
-    xp_tria_3[0][0]=+0.166666666666666; 
+    xp_tria_3[0][0]=+0.166666666666666;
     xp_tria_3[0][1]=+0.166666666666666;
-    wp_tria_3[0]   =+0.166666666666666;          
-    
-    xp_tria_3[1][0]=+0.666666666666666; 
-    xp_tria_3[1][1]=+0.166666666666666;
-    wp_tria_3[1]   =+0.166666666666666;        
+    wp_tria_3[0]   =+0.166666666666666;
 
-    xp_tria_3[2][0]=+0.166666666666666; 
+    xp_tria_3[1][0]=+0.666666666666666;
+    xp_tria_3[1][1]=+0.166666666666666;
+    wp_tria_3[1]   =+0.166666666666666;
+
+    xp_tria_3[2][0]=+0.166666666666666;
     xp_tria_3[2][1]=+0.666666666666666;
     wp_tria_3[2]   =+0.166666666666666;
-   
+
     for(gp=0;gp<3;gp++)
     {
         sh_tria_3[0][gp]   = +1.0-xp_tria_3[gp][0]-xp_tria_3[gp][1];
-        ds_tria_3[0][0][gp]= -1.0;  
+        ds_tria_3[0][0][gp]= -1.0;
         ds_tria_3[0][1][gp]= -1.0;
 
         sh_tria_3[1][gp]  = +xp_tria_3[gp][0];
@@ -73,7 +90,7 @@ int fem_inigau(void){
     wp_quad_4=(double *)calloc(4,sizeof(double));
     sh_quad_4=(double **)calloc(4,sizeof(double*));
     ds_quad_4=(double ***)calloc(4,sizeof(double**));
-    
+
     for(i=0;i<4;i++)
         ds_quad_4[i]=(double **)calloc(2,sizeof(double*));
     for(i=0;i<4;i++)
@@ -84,25 +101,25 @@ int fem_inigau(void){
             ds_quad_4[i][j]=(double *)calloc(4,sizeof(double));
     }
 
-    xp_quad_4[0][0]= -0.577350269189626;   xp_quad_4[0][1]= -0.577350269189626;  wp_quad_4[0]= +1.0;          
-    xp_quad_4[1][0]= +0.577350269189626;   xp_quad_4[1][1]= -0.577350269189626;  wp_quad_4[1]= +1.0;        
+    xp_quad_4[0][0]= -0.577350269189626;   xp_quad_4[0][1]= -0.577350269189626;  wp_quad_4[0]= +1.0;
+    xp_quad_4[1][0]= +0.577350269189626;   xp_quad_4[1][1]= -0.577350269189626;  wp_quad_4[1]= +1.0;
     xp_quad_4[2][0]= +0.577350269189626;   xp_quad_4[2][1]= +0.577350269189626;  wp_quad_4[2]= +1.0;
     xp_quad_4[3][0]= -0.577350269189626;   xp_quad_4[3][1]= +0.577350269189626;  wp_quad_4[3]= +1.0;
     for(gp=0;gp<4;gp++){
         sh_quad_4[0][gp]= (1.0-xp_quad_4[gp][0])*(1.0-xp_quad_4[gp][1])*0.25;
-        ds_quad_4[0][0][gp]= -1.0*(1.0-xp_quad_4[gp][1])*0.25;  
+        ds_quad_4[0][0][gp]= -1.0*(1.0-xp_quad_4[gp][1])*0.25;
         ds_quad_4[0][1][gp]= -1.0*(1.0-xp_quad_4[gp][0])*0.25;
 
         sh_quad_4[1][gp]= (1.0+xp_quad_4[gp][0])*(1.0-xp_quad_4[gp][1])*0.25;
-        ds_quad_4[1][0][gp]= +1.0*(1.0-xp_quad_4[gp][1])*0.25;  
+        ds_quad_4[1][0][gp]= +1.0*(1.0-xp_quad_4[gp][1])*0.25;
         ds_quad_4[1][1][gp]= -1.0*(1.0+xp_quad_4[gp][0])*0.25;
 
         sh_quad_4[2][gp]= (1.0+xp_quad_4[gp][0])*(1.0+xp_quad_4[gp][1])*0.25;
-        ds_quad_4[2][0][gp]= +1.0*(1.0+xp_quad_4[gp][1])*0.25;  
+        ds_quad_4[2][0][gp]= +1.0*(1.0+xp_quad_4[gp][1])*0.25;
         ds_quad_4[2][1][gp]= +1.0*(1.0+xp_quad_4[gp][0])*0.25;
 
         sh_quad_4[3][gp]= (1.0-xp_quad_4[gp][0])*(1.0+xp_quad_4[gp][1])*0.25;
-        ds_quad_4[3][0][gp]= -1.0*(1.0+xp_quad_4[gp][1])*0.25;  
+        ds_quad_4[3][0][gp]= -1.0*(1.0+xp_quad_4[gp][1])*0.25;
         ds_quad_4[3][1][gp]= +1.0*(1.0-xp_quad_4[gp][0])*0.25;
     }
 
@@ -119,45 +136,45 @@ int fem_inigau(void){
         for(j=0;j<3;j++)
             ds_tetra_4[i][j]=(double *)calloc(4,sizeof(double));
     }
-    xp_tetra_4[0][0]= +0.138196601125011;   
-    xp_tetra_4[0][1]= +0.138196601125011;   
-    xp_tetra_4[0][2]= +0.138196601125011;     
-    wp_tetra_4[0]   = +0.041666666666666;          
-    
-    xp_tetra_4[1][0]= +0.585410196624968;   
-    xp_tetra_4[1][1]= +0.138196601125011;   
-    xp_tetra_4[1][2]= +0.138196601125011;     
-    wp_tetra_4[1]   = +0.041666666666666;        
+    xp_tetra_4[0][0]= +0.138196601125011;
+    xp_tetra_4[0][1]= +0.138196601125011;
+    xp_tetra_4[0][2]= +0.138196601125011;
+    wp_tetra_4[0]   = +0.041666666666666;
 
-    xp_tetra_4[2][0]= +0.138196601125011;   
-    xp_tetra_4[2][1]= +0.585410196624968;   
-    xp_tetra_4[2][2]= +0.138196601125011;     
+    xp_tetra_4[1][0]= +0.585410196624968;
+    xp_tetra_4[1][1]= +0.138196601125011;
+    xp_tetra_4[1][2]= +0.138196601125011;
+    wp_tetra_4[1]   = +0.041666666666666;
+
+    xp_tetra_4[2][0]= +0.138196601125011;
+    xp_tetra_4[2][1]= +0.585410196624968;
+    xp_tetra_4[2][2]= +0.138196601125011;
     wp_tetra_4[2]   = +0.041666666666666;
-    
-    xp_tetra_4[3][0]= +0.138196601125011;   
-    xp_tetra_4[3][1]= +0.138196601125011;   
-    xp_tetra_4[3][2]= +0.585410196624968;     
+
+    xp_tetra_4[3][0]= +0.138196601125011;
+    xp_tetra_4[3][1]= +0.138196601125011;
+    xp_tetra_4[3][2]= +0.585410196624968;
     wp_tetra_4[3]   = +0.041666666666666;
 
     for(gp=0;gp<4;gp++)
     {
         sh_tetra_4[0][gp]= 1.0 - xp_tetra_4[gp][0] - xp_tetra_4[gp][1] - xp_tetra_4[gp][2];
-        ds_tetra_4[0][0][gp]= -1.0;  
+        ds_tetra_4[0][0][gp]= -1.0;
         ds_tetra_4[0][1][gp]= -1.0;
         ds_tetra_4[0][2][gp]= -1.0;
 
         sh_tetra_4[1][gp]= xp_tetra_4[gp][0];
-        ds_tetra_4[1][0][gp]= +1.0;  
+        ds_tetra_4[1][0][gp]= +1.0;
         ds_tetra_4[1][1][gp]= +0.0;
         ds_tetra_4[1][2][gp]= +0.0;
 
         sh_tetra_4[2][gp]= xp_tetra_4[gp][1];
-        ds_tetra_4[2][0][gp]= +0.0;  
+        ds_tetra_4[2][0][gp]= +0.0;
         ds_tetra_4[2][1][gp]= +1.0;
         ds_tetra_4[2][2][gp]= +0.0;
 
         sh_tetra_4[3][gp]= xp_tetra_4[gp][2];
-        ds_tetra_4[3][0][gp]= +0.0;  
+        ds_tetra_4[3][0][gp]= +0.0;
         ds_tetra_4[3][1][gp]= +0.0;
         ds_tetra_4[3][2][gp]= +1.0;
     }
@@ -174,65 +191,65 @@ int fem_inigau(void){
         for(j=0;j<3;j++)
             ds_prism_6[i][j]=(double *)calloc(6,sizeof(double));
     }
-    xp_prism_6[0][0]= +0.166666666666666;   
-    xp_prism_6[0][1]= +0.166666666666666;   
-    xp_prism_6[0][2]= -0.577350269189626;//+0.166666666666666;     
-    wp_prism_6[0]   = +0.166666666666666;          
-    
-    xp_prism_6[1][0]= +0.666666666666666;   
-    xp_prism_6[1][1]= +0.166666666666666;   
-    xp_prism_6[1][2]= -0.577350269189626;//+0.166666666666666;     
-    wp_prism_6[1]   = +0.166666666666666;        
-    
-    xp_prism_6[2][0]= +0.166666666666666;   
-    xp_prism_6[2][1]= +0.666666666666666;    
-    xp_prism_6[2][2]= -0.577350269189626;//+0.166666666666666;     
+    xp_prism_6[0][0]= +0.166666666666666;
+    xp_prism_6[0][1]= +0.166666666666666;
+    xp_prism_6[0][2]= -0.577350269189626;//+0.166666666666666;
+    wp_prism_6[0]   = +0.166666666666666;
+
+    xp_prism_6[1][0]= +0.666666666666666;
+    xp_prism_6[1][1]= +0.166666666666666;
+    xp_prism_6[1][2]= -0.577350269189626;//+0.166666666666666;
+    wp_prism_6[1]   = +0.166666666666666;
+
+    xp_prism_6[2][0]= +0.166666666666666;
+    xp_prism_6[2][1]= +0.666666666666666;
+    xp_prism_6[2][2]= -0.577350269189626;//+0.166666666666666;
     wp_prism_6[2]   = +0.166666666666666;
-    
-    xp_prism_6[3][0]= +0.166666666666666;   
-    xp_prism_6[3][1]= +0.166666666666666;   
-    xp_prism_6[3][2]= +0.577350269189626;//+0.666666666666666;     
+
+    xp_prism_6[3][0]= +0.166666666666666;
+    xp_prism_6[3][1]= +0.166666666666666;
+    xp_prism_6[3][2]= +0.577350269189626;//+0.666666666666666;
     wp_prism_6[3]   = +0.166666666666666;
-    
-    xp_prism_6[4][0]= +0.666666666666666;   
-    xp_prism_6[4][1]= +0.166666666666666;   
-    xp_prism_6[4][2]= +0.577350269189626;//+0.666666666666666;     
+
+    xp_prism_6[4][0]= +0.666666666666666;
+    xp_prism_6[4][1]= +0.166666666666666;
+    xp_prism_6[4][2]= +0.577350269189626;//+0.666666666666666;
     wp_prism_6[4]   = +0.166666666666666;
 
-    xp_prism_6[5][0]= +0.166666666666666;   
-    xp_prism_6[5][1]= +0.666666666666666;   
-    xp_prism_6[5][2]= +0.577350269189626;//+0.666666666666666;     
+    xp_prism_6[5][0]= +0.166666666666666;
+    xp_prism_6[5][1]= +0.666666666666666;
+    xp_prism_6[5][2]= +0.577350269189626;//+0.666666666666666;
     wp_prism_6[5]   = +0.166666666666666;
 
     for(gp=0;gp<6;gp++)
     {
         sh_prism_6[0][gp]   = (1.0-xp_prism_6[gp][0]-xp_prism_6[gp][1])*(1.0-xp_prism_6[gp][2])*0.5;
-        ds_prism_6[0][0][gp]= -1.0*(1.0-xp_prism_6[gp][2])*0.5;  
+        ds_prism_6[0][0][gp]= -1.0*(1.0-xp_prism_6[gp][2])*0.5;
         ds_prism_6[0][1][gp]= -1.0*(1.0-xp_prism_6[gp][2])*0.5;
         ds_prism_6[0][2][gp]= -1.0*(1.0-xp_prism_6[gp][0]-xp_prism_6[gp][1])*0.5;
 
         sh_prism_6[1][gp]   =  xp_prism_6[gp][0]*(1.0-xp_prism_6[gp][2])*0.5;
-        ds_prism_6[1][0][gp]= +1.0*(1.0-xp_prism_6[gp][2])*0.5;  
+        ds_prism_6[1][0][gp]= +1.0*(1.0-xp_prism_6[gp][2])*0.5;
         ds_prism_6[1][1][gp]= +0.0;
         ds_prism_6[1][2][gp]= -1.0*xp_prism_6[gp][0]*0.5;
 
         sh_prism_6[2][gp]   = xp_prism_6[gp][1]*(1.0-xp_prism_6[gp][2])*0.5;
-        ds_prism_6[2][0][gp]= +0.0;  
+        ds_prism_6[2][0][gp]= +0.0;
         ds_prism_6[2][1][gp]= +1.0*(1.0-xp_prism_6[gp][2])*0.5;
         ds_prism_6[2][2][gp]= -1.0*xp_prism_6[gp][1]*0.5;
 
         sh_prism_6[3][gp]   = (1.0-xp_prism_6[gp][0]-xp_prism_6[gp][1])*(1.0+xp_prism_6[gp][2])*0.5;
-        ds_prism_6[3][0][gp]= -1.0*(1.0+xp_prism_6[gp][2])*0.5;  
+        ds_prism_6[3][0][gp]= -1.0*(1.0+xp_prism_6[gp][2])*0.5;
         ds_prism_6[3][1][gp]= -1.0*(1.0+xp_prism_6[gp][2])*0.5;
         ds_prism_6[3][2][gp]= +1.0*(1.0-xp_prism_6[gp][0]-xp_prism_6[gp][1])*0.5;
 
         sh_prism_6[4][gp]   = xp_prism_6[gp][0]*(1.0 + xp_prism_6[gp][2])*0.5;
-        ds_prism_6[4][0][gp]= +1.0*(1.0+xp_prism_6[gp][2])*0.5;  
+        ds_prism_6[4][0][gp]= +1.0*(1.0+xp_prism_6[gp][2])*0.5;
         ds_prism_6[4][1][gp]= +0.0;
         ds_prism_6[4][2][gp]= +1.0*xp_prism_6[gp][0]*0.5;
 
         sh_prism_6[5][gp]   = xp_prism_6[gp][1]*(1.0+xp_prism_6[gp][2])*0.5;
-        ds_prism_6[5][0][gp]= +0.0;  
+        ds_prism_6[5][0][gp]= +0.0;
         ds_prism_6[5][1][gp]= +1.0*(1.0+xp_prism_6[gp][2])*0.5;
         ds_prism_6[5][2][gp]= +1.0*xp_prism_6[gp][1]*0.5;
     }
@@ -249,90 +266,90 @@ int fem_inigau(void){
         for(j=0;j<3;j++)
             ds_hexa_8[i][j]=(double *)calloc(8,sizeof(double));
     }
-    xp_hexa_8[0][0]= -0.577350269189626;   
-    xp_hexa_8[0][1]= -0.577350269189626;   
-    xp_hexa_8[0][2]= -0.577350269189626;    
-    wp_hexa_8[0]   = +1.0;          
+    xp_hexa_8[0][0]= -0.577350269189626;
+    xp_hexa_8[0][1]= -0.577350269189626;
+    xp_hexa_8[0][2]= -0.577350269189626;
+    wp_hexa_8[0]   = +1.0;
 
-    xp_hexa_8[1][0]= +0.577350269189626;   
-    xp_hexa_8[1][1]= -0.577350269189626;   
-    xp_hexa_8[1][2]= -0.577350269189626;    
-    wp_hexa_8[1]   = +1.0;        
+    xp_hexa_8[1][0]= +0.577350269189626;
+    xp_hexa_8[1][1]= -0.577350269189626;
+    xp_hexa_8[1][2]= -0.577350269189626;
+    wp_hexa_8[1]   = +1.0;
 
-    xp_hexa_8[2][0]= +0.577350269189626;   
-    xp_hexa_8[2][1]= +0.577350269189626;   
-    xp_hexa_8[2][2]= -0.577350269189626;    
+    xp_hexa_8[2][0]= +0.577350269189626;
+    xp_hexa_8[2][1]= +0.577350269189626;
+    xp_hexa_8[2][2]= -0.577350269189626;
     wp_hexa_8[2]   = +1.0;
 
-    xp_hexa_8[3][0]= -0.577350269189626;   
-    xp_hexa_8[3][1]= +0.577350269189626;   
-    xp_hexa_8[3][2]= -0.577350269189626;    
+    xp_hexa_8[3][0]= -0.577350269189626;
+    xp_hexa_8[3][1]= +0.577350269189626;
+    xp_hexa_8[3][2]= -0.577350269189626;
     wp_hexa_8[3]   = +1.0;
 
-    xp_hexa_8[4][0]= -0.577350269189626;   
-    xp_hexa_8[4][1]= -0.577350269189626;   
-    xp_hexa_8[4][2]= +0.577350269189626;    
+    xp_hexa_8[4][0]= -0.577350269189626;
+    xp_hexa_8[4][1]= -0.577350269189626;
+    xp_hexa_8[4][2]= +0.577350269189626;
     wp_hexa_8[4]   = +1.0;
 
-    xp_hexa_8[5][0]= +0.577350269189626;   
-    xp_hexa_8[5][1]= -0.577350269189626;   
-    xp_hexa_8[5][2]= +0.577350269189626;    
+    xp_hexa_8[5][0]= +0.577350269189626;
+    xp_hexa_8[5][1]= -0.577350269189626;
+    xp_hexa_8[5][2]= +0.577350269189626;
     wp_hexa_8[5]   = +1.0;
 
-    xp_hexa_8[6][0]= +0.577350269189626;   
-    xp_hexa_8[6][1]= +0.577350269189626;   
-    xp_hexa_8[6][2]= +0.577350269189626;    
-    wp_hexa_8[6]   = +1.0; 
+    xp_hexa_8[6][0]= +0.577350269189626;
+    xp_hexa_8[6][1]= +0.577350269189626;
+    xp_hexa_8[6][2]= +0.577350269189626;
+    wp_hexa_8[6]   = +1.0;
 
-    xp_hexa_8[7][0]= -0.577350269189626;   
-    xp_hexa_8[7][1]= +0.577350269189626;   
-    xp_hexa_8[7][2]= +0.577350269189626;    
-    wp_hexa_8[7]   = +1.0; 
+    xp_hexa_8[7][0]= -0.577350269189626;
+    xp_hexa_8[7][1]= +0.577350269189626;
+    xp_hexa_8[7][2]= +0.577350269189626;
+    wp_hexa_8[7]   = +1.0;
 
     for(gp=0;gp<8;gp++)
     {
         sh_hexa_8[0][gp]= ( 1.0 - xp_hexa_8[gp][0] )*(1.0 - xp_hexa_8[gp][1] )*(1.0 - xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[0][0][gp]= -1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[0][0][gp]= -1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[0][1][gp]= -1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[0][2][gp]= -1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[1][gp]= ( 1.0 + xp_hexa_8[gp][0] )*(1.0 - xp_hexa_8[gp][1] )*(1.0 - xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[1][0][gp]= +1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[1][0][gp]= +1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[1][1][gp]= -1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[1][2][gp]= -1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[2][gp]= ( 1.0 + xp_hexa_8[gp][0] )*(1.0 + xp_hexa_8[gp][1] )*(1.0 - xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[2][0][gp]= +1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[2][0][gp]= +1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[2][1][gp]= +1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[2][2][gp]= -1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[3][gp]= ( 1.0 - xp_hexa_8[gp][0] )*(1.0 + xp_hexa_8[gp][1] )*(1.0 - xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[3][0][gp]= -1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[3][0][gp]= -1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[3][1][gp]= +1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[3][2][gp]= -1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[4][gp]= ( 1.0 - xp_hexa_8[gp][0] )*(1.0 - xp_hexa_8[gp][1] )*(1.0 + xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[4][0][gp]= -1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[4][0][gp]= -1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[4][1][gp]= -1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[4][2][gp]= +1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[5][gp]= ( 1.0 + xp_hexa_8[gp][0] )*(1.0 - xp_hexa_8[gp][1] )*(1.0 + xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[5][0][gp]= +1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[5][0][gp]= +1.0*(1.0 - xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[5][1][gp]= -1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[5][2][gp]= +1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 - xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[6][gp]= ( 1.0 + xp_hexa_8[gp][0] )*(1.0 + xp_hexa_8[gp][1] )*(1.0 + xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[6][0][gp]= +1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[6][0][gp]= +1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[6][1][gp]= +1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[6][2][gp]= +1.0*(1.0 + xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][1])*0.125;
 
         sh_hexa_8[7][gp]= ( 1.0 - xp_hexa_8[gp][0] )*(1.0 + xp_hexa_8[gp][1] )*(1.0 + xp_hexa_8[gp][2])*0.125;
-        ds_hexa_8[7][0][gp]= -1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;  
+        ds_hexa_8[7][0][gp]= -1.0*(1.0 + xp_hexa_8[gp][1])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[7][1][gp]= +1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][2])*0.125;
         ds_hexa_8[7][2][gp]= +1.0*(1.0 - xp_hexa_8[gp][0])*(1.0 + xp_hexa_8[gp][1])*0.125;
-    }    
+    }
 
-    return 0;   
+    return 0;
 }
 
 int fem_caljac(double **coor,double ***ds, int npe, int gp, int dim, double **jac)
@@ -361,7 +378,7 @@ int fem_invjac(double **jac, int dim, double **ijac, double *det){
     if(dim==1){
         *det=jac[0][0];
         ijac[0][0]=1.0/(*det);
-        return 0;   
+        return 0;
     }else if(dim==2){
         double c00,c01,c10,c11;
         (*det)=jac[0][0]*jac[1][1]-jac[1][0]*jac[0][1];
@@ -404,7 +421,7 @@ int fem_invjac(double **jac, int dim, double **ijac, double *det){
 
 int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder, double **der)
 {
-    int i,j,sh; 
+    int i,j,sh;
     if(!ijac || !oder || !der)
         return 1;
     for(sh=0;sh<nsh;sh++)
@@ -417,7 +434,7 @@ int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder, double *
                 der[sh][i] += ijac[i][j] * oder[sh][j][gp];
             }
         }
-    }        
+    }
     return 0;
 }
 
@@ -595,7 +612,7 @@ int fem_vecmod(double *vec, int n, double *mod){
     int d;
     if(!vec || !mod)
         return 1;
-    *mod=0.0; 
+    *mod=0.0;
     for(d=0;d<n;d++)
         *mod+=pow(vec[d],2);
     *mod=sqrt(*mod);
@@ -613,7 +630,7 @@ int fem_vcross(double *v1, double *v2, double *vr){
 }
 
 int fem_dotdsh(int i, int j, double **derivs, int dim, double *p){
-    
+
     int d;
 
     *p = 0.0;

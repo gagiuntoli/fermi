@@ -1,16 +1,22 @@
 /*
- * output.c - This files contains the output functions
- * 
- * print_struct - print internal structures of the code, useful tool
- *                for debugging
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
  *
- * save_vtk - Generates a vtk format file where are storage the mesh,
- *           the material properties distribution and the flux
- * 
- * Autor : Guido Giuntoli
- * Last Modification: 29/12/2015
- * 
- *  
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -50,7 +56,7 @@ int print_struct(int step)
     return 1;
   }
 
-  fprintf(fout,"Structures - rank %d\n\n",rank);  
+  fprintf(fout,"Structures - rank %d\n\n",rank);
 
   fprintf(fout,"========================================\n");
   fprintf(fout,"list_nodes : \n");
@@ -141,10 +147,10 @@ int print_struct(int step)
   for(i=0;i<list_bound.sizelist;i++)
   {
     fprintf(fout,"node : %d\n",i);
-    fprintf(fout,"name : %s\n",((bound_t *)onode->data)->name); 
-    fprintf(fout,"order: %d\n",((bound_t *)onode->data)->order); 
-    fprintf(fout,"kind : %d\n",((bound_t *)onode->data)->kind); 
-    fprintf(fout,"dimS : %d\n",((bound_t *)onode->data)->dimS); 
+    fprintf(fout,"name : %s\n",((bound_t *)onode->data)->name);
+    fprintf(fout,"order: %d\n",((bound_t *)onode->data)->order);
+    fprintf(fout,"kind : %d\n",((bound_t *)onode->data)->kind);
+    fprintf(fout,"dimS : %d\n",((bound_t *)onode->data)->dimS);
     fprintf(fout,"nnodes: % d ",((bound_t *)onode->data)->nodeL.sizelist);
     fprintf(fout,"nodes: ");
     pNod=((bound_t *)onode->data)->nodeL.head;
@@ -157,7 +163,7 @@ int print_struct(int step)
     onode = onode ->next;
   }
   fprintf(fout,"\n");
-  
+
   fprintf(fout,"========================================\n");
   fprintf(fout,"list_ctrlr :\n");
   fprintf(fout,"sizelist : %d\n\n",list_ctrlr.sizelist);
@@ -165,18 +171,18 @@ int print_struct(int step)
   for(i=0;i<list_ctrlr.sizelist;i++)
   {
     fprintf(fout,"node : %d\n",i);
-    fprintf(fout,"name_ele : %s\n",((ctrlrod_t *)onode->data)->name_ele); 
-    fprintf(fout,"name_nod : %s\n",((ctrlrod_t *)onode->data)->name_nod); 
-    fprintf(fout,"nfun : %d\n",((ctrlrod_t *)onode->data)->nfun); 
+    fprintf(fout,"name_ele : %s\n",((ctrlrod_t *)onode->data)->name_ele);
+    fprintf(fout,"name_nod : %s\n",((ctrlrod_t *)onode->data)->name_nod);
+    fprintf(fout,"nfun : %d\n",((ctrlrod_t *)onode->data)->nfun);
     fprintf(fout,"n : ");
     for(d=0;d<3;d++)
-      fprintf(fout,"%lf ",((ctrlrod_t *)onode->data)->n[d]); 
+      fprintf(fout,"%lf ",((ctrlrod_t *)onode->data)->n[d]);
     fprintf(fout,"\n");
-    fprintf(fout,"p : "); 
+    fprintf(fout,"p : ");
     for(d=0;d<3;d++)
-      fprintf(fout,"%lf ",((ctrlrod_t *)onode->data)->p[d]); 
+      fprintf(fout,"%lf ",((ctrlrod_t *)onode->data)->p[d]);
     fprintf(fout,"\n");
-    fprintf(fout,"xsaval : %lf\n",((ctrlrod_t *)onode->data)->xsaval); 
+    fprintf(fout,"xsaval : %lf\n",((ctrlrod_t *)onode->data)->xsaval);
     fprintf(fout,"elemv : ");
     pNod=((ctrlrod_t *)onode->data)->elemv.head;
     while(pNod)
@@ -216,35 +222,35 @@ int print_struct(int step)
     fprintf(fout,"%d ",i);
     for(d=0;d<3;d++)
       fprintf(fout,"%+4.3lf ",mesh.node[i].coor[d]);
-    onode=mesh.node[i].elemvL.head;        
-    fprintf(fout,"\nelemvL: "); 
-    e=0;        
+    onode=mesh.node[i].elemvL.head;
+    fprintf(fout,"\nelemvL: ");
+    e=0;
     while(onode)
     {
       pInt=(int*)onode->data;
-      fprintf(fout,"%4d",*pInt); 
+      fprintf(fout,"%4d",*pInt);
       onode=onode->next;
-      e++; 
-    }        
-    while(e<8)
-    {
-      fprintf(fout,"    "); 
-      e++; 
+      e++;
     }
-    onode=mesh.node[i].elemsL.head;        
-    fprintf(fout,"\nelemsL: "); 
-    e=0;        
+    while(e<8)
+    {
+      fprintf(fout,"    ");
+      e++;
+    }
+    onode=mesh.node[i].elemsL.head;
+    fprintf(fout,"\nelemsL: ");
+    e=0;
     while(onode)
     {
       pInt=(int*)onode->data;
-      fprintf(fout,"%4d ",*pInt); 
+      fprintf(fout,"%4d ",*pInt);
       onode=onode->next;
-      e++; 
-    }        
+      e++;
+    }
     while(e<8)
     {
-      fprintf(fout,"    "); 
-      e++; 
+      fprintf(fout,"    ");
+      e++;
     }
     fprintf(fout,"\n");
   }
@@ -256,35 +262,35 @@ int print_struct(int step)
     fprintf(fout,"%d ",i);
     for(d=0;d<3;d++)
       fprintf(fout,"%+4.3lf ",mesh.node[mesh.nnodes+i].coor[d]);
-    onode=mesh.node[i].elemvL.head;        
-    fprintf(fout,"\nelemvL: "); 
-    e=0;        
+    onode=mesh.node[i].elemvL.head;
+    fprintf(fout,"\nelemvL: ");
+    e=0;
     while(onode)
     {
       pInt=(int*)onode->data;
-      fprintf(fout,"%4d",*pInt); 
+      fprintf(fout,"%4d",*pInt);
       onode=onode->next;
-      e++; 
-    }        
-    while(e<8)
-    {
-      fprintf(fout,"    "); 
-      e++; 
+      e++;
     }
-    onode=mesh.node[mesh.nnodes+i].elemsL.head;        
-    fprintf(fout,"\nelemsL: "); 
-    e=0;        
+    while(e<8)
+    {
+      fprintf(fout,"    ");
+      e++;
+    }
+    onode=mesh.node[mesh.nnodes+i].elemsL.head;
+    fprintf(fout,"\nelemsL: ");
+    e=0;
     while(onode)
     {
       pInt=(int*)onode->data;
-      fprintf(fout,"%4d ",*pInt); 
+      fprintf(fout,"%4d ",*pInt);
       onode=onode->next;
-      e++; 
-    }        
+      e++;
+    }
     while(e<8)
     {
-      fprintf(fout,"    "); 
-      e++; 
+      fprintf(fout,"    ");
+      e++;
     }
     fprintf(fout,"\n");
   }
@@ -327,9 +333,9 @@ int print_struct(int step)
     fprintf(fout,"%5d %5d \n",i,loc2gnew[i]);
   fprintf(fout,"\n");
 
-  fclose(fout);     
+  fclose(fout);
 
-  return 0;   
+  return 0;
 }
 
 int print_out(Vec *phi, int step)
@@ -337,8 +343,8 @@ int print_out(Vec *phi, int step)
 
   /*
      It travels all the list.outpu and determines if it has to print something
-     in this time step "step" the kind of the structure output_t means what it 
-     has to print 
+     in this time step "step" the kind of the structure output_t means what it
+     has to print
 
    */
 
@@ -348,7 +354,7 @@ int print_out(Vec *phi, int step)
   Vec           x_local;
   node_list_t * pNod;
   output_t    * po;
-        
+
   VecGhostUpdateBegin(*phi,INSERT_VALUES,SCATTER_FORWARD);
   VecGhostUpdateEnd(*phi,INSERT_VALUES,SCATTER_FORWARD);
   VecGhostGetLocalForm(*phi,&x_local);
@@ -384,13 +390,13 @@ int print_out(Vec *phi, int step)
 	/*
 	   prints power on different physical entities on ASCII file
 
-	   kind = 2  
+	   kind = 2
 	   file <file_name.dat>
 	   nphy <# of physical entities>
 	   <"phys_1"> <"phys_2"> ... <"phys_n">
 
 	 */
-        
+
 
 	fer_pow_phys( po->kind_2.nphy, po->kind_2.ids, po->kind_2.pow );
 
@@ -438,7 +444,7 @@ int print_vtk(const char *name) {
 
   /************************************************************/
   /*Mesh geometry data                                        */
-  /************************************************************/    
+  /************************************************************/
   fprintf(vtkf, "# vtk DataFile Version 2.0\n");
   fprintf(vtkf, "Fermi\n");
   fprintf(vtkf, "ASCII\n");
@@ -464,7 +470,7 @@ int print_vtk(const char *name) {
 
   fprintf(vtkf, "CELL_TYPES %i\n", mesh.nelemv);
   for (e=0;e<mesh.nelemv;e++)
-    fprintf(vtkf, "%d\n",vtkcode(DIM,mesh.elemv[e].npe));  
+    fprintf(vtkf, "%d\n",vtkcode(DIM,mesh.elemv[e].npe));
 
 
   /************************************************************/
@@ -494,15 +500,15 @@ int print_vtk(const char *name) {
       index=n*egn+e;
       VecGetValues(xlocal,1,&index,&vald);
       fprintf(vtkf,"%lf\n",vald);
-    }        
+    }
   }
 
   /************************************************************/
   /* DATA IN CELLS                                            */
-  /************************************************************/      
+  /************************************************************/
   fprintf(vtkf, "CELL_DATA %i\n",mesh.nelemv);
 
-  pn=list_ctrlr.head;  
+  pn=list_ctrlr.head;
   while(pn)
   {
     fprintf(vtkf, "SCALARS rod_%s FLOAT\n",((ctrlrod_t*)pn->data)->name_ele);
@@ -545,11 +551,11 @@ int print_vtk(const char *name) {
     fprintf(vtkf, "LOOKUP_TABLE default\n");
     for (d=0;d<mesh.nelemv;d++)
       fprintf(vtkf, "%lf\n", ((pv_t*)mesh.elemv[d].prop)->D[e]);
-  } 
+  }
   fclose(vtkf);
   return 0;
 
-}   
+}
 
 int printMatrixR(char *name,double *A, int m, int n){
 
@@ -563,7 +569,7 @@ int printMatrixR(char *name,double *A, int m, int n){
     }
     fprintf(f,"\n");
   }
-  fclose(f);   
+  fclose(f);
   return 0;
 }
 
@@ -579,7 +585,7 @@ int printMatrixRC(char *name,double **A, int m, int n){
     }
     fprintf(f,"\n");
   }
-  fclose(f);   
+  fclose(f);
   return 0;
 }
 
@@ -598,7 +604,7 @@ int printMat(char *name,Mat *A,int n){
     }
     fprintf(f,"\n");
   }
-  fclose(f);   
+  fclose(f);
   return 0;
 }
 
@@ -612,7 +618,7 @@ int printVector(char *name,double *vec, int m){
     fprintf(f,"%lf %lf\n ",vec[j],vec[j]);
   }
 
-  fclose(f);   
+  fclose(f);
   return 0;
 }
 
@@ -632,7 +638,7 @@ int printVec(char *name,Vec *vec, int m){
     fprintf(f,"%lf %lf\n ",val,val);
   }
 
-  fclose(f);   
+  fclose(f);
   return 0;
 }
 
@@ -660,9 +666,9 @@ int vtkcode(int dim,int npe){
         case 4 :
           return VTK_TETRAHEDRON;
         case 6 :
-          return VTK_6N_PRISM;  
+          return VTK_6N_PRISM;
         case 8 :
-          return VTK_HEXAHEDRON;  
+          return VTK_HEXAHEDRON;
         default:
           return -1;
       }

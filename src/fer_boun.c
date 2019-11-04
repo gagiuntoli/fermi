@@ -1,20 +1,37 @@
-/*  Routines for applying boundary conditions
- * 
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "fermi.h"
 
 int ferbouset(void){
 
-  /* For every boundary on the list list_bound searchs for 
-   * the physical entity associated with the same name and assigns 
+  /* For every boundary on the list list_bound searchs for
+   * the physical entity associated with the same name and assigns
    * the dimS value for each bound.
-   * For each boundary search for the nodes that shears the elements 
-   * that have the same physical entity associated (gmshid). The nodes 
+   * For each boundary search for the nodes that shears the elements
+   * that have the same physical entity associated (gmshid). The nodes
    * are saved on the list "nodeL" and are delete in the last part those
    * which are repeated
    *
-   * Generates a vector dirIndex with the dirichlet index positions 
+   * Generates a vector dirIndex with the dirichlet index positions
    */
 
   int e,n,i,j,k,h,d,gmshid,index;
@@ -72,11 +89,11 @@ int ferbouset(void){
   }
 
   //
-  //==============================    
+  //==============================
   //   DIRICHLET INDECES
-  //==============================    
+  //==============================
   //
-  list_init(&dirIndexL,sizeof(int),cmp_int);   
+  list_init(&dirIndexL,sizeof(int),cmp_int);
   pba=list_bound.head;
   while(pba){
     pna=((bound_t*)pba->data)->nodeL.head;
@@ -86,7 +103,7 @@ int ferbouset(void){
         if( ((bound_t*)pba->data)->kind == 0 )
           /* kind = 0 es dirichlet */
           list_insertlast(&dirIndexL,(void*)&index);
-      }     
+      }
       pna=pna->next;
     }
     pba=pba->next;
@@ -104,9 +121,9 @@ int ferbouset(void){
     pna=pna->next;
   }
   //
-  //==============================    
+  //==============================
   //   NEUMANN INDECES
-  //==============================    
+  //==============================
   //
   /* por ahora no le hacemos nada*/
   return 0;

@@ -1,8 +1,24 @@
-/* list_t operations
- * 
- * 
- * 
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,12 +42,12 @@ int list_init(list_t * list, int sizedata, fcmp cmp){
 int list_insert_se(list_t * list, void *data){
 
     /* Insert sort exclusive an element
-     * 
-     * 
+     *
+     *
      * return 0  if success
      *        1  if repeated
      *       -1  error
-     * 
+     *
      */
 
     node_list_t * node, *onode;
@@ -73,7 +89,7 @@ int list_insert_se(list_t * list, void *data){
         aux = onode->data;
         onode->data = node->data;
         node->data = aux;
-    }    
+    }
     if(onode==list->tail)
         list->tail=node;
     return 0;
@@ -83,9 +99,9 @@ int list_insert_se(list_t * list, void *data){
 int list_insertlast(list_t * list, void *data){
 
     /* Insert sort exclusive an element
-     * 
+     *
      * return 0  if success
-     *        1  error 
+     *        1  error
      */
 
     node_list_t * node;
@@ -111,7 +127,7 @@ int list_insertlast(list_t * list, void *data){
     }
     list->sizelist ++;
     list->tail->next = node;
-    list->tail = node;    
+    list->tail = node;
     return 0;
 
 }
@@ -119,7 +135,7 @@ int list_insertlast(list_t * list, void *data){
 int list_delfirst(list_t * list){
 
     /* Deletes the first element in the list
-     * 
+     *
      * return 0 sucess.
      *        1 if list=NULL or if there is no element to delete.
      */
@@ -127,7 +143,7 @@ int list_delfirst(list_t * list){
     node_list_t *aux;
     if(!list)
         return 1;
-    if(list->sizelist==0) 
+    if(list->sizelist==0)
         return 1;
     if(list->sizelist==1){
         free(list->head);
@@ -138,15 +154,15 @@ int list_delfirst(list_t * list){
     }
     aux = list->head->next;
     free(list->head);
-    list->head=aux;    
+    list->head=aux;
     list->sizelist--;
     return 0;
 }
 
 int list_del(list_t *list, node_list_t* pNod){
 
-    /* Removes the element if 
-     * exists 
+    /* Removes the element if
+     * exists
      */
 
     node_list_t *pNodA;
@@ -183,7 +199,7 @@ int list_del(list_t *list, node_list_t* pNod){
 
 int list_free(list_t *list){
 
-    /* Frees the memory allocated by the list 
+    /* Frees the memory allocated by the list
     */
 
     if(!list)
@@ -194,5 +210,3 @@ int list_free(list_t *list){
     free(list);
     return 0;
 }
-
-

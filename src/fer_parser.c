@@ -1,6 +1,22 @@
-/* 
- * parser.c : parser rutine for FERMI inputs
- * 
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -10,7 +26,6 @@
 #include "fermi.h"
 #include "list.h"
 #include "types.h"
-#include "matlaw.h"
 #include "mesh.h"
 
 #define NBUF 128
@@ -22,14 +37,14 @@ int parse_input(void){
     return 1;
   }
 
-  if(parse_mesh())return 1; 
+  if(parse_mesh())return 1;
   if(parse_mats())return 2;
   if(parse_mode())return 3;
-  if(parse_func())return 4; 
-  if(parse_boun())return 5; 
-  if(parse_crod())return 6; 
-  if(parse_outp())return 7; 
-  if(parse_communication())return 8; 
+  if(parse_func())return 4;
+  if(parse_boun())return 5;
+  if(parse_crod())return 6;
+  if(parse_outp())return 7;
+  if(parse_communication())return 8;
   return 0;
 }
 
@@ -52,7 +67,7 @@ int parse_mesh(void)
       }else if(!strcmp(data,"$EndMesh"))
       {
         if(com==7)
-        { 
+        {
           return 0;
         }else if(nproc==1 && com>=1){
           return 0;
@@ -62,50 +77,50 @@ int parse_mesh(void)
           return 1;
         }else{
           PetscPrintf(FERMI_Comm,"parser.c:$Mesh sect BF.\n");
-          return 1;    
+          return 1;
         }
       }
       if(fl==2){
-        if(strcmp(data,"mesh_file") == 0){    
-          data = strtok(NULL," \n");    
+        if(strcmp(data,"mesh_file") == 0){
+          data = strtok(NULL," \n");
           if(!data){
-            PetscPrintf(FERMI_Comm,"parser.c:meshfile line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:meshfile line %d.\n",ln);
             return 1;
           }
-          strcpy(meshfile,data);   
+          strcpy(meshfile,data);
           if(access(meshfile,F_OK) == -1){
-            PetscPrintf(FERMI_Comm,"parser.c:%s NF.\n",meshfile); 
+            PetscPrintf(FERMI_Comm,"parser.c:%s NF.\n",meshfile);
             return 1;
           }
-          com=com|1;  
-        }else if(strcmp(data,"parfile_e") == 0){    
-          data = strtok(NULL," \n");    
+          com=com|1;
+        }else if(strcmp(data,"parfile_e") == 0){
+          data = strtok(NULL," \n");
           if(!data){
             PetscPrintf(FERMI_Comm,"parser.c:partfile line %d.\n",ln);
             return 1;
           }
           strcpy(epartfile,data);
           if(access(epartfile,F_OK) == -1){
-            PetscPrintf(FERMI_Comm,"parser.c:%s NF.\n",epartfile); 
+            PetscPrintf(FERMI_Comm,"parser.c:%s NF.\n",epartfile);
             return 1;
           }
           com=com|2;
-        }else if(strcmp(data,"parfile_n") == 0){    
-          data = strtok(NULL," \n");    
+        }else if(strcmp(data,"parfile_n") == 0){
+          data = strtok(NULL," \n");
           if(!data){
             PetscPrintf(FERMI_Comm,"parser.c:partfile line %d.\n",ln);
             return 1;
           }
           strcpy(npartfile,data);
           if(access(npartfile,F_OK) == -1){
-            PetscPrintf(FERMI_Comm,"parser.c:%s NF.\n",npartfile); 
+            PetscPrintf(FERMI_Comm,"parser.c:%s NF.\n",npartfile);
             return 1;
           }
-          com=com|4;     
-        }else if(strcmp(data,"#")!=0){    
-          PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+          com=com|4;
+        }else if(strcmp(data,"#")!=0){
+          PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
           return 1;
-        }    
+        }
       }
       if(fl==1)
         fl=2;
@@ -117,7 +132,7 @@ int parse_mesh(void)
 
 int parse_mats(void)
 {
-  FILE *file= fopen(inputfile,"r");   
+  FILE *file= fopen(inputfile,"r");
   char *data,buf[NBUF],bufcpy[NBUF];
   int  i,fl=0,ln=0,com=0;
   pvl_t mat;
@@ -137,7 +152,7 @@ int parse_mats(void)
         if(!list_mater.sizelist)
         {
           PetscPrintf(FERMI_Comm,"parser.c:no materials specified.\n");
-          return 1;     
+          return 1;
         }
         return 0;
       }
@@ -145,15 +160,15 @@ int parse_mats(void)
       {
         if(!strcmp(data,"egn"))
         {
-          data = strtok(NULL," \n");    
+          data = strtok(NULL," \n");
           if(!data){
-            PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
             return 1;
-          }    
+          }
           egn=atoi(data);
           if(egn<1)
           {
-            PetscPrintf(FERMI_Comm,"parser.c:egn should positive at line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:egn should positive at line %d.\n",ln);
             return 1;
           }
           veloc=(double*)calloc(egn,sizeof(double));
@@ -166,15 +181,15 @@ int parse_mats(void)
           com=com|1;
         }else if(!strcmp(data,"pgn"))
         {
-          data = strtok(NULL," \n");    
+          data = strtok(NULL," \n");
           if(!data){
-            PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
             return 1;
-          }    
+          }
           pgn=atoi(data);
           if(pgn<1)
           {
-            PetscPrintf(FERMI_Comm,"parser.c:pgn should positive at line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:pgn should positive at line %d.\n",ln);
             return 1;
           }
           beta=(double*)calloc(pgn,sizeof(double));
@@ -185,11 +200,11 @@ int parse_mats(void)
         {
           for(i=0;i<egn;i++)
           {
-            data=strtok(NULL," \n");    
+            data=strtok(NULL," \n");
             if(!data){
-              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
               return 1;
-            }    
+            }
             veloc[i]=atof(data);
           }
           com=com|4;
@@ -197,29 +212,29 @@ int parse_mats(void)
         {
           for(i=0;i<pgn;i++)
           {
-            data=strtok(NULL," \n");    
+            data=strtok(NULL," \n");
             if(!data){
-              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
               return 1;
-            }    
+            }
             beta[i]=atof(data);
           }
           for(i=0;i<pgn;i++)
           {
-            data=strtok(NULL," \n");    
+            data=strtok(NULL," \n");
             if(!data){
-              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
               return 1;
-            }    
+            }
             lambda[i]=atof(data);
           }
           for(i=0;i<pgn;i++)
           {
-            data=strtok(NULL," \n");    
+            data=strtok(NULL," \n");
             if(!data){
-              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+              PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
               return 1;
-            }    
+            }
             chi[i]=atof(data);
           }
           com=com|8;
@@ -227,9 +242,9 @@ int parse_mats(void)
         {
           if((com&1)!=1)
           {
-            PetscPrintf(FERMI_Comm,"parser.c:egn should be before xs values at line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:egn should be before xs values at line %d.\n",ln);
             return 1;
-          }    
+          }
           mat.D    =(double*)calloc(egn,sizeof(double));
           mat.xs_a =(double*)calloc(egn,sizeof(double));
           mat.xs_s =(double*)calloc(egn*(egn-1),sizeof(double));
@@ -238,7 +253,7 @@ int parse_mats(void)
           mat.chi  =(double*)calloc(egn,sizeof(double));
           if(parse_material(bufcpy,&mat))
           {
-            PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
             return 1;
           }
           if(list_insert_se(&list_mater,(void*)&mat))
@@ -255,11 +270,11 @@ int parse_mats(void)
 
 int parse_mode(void)
 {
-  FILE *file= fopen(inputfile,"r");   
+  FILE *file= fopen(inputfile,"r");
   char *data,buf[NBUF];
   int  fl=0,com=0,ln=0,auxi;
   double auxd;
-  list_t list_ts, list_tf, list_dt;        
+  list_t list_ts, list_tf, list_dt;
 
   list_init(&calcu.time,sizeof(tcontrol_t),cmp_time);
   list_init(&list_tf,sizeof(double),cmp_int);
@@ -281,7 +296,7 @@ int parse_mode(void)
         }else{
           if(power<=1.0e-10)
           {
-            PetscPrintf(FERMI_Comm,"parser.c:p0 <= 0 line %d.\n",ln); 
+            PetscPrintf(FERMI_Comm,"parser.c:p0 <= 0 line %d.\n",ln);
             return 1;
           }
         }
@@ -301,26 +316,26 @@ int parse_mode(void)
         }else if( (com&24)==24 ){
           PetscPrintf(FERMI_Comm,"parser.c:dt and ts specified at the same time.\n");
         }
-        return 0;    
+        return 0;
       }
       if(fl==2){
         if(strcmp(data,"timedep") == 0){
-          data = strtok(NULL," \n");    
+          data = strtok(NULL," \n");
           if(!data){
             PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
           }
-          if(!strcmp(data,"QSTATIC")){    
+          if(!strcmp(data,"QSTATIC")){
             calcu.timedep=QS;
-          }else if(!strcmp(data,"DYNAMIC")){    
+          }else if(!strcmp(data,"DYNAMIC")){
             calcu.timedep=TR;
-          }else{    
+          }else{
             PetscPrintf(FERMI_Comm,"parser.c:Invalid option at line %d.\n",ln);
             return 1;
           }
           com=com|2;
         }else if(strcmp(data,"t0") == 0)
         {
-          data = strtok(NULL," \n");    
+          data = strtok(NULL," \n");
           if(!data){
             PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
             return 1;
@@ -365,21 +380,21 @@ int parse_mode(void)
           com=com|16;
         }else if(!strcmp(data,"kmode"))
         {
-          data = strtok(NULL," \n");    
+          data = strtok(NULL," \n");
           if(!data){
             PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
             return 1;
           }
-          if(!strcmp(data,"K1")){    
+          if(!strcmp(data,"K1")){
             calcu.kmode=K1;
-          }else{    
+          }else{
             PetscPrintf(FERMI_Comm,"parser.c:Invalid option at line %d.\n",ln);
             return 1;
           }
           com=com|32;
         }else if(!strcmp(data,"p0"))
         {
-          data = strtok(NULL," \n");    
+          data = strtok(NULL," \n");
           if(!data)
           {
             PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
@@ -387,7 +402,7 @@ int parse_mode(void)
           }
           power=atof(data);
           com=com|64;
-        }else if(strcmp(data,"#") != 0){    
+        }else if(strcmp(data,"#") != 0){
           PetscPrintf(FERMI_Comm,"parser.c:BF line %d.\n",ln);
           return 1;
         }
@@ -396,12 +411,12 @@ int parse_mode(void)
         fl=2;
     }
   }
-  return 1;    
+  return 1;
 }
 
 int parse_crod(void){
 
-  FILE *file= fopen(inputfile,"r");   
+  FILE *file= fopen(inputfile,"r");
   char *data,buf[NBUF],bufcpy[NBUF];
   int fl=0,ln=0,i;
   ctrlrod_t ctrlrod;
@@ -489,7 +504,7 @@ int parse_crod(void){
 
 int parse_func(void)
 {
-  FILE *file= fopen(inputfile,"r");   
+  FILE *file= fopen(inputfile,"r");
   char *data,buf[NBUF];
   int fl=0,com=0,ln=0,i,fs;
   double *xy;
@@ -508,7 +523,7 @@ int parse_func(void)
         fs=0;
       }else if(!strcmp(data,"$EndFunction"))
       {
-        if(com==15){ 
+        if(com==15){
           com=0;
           fl=0;
         }else if(fl==0){
@@ -544,12 +559,12 @@ int parse_func(void)
             return 1;
           if(!strcmp(data,"INTER1")){
             f1d->inter=atoi(data);
-          }    
+          }
           com=com|4;
         }else if(strcmp(data,"start") == 0){
           fs=1;
           if( (com & 1 ) != 1){
-            PetscPrintf(FERMI_Comm,"parser.c:<funckind> should be < start>.\n");  
+            PetscPrintf(FERMI_Comm,"parser.c:<funckind> should be < start>.\n");
             return 1;
           }
         }else if(strcmp(data,"end") == 0){
@@ -586,12 +601,12 @@ int parse_func(void)
     }
   }
   fclose(file);
-  return 0;    
-}       
+  return 0;
+}
 
 int parse_boun(void){
 
-  FILE *file= fopen(inputfile,"r");   
+  FILE *file= fopen(inputfile,"r");
   char *data,buf[NBUF],bufcpy[NBUF];
   int fl=0,ln=0;
   bound_t bou;
@@ -604,11 +619,11 @@ int parse_boun(void){
       if(!strcmp(data,"$Boundary")){
         fl=1;
       }else if(!strcmp(data,"$EndBoundary")){
-        if(!list_bound.sizelist){ 
+        if(!list_bound.sizelist){
         PetscPrintf(FERMI_Comm,"parser.c: No boundaries in %s.\n",inputfile);
           return 1;
         }
-        return 0;    
+        return 0;
       }
       if(fl==2){
         if(data[0]!='#'){
@@ -642,7 +657,7 @@ int parse_material(char *buff, pvl_t *mat){
     return 1;
   strcpy(mat->name,data);
 
-  /* second column is 0|1 which means if the mat has or not has precursors */ 
+  /* second column is 0|1 which means if the mat has or not has precursors */
   data = strtok(NULL," \n");
   if(!data)
     return 1;
@@ -650,7 +665,7 @@ int parse_material(char *buff, pvl_t *mat){
     mat->hasprec=atoi(data);
   }
 
-  /* diffusion coeficients */ 
+  /* diffusion coeficients */
   for(i=0;i<egn;i++){
     data = strtok(NULL," \n");
     if(!data)
@@ -658,32 +673,32 @@ int parse_material(char *buff, pvl_t *mat){
     mat->D[i]=atof(data);
   }
 
-  /* absortion cross sections */ 
+  /* absortion cross sections */
   for(i=0;i<egn;i++){
     data = strtok(NULL," \n");
     if(!data)
       return 1;
     mat->xs_a[i]=atof(data);
-  } 
+  }
 
 
-  /* scattering cross sections */ 
+  /* scattering cross sections */
   for(i=0;i<egn*(egn-1);i++){
     data = strtok(NULL," \n");
     if(!data)
       return 1;
     mat->xs_s[i]=atof(data);
-  } 
+  }
 
-  /* fission cross sections */ 
+  /* fission cross sections */
   for(i=0;i<egn;i++){
     data = strtok(NULL," \n");
     if(!data)
       return 1;
     mat->nxs_f[i]=atof(data);
-  } 
+  }
 
-  /* energy cross sections */ 
+  /* energy cross sections */
   for(i=0;i<egn;i++){
     data = strtok(NULL," \n");
     if(!data)
@@ -691,7 +706,7 @@ int parse_material(char *buff, pvl_t *mat){
     mat->exs_f[i]=atof(data);
   }
 
-  /* fission spectrum */ 
+  /* fission spectrum */
   for(i=0;i<egn;i++){
     data = strtok(NULL," \n");
     if(!data)
@@ -730,12 +745,12 @@ int parse_outp(void)
 	fl=1;
       }
       else if(!strcmp(data,"$EndOutput")){
-	if(output.kind==1){ 
+	if(output.kind==1){
 
 	  list_insertlast(&list_outpu,(void*)&output);
 
 	}
-	else if(output.kind==2){ 
+	else if(output.kind==2){
 
 	  list_insertlast(&list_outpu,(void*)&output);
 
@@ -750,8 +765,8 @@ int parse_outp(void)
       if(fl==2 && data[0]!='#'){
 
 	// we are in the line after $Output
-	if( get_int(buf,"kind",&output.kind)) 
-	  return 1;  
+	if( get_int(buf,"kind",&output.kind))
+	  return 1;
 
 	switch(output.kind){
 
@@ -761,7 +776,7 @@ int parse_outp(void)
 	  case 2:
 
 	    /*
-	       kind = 2  
+	       kind = 2
 
 	       power on different physical entities on ASCII file
 	       file <file.dat>
@@ -770,19 +785,19 @@ int parse_outp(void)
 
 	     */
 
-	    if(!fgets(buf,NBUF,file)) 
+	    if(!fgets(buf,NBUF,file))
 	      return 1;
 	    ln ++;
 
-	    if( get_char(buf,"file",output.kind_2.file)) 
+	    if( get_char(buf,"file",output.kind_2.file))
 	      return 1;
 
-	    if(!fgets(buf,NBUF,file)) 
+	    if(!fgets(buf,NBUF,file))
 	      return 1;
 	    ln ++;
 
-	    if( get_int(buf,"nphy",&output.kind_2.nphy)) 
-	      return 1;  
+	    if( get_int(buf,"nphy",&output.kind_2.nphy))
+	      return 1;
 	    output.kind_2.phys = malloc(output.kind_2.nphy*sizeof(char*));
 	    output.kind_2.ids  = malloc(output.kind_2.nphy*sizeof(int*));
 	    output.kind_2.pow  = malloc(output.kind_2.nphy*sizeof(double*));
@@ -790,7 +805,7 @@ int parse_outp(void)
 	      output.kind_2.phys[i] = (char *)malloc(16*sizeof(char));
 	    }
 
-	    if(!fgets(buf,NBUF,file)) 
+	    if(!fgets(buf,NBUF,file))
 	      return 1;
 	    ln ++;
 
@@ -829,14 +844,14 @@ int parse_communication(void)
   /*
      Parse for $Communication word on input file
 
-     The user is able to specify what "kind" 
-     of communication wants to perform 
-     
+     The user is able to specify what "kind"
+     of communication wants to perform
+
      kind 1: means (recv) cross sections (send) powers
 
      Notes:
 
-     -> $Communication could be repeated various times on input 
+     -> $Communication could be repeated various times on input
      file with different arguments (and maybe the same, probably
      is an error)
 
@@ -868,8 +883,8 @@ int parse_communication(void)
     if(fl==2 && data[0]!='#'){
 
       // we are in the line after $Communication
-      if( get_int(buf,"kind",&comm.kind)) 
-	return 1;  
+      if( get_int(buf,"kind",&comm.kind))
+	return 1;
 
       switch(comm.kind){
 
@@ -887,12 +902,12 @@ int parse_communication(void)
 
 	   */
 
-          // Search for its friend's name 
+          // Search for its friend's name
 	  // there is only one for this case
-	  if(!fgets(buf,NBUF,file)) 
+	  if(!fgets(buf,NBUF,file))
 	    return 1;
 	  ln ++;
-	  if( get_char(buf,"friend",comm.comm_1.friend_name)) 
+	  if( get_char(buf,"friend",comm.comm_1.friend_name))
 	    return 1;
 
           // we search for the intercommunicator
@@ -904,11 +919,11 @@ int parse_communication(void)
 	    }
 	  }
 
-	  if(!fgets(buf,NBUF,file)) 
+	  if(!fgets(buf,NBUF,file))
 	    return 1;
 	  ln ++;
-	  if( get_int(buf,"nphy",&comm.comm_1.nphy)) 
-	    return 1;  
+	  if( get_int(buf,"nphy",&comm.comm_1.nphy))
+	    return 1;
 
 	  comm.comm_1.phys = malloc(comm.comm_1.nphy*sizeof(char**));
 	  comm.comm_1.ids  = malloc(comm.comm_1.nphy*sizeof(int*));
@@ -916,7 +931,7 @@ int parse_communication(void)
 	  comm.comm_1.xs   = malloc(comm.comm_1.nphy * \
 	      nxs_mat *sizeof(double*));
 
-	  if(!fgets(buf,NBUF,file)) 
+	  if(!fgets(buf,NBUF,file))
 	    return 1;
 	  ln ++;
 
@@ -960,7 +975,7 @@ int get_int(char *buf, const char *name,int *a)
 
   char *data;
 
-  data = strtok(buf," \n");    
+  data = strtok(buf," \n");
 
   if(!data){
     PetscPrintf(FERMI_Comm,"%s expected.\n",name);
@@ -972,7 +987,7 @@ int get_int(char *buf, const char *name,int *a)
     return 1;
   }
 
-  data = strtok(NULL," \n");    
+  data = strtok(NULL," \n");
   if(!data){
     PetscPrintf(FERMI_Comm,"%s value expected.\n",name);
     return 1;
@@ -996,7 +1011,7 @@ int get_char(char *buf, const char *name,char *a)
 
   char *data;
 
-  data = strtok(buf," \n");    
+  data = strtok(buf," \n");
 
   if(!data){
     PetscPrintf(FERMI_Comm,"%s expected.\n",name);
@@ -1008,7 +1023,7 @@ int get_char(char *buf, const char *name,char *a)
     return 1;
   }
 
-  data = strtok(NULL," \n");    
+  data = strtok(NULL," \n");
   if(!data){
     PetscPrintf(FERMI_Comm,"%s value expected.\n",name);
     return 1;
@@ -1093,7 +1108,7 @@ int parse_coupling(const char file_c[])
 int parse_boundary(char *buff, bound_t *bou)
 {
 
-  char *data;    
+  char *data;
 
   if(!strlen(buff))
     return 1;
