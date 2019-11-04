@@ -1,9 +1,23 @@
-/* 
-
-   FERMI main program
-
-*/
-
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "fermi.h"
 
@@ -19,16 +33,13 @@ int main(int argc,char **argv)
 
   calcu.t = calcu.t0;
   step=0;
-  
+
   if(calcu.timedep == QS){
 
     pNod=calcu.time.head;
     while(pNod){
 
       dtn=((tcontrol_t*)pNod->data)->dt;
-
-      // recv information
-      fer_comm_step(COUPLE_RECV);
 
       // Assembly the system and solve with SLEPc
       if(ferstep_ST())
@@ -37,9 +48,6 @@ int main(int argc,char **argv)
       sprintf(nam,"steady_r%d_t%d",rank,step);
       print_vtk(nam);
       print_out(&phi_n, step);
-
-      // send information
-      fer_comm_step(COUPLE_SEND);
 
       calcu.t=calcu.t + dtn;
       step ++;
@@ -52,7 +60,7 @@ int main(int argc,char **argv)
 
   else if(calcu.timedep == TR){
 
-    //================================================== 
+    //==================================================
     // Transient simulation
     //
     // 1) Calculate steady state solving Ax = (1/k) Bx
@@ -60,10 +68,10 @@ int main(int argc,char **argv)
     // 3) Calculates a "dt" increase in the flux solving
     //    Ax = b
     // 4) Send information for coupling (if it required)
-    // 5) Repeat from "2)" up to achieving final time "tf" 
+    // 5) Repeat from "2)" up to achieving final time "tf"
     //
     PetscPrintf(FERMI_Comm,"calculating stationary state.\n");
-    
+
     // Assembly the system and solve with SLEPc
     if(ferstep_ST())
       goto error;
@@ -79,9 +87,6 @@ int main(int argc,char **argv)
 
       dtn=((tcontrol_t*)pNod->data)->dt;
 
-      // recv information
-      fer_comm_step(COUPLE_RECV);
-
       // Assembly the system and solve with PETSc
       if(ferstep_TR(step))
         goto error;
@@ -96,9 +101,6 @@ int main(int argc,char **argv)
       print_vtk(nam);
       print_out(&phi_n, step);
 
-      // send information
-      fer_comm_step(COUPLE_SEND);
-
       calcu.t=calcu.t + dtn;
       step ++;
       if(calcu.t>((tcontrol_t*)pNod->data)->tf-1.0e-8)
@@ -109,8 +111,7 @@ int main(int argc,char **argv)
 
 error:
 
-  ferfini();  
+  ferfini();
 
   return 0;
 }
-

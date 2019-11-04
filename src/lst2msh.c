@@ -1,12 +1,24 @@
-/*  Copy properties functions for elemv and elems
- * 
- *  These functions tells how the list_nodes, list_ghost, list_elemv and list_elems should be copied inside the mesh_t structure.
- *  
- *  They use the global lists : list_t list_physe 
- *                              list_t list_mater
- *                              list_t list_bound 
- * 
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include "global.h"
 #include "types.h"
 #include "mesh.h"
@@ -20,7 +32,7 @@ int cpynode (node_list_t *node_nl, node_t *node){
     if(!node || !node_nl) return 1;
     for(d=0;d<3;d++)
         node->coor[d]=((gmshN_t *)(node_nl->data))->coor[d];
-    return 0;    
+    return 0;
 }
 
 
@@ -60,7 +72,7 @@ int cpyelemv (node_list_t *elem_nl, elem_t *elemv){
     elemv->prop=(pv_t*)calloc(1,sizeof(pv_t));
     pv=(pv_t*)elemv->prop;
 
-    pv->name  = (char*)calloc(sizeof(pvl->name),sizeof(char)); strcpy(pv->name,pvl->name); 
+    pv->name  = (char*)calloc(sizeof(pvl->name),sizeof(char)); strcpy(pv->name,pvl->name);
     pv->gmshid=gmshid;
     pv->D     = (double*)calloc(egn,sizeof(double));
 //    pv->xs_a  = (double*)calloc(egn,sizeof(double));
@@ -99,5 +111,5 @@ int cpyelems (node_list_t *elem_nl, elem_t *elems){
     ps = (ps_t*)elems->prop;
     ps->gmshid = ((gmshE_t*)elem_nl->data)->gmshid;
 
-    return 0; 
+    return 0;
 }

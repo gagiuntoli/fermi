@@ -1,159 +1,164 @@
+/*
+*  This source code is part of Fermi: a finite element code
+*  to solve the neutron diffusion problem for nuclear reactor
+*  designs.
+*
+*  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+*
+*  This program is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "fermi.h"
 
-/*************************************************************/
 int fer_norm(void)
 {
+    /* Normalize the flux acording to the power specified (or default) */
+    double fpower;
 
-  /* Normalize the flux acording to the power specified (or default) */
-
-  double fpower;
-
-  if(fer_pow(&fpower))
+    if(fer_pow(&fpower))
     return 1;
 
-  PetscPrintf(FERMI_Comm,"Eigen power : %lf\n",fpower); 
-  VecScale(phi_n,power/fpower);
+    PetscPrintf(FERMI_Comm,"Eigen power : %lf\n",fpower);
+    VecScale(phi_n,power/fpower);
 
-  return 0;
+    return 0;
 }
 
-/*************************************************************/
 
 int fer_pow(double *fpower)
 {
 
-  /* Calculates the fission power on the hole domain */
+    /* Calculates the fission power on the hole domain */
 
-  int      e,g,gp,i,d;
-  int      error,npe,ngp,locind;
-  double   power_l;                /* potencia local dentro de este proceso */ 
-  double   det,phival;
-  pv_t   * pv;
+    int      e,g,gp,i,d;
+    int      error,npe,ngp,locind;
+    double   power_l;                /* potencia local dentro de este proceso */
+    double   det,phival;
+    pv_t   * pv;
 
-  power_l=0.0;
+    power_l=0.0;
 
-  VecGhostUpdateBegin(phi_n,INSERT_VALUES,SCATTER_FORWARD);
-  VecGhostUpdateEnd(phi_n,INSERT_VALUES,SCATTER_FORWARD);
-  VecGhostGetLocalForm(phi_n,&xlocal);
-  
-  /* recorremos todos los elementos de este proceso */
-  for(e=0;e<mesh.nelemv;e++){
+    VecGhostUpdateBegin(phi_n,INSERT_VALUES,SCATTER_FORWARD);
+    VecGhostUpdateEnd(phi_n,INSERT_VALUES,SCATTER_FORWARD);
+    VecGhostGetLocalForm(phi_n,&xlocal);
 
-    pv  = (pv_t *)mesh.elemv[e].prop;
-    npe = mesh.elemv[e].npe;         /* numero de vertices por elemento */
-    ngp = mesh.elemv[e].ngp;         /* numero de puntos de Gauss por elemento */
+    /* recorremos todos los elementos de este proceso */
+    for(e=0;e<mesh.nelemv;e++){
 
-    /* armamos un vector con las coordenadas de los vertices para calcular el jac */
-    for(i=0;i<npe;i++){
-      for(d=0;d<DIM;d++)
-        coor[i][d]=mesh.node[mesh.elemv[e].nodel[i]].coor[d];
-    }
+        pv  = (pv_t *)mesh.elemv[e].prop;
+        npe = mesh.elemv[e].npe;         /* numero de vertices por elemento */
+        ngp = mesh.elemv[e].ngp;         /* numero de puntos de Gauss por elemento */
 
-    /* buscamos los pesos, las funciones de forma y las derivadas */
-    fem_calwei(npe,DIM,&wp);
-    fem_calode(npe,DIM,&ode);
-    fem_calshp(npe,DIM,&sh);
-
-    /* Recorremos los vertices del elemento para calcular el aporte en la integral de cada funcion de forma */
-    for(i=0;i<npe;i++){
-
-      /* Recorremos cada una de las energias del neutron */
-      for(g=0;g<egn;g++){
-
-        /* calculamos el indice donde está el valor del flujo en el vector distribuido y lo pedimos */
-        locind=mesh.elemv[e].nodel[i]*egn+g;
-        VecGetValues(xlocal,1,&locind,&phival);
-
-        /* sumamos la contribución a la integral total */
-        for(gp=0;gp<ngp;gp++){
-          fem_caljac(coor, ode, npe, gp, DIM, jac);
-          fem_invjac(jac, DIM, ijac, &det);
-          power_l+=pv->exs_f[g]*phival*sh[i][gp]*det*wp[g];
+        /* armamos un vector con las coordenadas de los vertices para calcular el jac */
+        for(i=0;i<npe;i++){
+            for(d=0;d<DIM;d++)
+            coor[i][d]=mesh.node[mesh.elemv[e].nodel[i]].coor[d];
         }
-      }
+
+        /* buscamos los pesos, las funciones de forma y las derivadas */
+        fem_calwei(npe,DIM,&wp);
+        fem_calode(npe,DIM,&ode);
+        fem_calshp(npe,DIM,&sh);
+
+        /* Recorremos los vertices del elemento para calcular el aporte en la integral de cada funcion de forma */
+        for(i=0;i<npe;i++){
+
+            /* Recorremos cada una de las energias del neutron */
+            for(g=0;g<egn;g++){
+
+                /* calculamos el indice donde estï¿½ el valor del flujo en el vector distribuido y lo pedimos */
+                locind=mesh.elemv[e].nodel[i]*egn+g;
+                VecGetValues(xlocal,1,&locind,&phival);
+
+                /* sumamos la contribuciï¿½n a la integral total */
+                for(gp=0;gp<ngp;gp++){
+                    fem_caljac(coor, ode, npe, gp, DIM, jac);
+                    fem_invjac(jac, DIM, ijac, &det);
+                    power_l+=pv->exs_f[g]*phival*sh[i][gp]*det*wp[g];
+                }
+            }
+
+        }
 
     }
 
-  }
-  
-  /* Hacemos el Allreduce de las power_l de cada proceso y metemos el resultado en fpower */
-  error = MPI_Allreduce(&power_l,fpower,1,MPI_DOUBLE,MPI_SUM,FERMI_Comm);
-  if(error){
-    PetscPrintf(FERMI_Comm,"fer_powe.c:error mpi_allreduce.\n"); 
-    return 1;
-  }
+    /* Hacemos el Allreduce de las power_l de cada proceso y metemos el resultado en fpower */
+    error = MPI_Allreduce(&power_l,fpower,1,MPI_DOUBLE,MPI_SUM,FERMI_Comm);
+    if(error){
+        PetscPrintf(FERMI_Comm,"fer_powe.c:error mpi_allreduce.\n");
+        return 1;
+    }
 
-  return 0;
+    return 0;
 }
 
-/*************************************************************/
 
 int fer_pow_phys( int n, int * ids, double *fpower )
 {
 
-  /* 
-     Calculates the fission power the "n" physicals entities with "ids" 
+    /*
+    * Calculates the fission power the "n" physicals entities with "ids"
+    */
 
-     Authors: 
+    int           e, p;
+    int           error;
+    double        power_l, power_e;
+    node_list_t * pe, * pp;
 
-     Guido Giuntoli
+    p = 0;
+    while( p < n ){
 
-  */
+        pp = list_physe.head;
+        while( pp != NULL ){ // Recorremos cada una de las physical entities
 
-  int           e, p;
-  int           error;
-  double        power_l, power_e;
-  node_list_t * pe, * pp;
+            if(ids[p] ==  ((gmshP_t*)pp->data)->gmshid ){
 
-  p = 0;
-  while( p < n ){
+                // Recorremos todos los elmentos de esa physical entity y calculamos power_l para este proceso
+                power_l = 0.0;
+                pe = ((gmshP_t*)pp->data)->elem.head;
+                while( pe != NULL ){
+                    e   = *((int *)pe->data);
+                    fer_pow_elem(e, &power_e);
+                    power_l += power_e;
+                    pe = pe->next;
+                }
 
-      pp = list_physe.head;
-      while( pp != NULL ){ // Recorremos cada una de las physical entities
+                /* Hacemos el Allreduce de las power_l de cada proceso y metemos el resultado en fpower[p] */
+                error = MPI_Allreduce(&power_l,&fpower[p],1,MPI_DOUBLE,MPI_SUM,FERMI_Comm);
+                if(error){
+                    PetscPrintf(FERMI_Comm,"fer_powe.c:error mpi_allreduce.\n");
+                    return 1;
+                }
 
-	  if(ids[p] ==  ((gmshP_t*)pp->data)->gmshid ){
+            }
 
-	      // Recorremos todos los elmentos de esa physical entity y calculamos power_l para este proceso
-	      power_l = 0.0;
-	      pe = ((gmshP_t*)pp->data)->elem.head; 
-	      while( pe != NULL ){
-                  e   = *((int *)pe->data);
-		  fer_pow_elem(e, &power_e);
-		  power_l += power_e;
-		  pe = pe->next;
-	      }
+            pp = pp->next;
+        }
+        p ++;
+    }
 
-	      /* Hacemos el Allreduce de las power_l de cada proceso y metemos el resultado en fpower[p] */
-	      error = MPI_Allreduce(&power_l,&fpower[p],1,MPI_DOUBLE,MPI_SUM,FERMI_Comm);
-	      if(error){
-		  PetscPrintf(FERMI_Comm,"fer_powe.c:error mpi_allreduce.\n"); 
-		  return 1;
-	      }
-
-	  }
-
-	  pp = pp->next;
-      }
-      p ++;
-  }
-
-  return 0;
+    return 0;
 }
 
-/*************************************************************/
 
 int fer_pow_elem(int e, double *power_e)
 {
 
-  /* 
-     This functions calculates the power generated on mesh element "e". 
-     The result is saved on "power_e"
-
-     Authors: 
-     
-     Guido Giuntoli
-
-   */
+    /*
+    * This functions calculates the power generated on mesh element "e".
+    * The result is saved on "power_e"
+    */
 
     int      g, gp, i, d;
     int      npe, ngp, locind;
@@ -168,8 +173,8 @@ int fer_pow_elem(int e, double *power_e)
 
     /* armamos un vector con las coordenadas de los vertices para calcular el jac */
     for(i=0;i<npe;i++){
-	for(d=0;d<DIM;d++)
-	    coor[i][d]=mesh.node[mesh.elemv[e].nodel[i]].coor[d];
+        for(d=0;d<DIM;d++)
+        coor[i][d]=mesh.node[mesh.elemv[e].nodel[i]].coor[d];
     }
 
     /* buscamos los pesos, las funciones de forma y las derivadas */
@@ -181,20 +186,20 @@ int fer_pow_elem(int e, double *power_e)
     /* Recorremos los vertices del elemento para calcular el aporte en la integral de cada funcion de forma */
     for( i = 0; i < npe; i++){
 
-	/* Recorremos cada una de las energias del neutron */
-	for( g=0; g<egn; g++){
+        /* Recorremos cada una de las energias del neutron */
+        for( g=0; g<egn; g++){
 
-	    /* calculamos el indice donde está el valor del flujo en el vector distribuido y lo pedimos */
-	    locind=mesh.elemv[e].nodel[i]*egn+g;
-	    VecGetValues(xlocal,1,&locind,&phival);
+            /* calculamos el indice donde estï¿½ el valor del flujo en el vector distribuido y lo pedimos */
+            locind=mesh.elemv[e].nodel[i]*egn+g;
+            VecGetValues(xlocal,1,&locind,&phival);
 
-	    /* sumamos la contribución a la integral total */
-	    for( gp=0; gp < ngp; gp++ ){
-		fem_caljac(coor, ode, npe, gp, DIM, jac);
-		fem_invjac(jac, DIM, ijac, &det);
-		*power_e += pv->exs_f[g]*phival*sh[i][gp]*det*wp[g];
-	    }
-	}
+            /* sumamos la contribuciï¿½n a la integral total */
+            for( gp=0; gp < ngp; gp++ ){
+                fem_caljac(coor, ode, npe, gp, DIM, jac);
+                fem_invjac(jac, DIM, ijac, &det);
+                *power_e += pv->exs_f[g]*phival*sh[i][gp]*det*wp[g];
+            }
+        }
 
     }
 

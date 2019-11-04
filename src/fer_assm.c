@@ -1,4 +1,23 @@
-/* Rutines for assembly K matrix */
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "fermi.h"
 
@@ -58,7 +77,7 @@ int ferass_TR(int step)
   }
   MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);
-  
+
   /* b = A*phi_n */
   MatMult(A,phi_n,b);
 
@@ -73,18 +92,18 @@ int ferass_TR(int step)
 
 int ferass_TR_1(int step)
 {
-  /* Assemblies object for the TR simulation 
-   * if step = 0 assemblies the mass matrix M 
-   the final A = A + B/keff + M, 
-   the perturbation matrix B 
+  /* Assemblies object for the TR simulation
+   * if step = 0 assemblies the mass matrix M
+   the final A = A + B/keff + M,
+   the perturbation matrix B
    calculates b=(A+B)*phi_n
    assemblies precursors terms on b += be
-   puts boundary conditions on M and b 
+   puts boundary conditions on M and b
 
-   if step > 0 assemblies the perturbation matrix B           
+   if step > 0 assemblies the perturbation matrix B
    calculates b=(A+B)*phi_n
    assemblies precursors terms on b += be
-   puts boundary conditions on M and b 
+   puts boundary conditions on M and b
    */
   int e;
   node_list_t *pr,*px,*pe;
@@ -95,7 +114,7 @@ int ferass_TR_1(int step)
     {
       if(ferelem_M(e))
       {
-        PetscPrintf(FERMI_Comm,"Problem calculating elemental objects TR steps.\n"); 
+        PetscPrintf(FERMI_Comm,"Problem calculating elemental objects TR steps.\n");
         return 1;
       }
       MatSetValues(M,nke,idxm,nke,idxm,Me,ADD_VALUES);
@@ -117,7 +136,7 @@ int ferass_TR_1(int step)
     {
       if(ferelem_R(*(int*)pe->data,*(double*)px->data,-1.0))
       {
-        PetscPrintf(FERMI_Comm,"ferassm.c:problem calculating rod element perturbation.\n"); 
+        PetscPrintf(FERMI_Comm,"ferassm.c:problem calculating rod element perturbation.\n");
         return 1;
       }
       pe=pe->next;
@@ -166,7 +185,7 @@ int ferass_ST(void)
   for(e=0;e<mesh.nelemv;e++)
   {
     if(ferelem_AB(e)){
-      PetscPrintf(FERMI_Comm,"Problem calculating elemental objects ST steps.\n"); 
+      PetscPrintf(FERMI_Comm,"Problem calculating elemental objects ST steps.\n");
       return 1;
     }
     MatSetValues(A,nke,idxm,nke,idxm,Ae,ADD_VALUES);

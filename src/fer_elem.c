@@ -1,4 +1,23 @@
-/* Assembly functions */
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "fermi.h"
 
@@ -49,7 +68,7 @@ int ferelem_ABM(int e)
         }
       }
     }
-  }/*gp loop*/ 
+  }/*gp loop*/
   return 0;
 }
 
@@ -96,7 +115,7 @@ int ferelem_AB(int e)
         }
       }
     }
-  }/*gp loop*/ 
+  }/*gp loop*/
   return 0;
 }
 
@@ -154,7 +173,7 @@ int ferelem_M(int e)
         }
       }
     }
-  }/*gp loop*/ 
+  }/*gp loop*/
   return 0;
 }
 
@@ -175,12 +194,12 @@ int ferelem_R(int e,double xs_a,double factor)
     for(d=0;d<DIM;d++)
       coor[i][d]=mesh.node[mesh.elemv[e].nodel[i]].coor[d];
   }
-  
+
   memset(Be,0.0,nke*nke*sizeof(double));
   fem_calwei(npe,DIM,&wp);
   fem_calode(npe,DIM,&ode);
   fem_calshp(npe,DIM,&sh);
-  
+
   for(gp=0;gp<ngp;gp++)
   {
     fem_caljac(coor,ode,npe,gp,DIM,jac);
@@ -193,6 +212,6 @@ int ferelem_R(int e,double xs_a,double factor)
           Be[i*npe+j] += factor*xs_a*sh[i][gp]*sh[j][gp]*wp[gp]*det;
       }
     }
-  }/*gp loop*/ 
+  }/*gp loop*/
   return 0;
 }

@@ -1,14 +1,24 @@
-/* Rutines to performe calculations on a mesh
- * 
- * 
- * list_t *list_nodes list of nodes (locals)
- * list_t *list_ghost list of ghost nodes
- * list_t *list_elemv list of volumetric elements
- * 
- * cpyprop_t cpypropv : pointer to funtion to copy properties from list_t *list_elemvprop to elemv
- * cpyprop_t cpyprops : pointer to funtion to copy properties from list_t *list_elemsprop to elems
- * 
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -58,8 +68,8 @@ int mesh_alloc(list_t *list_nodes, list_t *list_ghost, cpynode_t cpynode, list_t
       return 1;
     if(list_delfirst(list_elems))
       return 1;
-  }    
-  return 0;    
+  }
+  return 0;
 }
 
 
@@ -81,7 +91,7 @@ int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew){
       }
       if(!fl)
         return 1;
-    } 
+    }
   }
   for(e=0;e<mesh->nelems;e++){
     for(n=0;n<mesh->elems[e].npe;n++){
@@ -96,7 +106,7 @@ int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew){
       }
       if(!fl)
         return 1;
-    } 
+    }
   }
 
   return 0;
@@ -105,8 +115,8 @@ int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew){
 int mesh_neigh(mesh_t *mesh, int *loc2gnew){
 
   /* completes the mesh.node[i].elemv & mesh.node[i].elems lists
-   * for both : local nodes and ghosts nodes. The lists contains 
-   * the local element numeration of those which have the node 
+   * for both : local nodes and ghosts nodes. The lists contains
+   * the local element numeration of those which have the node
    * as a vertex.
    */
   int i,e,n;
@@ -119,7 +129,7 @@ int mesh_neigh(mesh_t *mesh, int *loc2gnew){
           list_insert_se(&mesh->node[i].elemvL,(void*)&e);
           break;
         }
-      } 
+      }
     }
   }
 
@@ -131,10 +141,10 @@ int mesh_neigh(mesh_t *mesh, int *loc2gnew){
           list_insert_se(&mesh->node[i].elemsL,(void*)&e);
           break;
         }
-      } 
+      }
     }
   }
-  return 0;    
+  return 0;
 }
 
 
@@ -182,7 +192,7 @@ int mesh_vnorm(double *vec, int n, double *mod){
   int d;
   if(!vec || !mod)
     return 1;
-  *mod=0.0; 
+  *mod=0.0;
   for(d=0;d<n;d++)
     *mod+=pow(vec[d],2);
   *mod=sqrt(*mod);

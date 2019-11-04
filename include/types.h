@@ -1,3 +1,23 @@
+/*
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef _TYPES_H_
 #define _TYPES_H_
@@ -28,10 +48,10 @@ typedef struct _bound_t{
   char name[16];
   int kind;
   int order;
-  int dimS;    
-  list_t nodeL;    
-  list_t elemsL;    
-  list_t elemvL;    
+  int dimS;
+  list_t nodeL;
+  list_t elemsL;
+  list_t elemvL;
 
 }bound_t;
 
@@ -42,15 +62,15 @@ typedef struct _pv_t{
   int        gmshid;
 
   double   * D;               // diffusion coeficient
-  double   * xs_a;            // absortion XS  
+  double   * xs_a;            // absortion XS
   double   * nxs_f;           // nu x fission XS
   double   * exs_f;           // energy x fission XS
-  double   * xs_s;            // scattering XS 
+  double   * xs_s;            // scattering XS
   double   * xs_r;            // remotion XS
   double   * chi;             // fission spectrum
 
   int        hasprec;
-  double   * conc;            // Fission precursors concentration  ( I groups ) 
+  double   * conc;            // Fission precursors concentration  ( I groups )
 
 }pv_t;
 
@@ -59,10 +79,10 @@ typedef struct _pvl_t{
   char       name[16];
 
   double   * D;               // diffusion coeficient
-  double   * xs_a;            // absortion XS  
+  double   * xs_a;            // absortion XS
   double   * nxs_f;           // nu x fission XS
   double   * exs_f;           // energy x fission XS
-  double   * xs_s;            // scattering XS 
+  double   * xs_s;            // scattering XS
   double   * xs_r;            // remotion XS
   double   * chi;             // fission spectrum
 
@@ -163,10 +183,10 @@ typedef struct{
   list_t time;
 
     int timedep;
-    int kmode;  
+    int kmode;
     int mode;
     int exec;
-    
+
 }calcu_t;
 
 /*************************************************************/
@@ -183,7 +203,7 @@ typedef struct _coupling_t{
   // with other codes
   int      * remote_ranks; // remotes ranks in INTER_Comm to communicate
                          // with the others
-    
+
 }coupling_t;
 
 

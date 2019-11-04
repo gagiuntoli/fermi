@@ -1,11 +1,25 @@
 /*
-
-   FERMI global variable declaration
-
-*/
+ *  This source code is part of Fermi: a finite element code
+ *  to solve the neutron diffusion problem for nuclear reactor
+ *  designs.
+ *
+ *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <petscksp.h>
-#include <slepceps.h>
 #include "stdbool.h"
 #include "list.h"
 #include "types.h"
@@ -16,6 +30,7 @@
 
 #define DIM 3
 #define NPE 8
+#define MAX_ITS_POWER 20
 
 MPI_Comm   WORLD_Comm;   // global communicator
 MPI_Comm   FERMI_Comm;   // local  communicator
@@ -35,9 +50,9 @@ PetscViewer kspview;
 PetscViewer viewer;
 
 int        rank;
-int        nproc;   
-int        nummat;                 
-             
+int        nproc;
+int        nummat;
+
 int      * loc2gold, *loc2gnew;
 int        ndir;
 int      * npp;
@@ -45,7 +60,7 @@ int        ntot;
 int      * dirIndex;
 double   * dirValue;
 double   * dirZeros;
-                    
+
 int memory;
 
 list_t list_nodes;
@@ -70,14 +85,13 @@ double ikeff,keff;
 Mat A,B,M,K;
 KSP ksp;
 PC  pc;          /* preconditioner context */
-EPS eps;
 int Istart,Iend;
 
 char inputfile[32];
 char meshfile[32];
 char epartfile[32];
 char npartfile[32];
-                    
+
 calcu_t  calcu;
 
 int      *idxm;
@@ -90,6 +104,7 @@ double   power;
 double   vol;
 
 /* Precursors constants */
-double *veloc,*lambda,*beta,*chi,beta_tot;      
+double *veloc,*lambda,*beta,*chi,beta_tot;
 double dtn;
+
 #endif
