@@ -5,7 +5,6 @@
 */
 
 #include <petscksp.h>
-#include <slepceps.h>
 #include "stdbool.h"
 #include "list.h"
 #include "types.h"
@@ -16,6 +15,7 @@
 
 #define DIM 3
 #define NPE 8
+#define MAX_ITS_POWER 20
 
 MPI_Comm   WORLD_Comm;   // global communicator
 MPI_Comm   FERMI_Comm;   // local  communicator
@@ -35,9 +35,9 @@ PetscViewer kspview;
 PetscViewer viewer;
 
 int        rank;
-int        nproc;   
-int        nummat;                 
-             
+int        nproc;
+int        nummat;
+
 int      * loc2gold, *loc2gnew;
 int        ndir;
 int      * npp;
@@ -45,7 +45,7 @@ int        ntot;
 int      * dirIndex;
 double   * dirValue;
 double   * dirZeros;
-                    
+
 int memory;
 
 list_t list_nodes;
@@ -70,14 +70,13 @@ double ikeff,keff;
 Mat A,B,M,K;
 KSP ksp;
 PC  pc;          /* preconditioner context */
-EPS eps;
 int Istart,Iend;
 
 char inputfile[32];
 char meshfile[32];
 char epartfile[32];
 char npartfile[32];
-                    
+
 calcu_t  calcu;
 
 int      *idxm;
@@ -90,6 +89,6 @@ double   power;
 double   vol;
 
 /* Precursors constants */
-double *veloc,*lambda,*beta,*chi,beta_tot;      
+double *veloc,*lambda,*beta,*chi,beta_tot;
 double dtn;
 #endif

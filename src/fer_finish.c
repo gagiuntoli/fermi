@@ -5,10 +5,10 @@
 int ferfini(void)
 {
 
-  //================================================================================ 
+  //================================================================================
   // CLOSING OUTPUT FILES (in those who need it)
-  //================================================================================ 
-  //    
+  //================================================================================
+  //
   node_list_t  * pn;
   output_t    * po;
   pn = list_outpu.head;
@@ -20,7 +20,7 @@ int ferfini(void)
 	break;
 
       case 2:
-	// power on physical entities as a function of time 
+	// power on physical entities as a function of time
 	fclose(po->kind_2.fp);
 	break;
 
@@ -31,14 +31,14 @@ int ferfini(void)
     pn = pn->next;
   }
   //
-  //================================================================================ 
+  //================================================================================
 
   // eliminamos las estructuras de comunicadores
   // e intercomunicadores
-  //    commdom_delete(); 
+  //    commdom_delete();
 
   MPI_Barrier(WORLD_Comm);
-  SlepcFinalize();
+  PetscFinalize();
   MPI_Finalize();
 
   return 0;

@@ -1,4 +1,3 @@
-#include <slepceps.h>
 #include "petscao.h"
 #include <list.h>
 
@@ -25,7 +24,7 @@
 
 #define MAX_MAT     8                 // Maximum number of materials defined on input
 
-// Node Type Options        
+// Node Type Options
 
 #define INSIDE_VOL  0                 // This node is not in the border
 #define DIRICHLET   1                 // This node has a Dirichlet condition
@@ -36,7 +35,7 @@
 
 #define COMMAND_ERROR 1
 
-// Global Variables    
+// Global Variables
 
 #define SEQUEN           1
 #define PARALL           2
@@ -58,7 +57,7 @@ enum {SEQUENCIAL, PARALLEL};
 
 Mat     A;
 Mat     B;
-Mat     M;     //Mass Matrix for dynamic problem              
+Mat     M;     //Mass Matrix for dynamic problem
 
 KSP      ksp;
 
@@ -102,8 +101,8 @@ PetscViewer    viewer;
 PetscBool      flg;
 PetscBool      evecs;
 PetscBool      ishermitian;
-PetscBool      terse; 
-PetscBool      set; 
+PetscBool      terse;
+PetscBool      set;
 PetscBool      mesh_flag;
 PetscBool      mat_flag;
 PetscBool      vtk_flag;
@@ -135,7 +134,7 @@ int     Istart;
 int     Iend;
 
 int     num_local;     // number of local nodes
-int     num_ghost;     // number of ghost nodes 
+int     num_ghost;     // number of ghost nodes
 int     num_static_calc;
 int     *glo2loc;
 int     *loc2glo;
@@ -152,7 +151,7 @@ int     *neumann;
 int     *neumann_rows;
 int     *global_new;
 int     *nnpp;
-int     *is_ghost;             // Number of nodes per process*/ 
+int     *is_ghost;             // Number of nodes per process*/
 int     integration_form;      // Kind of flux averange for precursors calculations
 int     num_total_vol_elem;
 int     num_total_surf_elem;
@@ -160,90 +159,90 @@ int     num_total_surf_elem;
 /***************************************************************************/
 
 typedef struct bit{
-    
+
     unsigned int val : 1;
-    
+
 }bit_t;
 
-typedef struct{                 
-    
+typedef struct{
+
     unsigned long    num_global;            // global numeration of the node
     unsigned long    num_local;             // local numeration of the node
     bit_t            mine;                  // if belongs to this process is 1 otherwise is 0
-                                            
-}node_t;                                    
-                                            
-typedef struct{                             
-                                            
-    unsigned int    npe;                      // Number of nodes of this element    
-    unsigned long   mat_index;                
-    unsigned long   gmsh_number;              //number that appear in the Gmsh file     
-    
+
+}node_t;
+
+typedef struct{
+
+    unsigned int    npe;                      // Number of nodes of this element
+    unsigned long   mat_index;
+    unsigned long   gmsh_number;              //number that appear in the Gmsh file
+
     bit_t           mine;                     // 1 if all its nodes are from this process
     node_t          *node;                    // Array of nodes of the element
 
 }element_vol_t;
 
-typedef struct{                 
+typedef struct{
 
     unsigned int    npe;                    // Number of nodes of this element
-                    
+
     unsigned int    boundary;
     unsigned long   gmsh_number;
-    
+
     bit_t           mine;
     node_t          *node;                  // Array of nodes of the element
 
 }element_surf_t;
 
 typedef struct{
-    
+
     char             name[64];
     unsigned long    gmsh_number;               // gmsh code used to relate this with the elements in the mesh
-                                                
+
     double           *D;                        // diffusion coeficient
-    double           *xs_a;                     // absortion XS  
+    double           *xs_a;                     // absortion XS
     double           *nxs_f;                    // nu x fission XS
     double           *exs_f;                    // energy x fission XS
-    double           *xs_s;                     // scattering XS 
+    double           *xs_s;                     // scattering XS
     double           *xs_r;                     // remotion XS
     double           *chi;                      // fission spectrum
-    
+
     bit_t            has_precursors;
-    double           *conc;                     // Fission precursors concentration  ( I groups ) 
-    
+    double           *conc;                     // Fission precursors concentration  ( I groups )
+
 }xstable_t;
 
 typedef struct{
-                                               
+
     double        *lambda;                   // Fission precursors decay constant ( I groups )
     double        *beta;                     // Fission precursors fission yield  ( I groups )
     double        *chi;           // chi constants of precursors       ( I groups x egn )
-    double        beta_tot;                  // Fission precursors total fission yield        
-    
+    double        beta_tot;                  // Fission precursors total fission yield
+
 }precursors_t;
 
 typedef struct{
-    
+
     double t0;
     double tf;
     double t;
     double dt;
-    
-    
+
+
     int mode;           // STATIC || TRANSIENT
     int exec;
     int static_steps;
-    
+
 }calculation_flow_t;
 
 typedef struct{
-    
+
     unsigned long  type;                //if belongs to surf or to vol
-    unsigned long  gmsh_number;         //number that appear in the Gmsh file  
+    unsigned long  gmsh_number;         //number that appear in the Gmsh file
     char           name[64];            //nombre que le pongo yo a esa entidad
     bit_t          mine;                //one if some of the elements of this process has this material
-    
+
 }physical_entity_t;
 
 
@@ -252,7 +251,7 @@ int                 rank;
 int                 num_process;   // number of processes
 int                 flag_coor;
 unsigned int        dim;
-                    
+
 int                 mesh_kind;
 int                 partition_kind;
 
@@ -260,7 +259,7 @@ unsigned long       num_physical_entities;
 unsigned long       num_materials;          //number of local materials
 unsigned int        pgn;                    //number of energy groups
 unsigned int        egn;                    //number of precursors groups
-                    
+
 bit_t               *is_my_vol_element;
 bit_t               *is_my_surf_element;
 bit_t               *is_my_node;
@@ -269,32 +268,32 @@ physical_entity_t   *physical_entity;
 
 unsigned long       num_elements_vol;
 element_vol_t       *element_vol;
-unsigned int        *npe_vol;                     
-                    
+unsigned int        *npe_vol;
+
 unsigned long       num_elements_surf;
 element_surf_t      *element_surf;
 unsigned int        *npe_surf;
-                    
+
 unsigned long       num_nodes;
 unsigned long       *nodes_per_process;
 Vec                 coord;                  // coord[numumero total de nodos][3]
-                    
+
 unsigned long       total_memory;
 
 list_t              list_coord;
 list_t              list_elemv;
 list_t              list_elems;
 list_t              list_physe;
-                    
+
 char                mesh_file_name[WORDS_LENGHT];
 char                input_file_name[MAXL];
 char                epart_file_name[MAXL];
 char                npart_file_name[MAXL];
 char                xs_file_name[MAXL];
-                    
+
 xstable_t           *xstable;
 precursors_t        precursors;
-double              *velocities;                      // Neutron medium velocity ( I groups ) 
+double              *velocities;                      // Neutron medium velocity ( I groups )
 
 calculation_flow_t  calcu;
 

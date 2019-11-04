@@ -1,4 +1,4 @@
-/* 
+/*
 
    Structure types and constants
 
@@ -7,7 +7,6 @@
 #ifndef _FUNCT_H_
 #define _FUNCT_H_
 
-#include <slepceps.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -32,7 +31,7 @@
 
 // Coupling orders used for external communication
 
-#define COUPLE_INIT  0    
+#define COUPLE_INIT  0
 #define COUPLE_RECV  1
 #define COUPLE_SEND  2
 #define COUPLE_ENDS  3
