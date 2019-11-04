@@ -74,15 +74,12 @@ $Output
   "FUEL_Z1" "FLUID_Z1"
 $EndOutput
 ```
-
 ## Future Workflow
 
-* Parallelization and performance evaluation
-
-* Benchmarking
-
-* Documentation
-
+- [ ] Testing
+- [ ] Parallelization and performance evaluation
+- [ ] Benchmarking
+- [ ] Documentation
 
 ## Contact
 
