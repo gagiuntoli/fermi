@@ -1,28 +1,28 @@
-# README 
+# README
 
-`Fermi` is a code made for studying the physical behavour of nuclear reactors and to perform a design of them.
+`Fermi` is a code made for studying the physical behavior of nuclear reactors and to perform a design of them.
 
-It solves an eigenvalue problem corresponding to the steady state multigroup diffusion equation, which is an aproximation of the Boltzman Transport Equation. This aproximation is only valid in materials were the relation between absortion and scattering collision of neutrons is small.
+It solves an eigenvalue problem corresponding to the steady state multi-group diffusion equation, which is an approximation of the Boltzmann Transport Equation. This approximation is only valid in materials were the relation between absorption and scattering collision of neutrons is small.
 
 Macroscopic cross sections should be provided in order to solve the equations in the domain. They may become from a lattice cell homogenization, and possibly, a condensation to few groups in order to decrease the computational effort.
 
-To perform calculations and solve the problem, `Fermi` take advantage of the finite element method to discretizise the equations. With this technique, the code is capable of solving the problem over unstructured 3d meshes.
+To perform calculations and solve the problem, `Fermi` take advantage of the finite element method to discretize the equations. With this technique, the code is capable of solving the problem over unstructured 3d meshes.
 
-The design of `Fermi` was aim to be a very simple and easy understanding code. The input is a 1d, 2d or 3d mesh that should be generated with `gmsh` code and an ASCII file with a particular format which contains information about the cross sections of each material that exist in the domain. The output is a `VTK` file which contains the solution of the problem (the scalar flux) and the a file containing the eigenvalue of multiplication factor "keff" of the problem.
+The design of `Fermi` was aim to be a very simple and easy understanding code. The input is a 1d, 2d or 3d mesh that should be generated with `gmsh` code and an ASCII file with a particular format which contains information about the cross sections of each material that exist in the domain. The output is a `VTK` file which contains the solution of the problem (the scalar flux) and the a file containing the eigenvalue of multiplication factor "Keff" of the problem.
 
 ## Instalation
 
+## `PETSC` libraries
 
-## `PETSC` and `SLEPc` libraries
-
-Download these libraries from [www.mcs.anl.gov/petsc](www.mcs.anl.gov/petsc) and [www.slepc.upv.es](www.slepc.upv.es). Then compile them and set the corresponding environmental variables values `PETSC_DIR`, `PETSC_ARCH` and `SLEPC_DIR` by doing
+Download and install [PETSc](www.mcs.anl.gov/petsc) library and declare the
+environmental variables:
 
 ```bash
    export PETSC_DIR=<path>
    export PETSC_ARCH=<path>
-   export SLEPC_DIR=<path>
 ```
-The values should be the same as those set during the compilation of the libraries. In `fermi`'s main folder do:
+The values should be the same as those set during the compilation of the
+libraries. In `fermi`'s main folder do:
 
 ```bash
    mkdir build
@@ -38,25 +38,15 @@ If you want a `Release` version with the optimized compilations flag `-O3` do
 
 in the other case the compilation will not be optimized. We suggest to define different `build` directories if the user want different versions of the code for debugging or compare results in case of code improvements.
 
-##`Coupling`:
-
-For coupling do:
-```bash
-   cd lib/PLEPP
-   ./RUNNER.sh
-   cd..
-   make PLEPP=1
-```
-
 ## `Input Structure`:
 
 ```bash
-$Mesh 
+$Mesh
     mesh_file   fuel_1.msh
-$EndMesh 
+$EndMesh
 
 $Mode
-  timedep QSTATIC 
+  timedep QSTATIC
   p0 2.5e6  
   t0 0.0
   tf 0.15
@@ -83,27 +73,17 @@ $Output
   nphy 2
   "FUEL_Z1" "FLUID_Z1"
 $EndOutput
-
-$Communication
-  kind   1
-  friend control
-  nphy   2
-  "FUEL_Z1" "FLUID_Z1"
-$EndCommunication
 ```
 
-For reading this text in a `pdf` format do:
+## Future Workflow
 
-```bash
-pandoc README.md -V geometry:margin=.5in --latex-engine=xelatex -o README.pdf
-```
-
-## The future  
-
-Paralelization and performance evaluation 
+* Parallelization and performance evaluation
 
 * Benchmarking
 
 * Documentation
 
-Guido Giuntoli - [giuntoli1991@gmail.com]
+
+## Contact
+
+Guido Giuntoli - [gagiuntoli@gmail.com]
