@@ -30,7 +30,7 @@
 
 #define DIM 3
 #define NPE 8
-#define MAX_ITS_POWER 20
+#define MAX_ITS_POWER 200
 
 MPI_Comm   WORLD_Comm;   // global communicator
 MPI_Comm   FERMI_Comm;   // local  communicator

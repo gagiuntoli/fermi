@@ -19,11 +19,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "list.h"
-#include <math.h>
 
 #ifndef MESH_H
 #define MESH_H
+
+
+#include "list.h"
+#include <math.h>
+
 
 typedef struct _elem_t{
 

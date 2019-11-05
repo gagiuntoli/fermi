@@ -19,11 +19,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #ifndef LIST_H
 #define LIST_H
 
-typedef int  (*fcmp) (void *, void *);
+typedef int (*fcmp) (void *, void *);
 
 typedef struct _node_list_t {
 
