@@ -22,8 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "list.h"
-#include "gmsh.h"
+#include "fermi.h"
 
 #define MAXC 128
 

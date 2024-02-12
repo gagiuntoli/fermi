@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
-#include "fem.h"
+#include "fermi.h"
 
 int fem_inigau(void){
 

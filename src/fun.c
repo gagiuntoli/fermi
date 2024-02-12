@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fun.h"
+#include "fermi.h"
 
 int f1d_init(double *x, double *y, int n, int inter, f1d_t *f1d){
 

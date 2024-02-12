@@ -22,11 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "global.h"
+
 #include "fermi.h"
-#include "list.h"
-#include "types.h"
-#include "mesh.h"
 
 #define NBUF 128
 

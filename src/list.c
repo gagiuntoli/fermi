@@ -22,10 +22,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "malloc.h"
-#include "string.h"
-#include "list.h"
+#include <string.h>
 
+#include "fermi.h"
 
 int list_init(list_t * list, int sizedata, fcmp cmp){
 

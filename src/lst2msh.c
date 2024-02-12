@@ -19,12 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "global.h"
-#include "types.h"
-#include "mesh.h"
-#include "list.h"
-#include "gmsh.h"
-#include "fun.h"
+#include "fermi.h"
 
 int cpynode (node_list_t *node_nl, node_t *node){
 

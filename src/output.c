@@ -20,12 +20,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "fermi.h"
-#include "global.h"
-#include "list.h"
-#include "gmsh.h"
 
 #define   VTK_POINT         1
 #define   VTK_LINE          3
