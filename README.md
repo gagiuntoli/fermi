@@ -82,6 +82,14 @@ $Output
 $EndOutput
 ```
 
+## Docker
+
+Build the docker image:
+
+```bash
+docker build -t fermi .
+```
+
 ## Future Workflow
 
 - [ ] Testing
