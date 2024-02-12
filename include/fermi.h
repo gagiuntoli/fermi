@@ -19,7 +19,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #ifndef _FERMI_H_
 #define _FERMI_H_
 
@@ -33,16 +32,16 @@
 #define NPE 8
 #define MAX_ITS_POWER 200
 
-enum {INTER1,INTER2};
+enum { INTER1, INTER2 };
 
 typedef struct f1d_t_ {
 
-    int n;
-    int inter;
-    int fnum;
+  int n;
+  int inter;
+  int fnum;
 
-    double *x;
-    double *y;
+  double *x;
+  double *y;
 
 } f1d_t;
 
@@ -50,124 +49,129 @@ int f1d_init(double *x, double *y, int n, int inter, f1d_t *f1d);
 int f1d_eval(double x, f1d_t *f1d, double *y);
 int cmp_f1d(void *a, void *b);
 
-typedef int (*fcmp) (void *, void *);
+typedef int (*fcmp)(void *, void *);
 
 typedef struct _node_list_t {
 
-    void * data;
-    struct _node_list_t * next;
+  void *data;
+  struct _node_list_t *next;
 
-}node_list_t;
-
+} node_list_t;
 
 typedef struct {
 
-    node_list_t *  head;
-    node_list_t *  tail;
-    int            sizedata;
-    int            sizelist;
-    fcmp           cmp;
+  node_list_t *head;
+  node_list_t *tail;
+  int sizedata;
+  int sizelist;
+  fcmp cmp;
 
-}list_t;
+} list_t;
 
-typedef struct _gmshN_t{
+typedef struct _gmshN_t {
 
-    int    n;
-    double coor[3];
+  int n;
+  double coor[3];
 
-}gmshN_t;
+} gmshN_t;
 
-typedef struct _gmshE_t{
+typedef struct _gmshE_t {
 
-    int    node[8];
-    int    npe;
-    int    gmshid;
-    int    elemv;
+  int node[8];
+  int npe;
+  int gmshid;
+  int elemv;
 
-}gmshE_t;
+} gmshE_t;
 
-typedef struct _gmshP_t{
+typedef struct _gmshP_t {
 
-    char   name[32];
-    int    dim;
-    int    gmshid;
-    list_t elem;
+  char name[32];
+  int dim;
+  int gmshid;
+  list_t elem;
 
-}gmshP_t;
+} gmshP_t;
 
-
-int gmsh_read(char *file,char *efile,char *nfile,int rank,int dim, list_t *list_nodes, list_t *list_ghost, list_t
-*list_elemv, list_t *list_elems, list_t *list_phyce,int **loc2gold,int **loc2gnew,int **npp,int nproc);
-int gmsh_readnodes(char *file,int nproc,char *nfile,int rank,list_t *list_nodes);
-int gmsh_detghosts(list_t *list_nodes,list_t *list_elemv,list_t *list_ghost);
-int gmsh_readghosts(char *file,list_t *list_ghost);
-int gmsh_readelemv(char *file,int nproc,char *nfile,int rank,int dim,list_t *list_elemv);
-int gmsh_readelems(char *file,int dim,list_t *list_elemv,list_t *list_elems);
-int gmsh_readphys(char *file,list_t *list_elemv,list_t *list_elems,list_t *list_phyce);
-int gmsh_reenumerate(char *nfile,int rank,list_t *list_nodes,list_t *list_ghost,int **loc2gold,int **loc2gnew,int **npp,int nproc);
+int gmsh_read(char *file, char *efile, char *nfile, int rank, int dim,
+              list_t *list_nodes, list_t *list_ghost, list_t *list_elemv,
+              list_t *list_elems, list_t *list_phyce, int **loc2gold,
+              int **loc2gnew, int **npp, int nproc);
+int gmsh_readnodes(char *file, int nproc, char *nfile, int rank,
+                   list_t *list_nodes);
+int gmsh_detghosts(list_t *list_nodes, list_t *list_elemv, list_t *list_ghost);
+int gmsh_readghosts(char *file, list_t *list_ghost);
+int gmsh_readelemv(char *file, int nproc, char *nfile, int rank, int dim,
+                   list_t *list_elemv);
+int gmsh_readelems(char *file, int dim, list_t *list_elemv, list_t *list_elems);
+int gmsh_readphys(char *file, list_t *list_elemv, list_t *list_elems,
+                  list_t *list_phyce);
+int gmsh_reenumerate(char *nfile, int rank, list_t *list_nodes,
+                     list_t *list_ghost, int **loc2gold, int **loc2gnew,
+                     int **npp, int nproc);
 int gmsh_phys_elmlist(list_t *list_elemv, list_t *list_physe);
-int gmsh_elems_belongs(list_t *list_elemv,gmshE_t *elems,int *nelemv);
-int gmsh_phys_belongs(list_t *list_elemv,list_t *list_elems,gmshP_t *phys);
-int gmsh_isvol(int code,int dim);
+int gmsh_elems_belongs(list_t *list_elemv, gmshE_t *elems, int *nelemv);
+int gmsh_phys_belongs(list_t *list_elemv, list_t *list_elems, gmshP_t *phys);
+int gmsh_isvol(int code, int dim);
 int gmsh_npe(int code);
 int gmsh_nodcmp(void *a, void *b);
 
-int list_init(list_t * list, int sizedata, fcmp cmp);
-int list_insert_se(list_t * list, void *data);
-int list_insertlast(list_t * list, void *data);
-int list_delfirst(list_t * list);
-int list_del(list_t *list, node_list_t* pNod);
+int list_init(list_t *list, int sizedata, fcmp cmp);
+int list_insert_se(list_t *list, void *data);
+int list_insertlast(list_t *list, void *data);
+int list_delfirst(list_t *list);
+int list_del(list_t *list, node_list_t *pNod);
 int list_free(list_t *list);
 
-typedef struct _elem_t{
+typedef struct _elem_t {
 
-    int  npe;
-    int  ngp;
-    int  *nodel;
-    int  *nodeg;
-    void *prop;
+  int npe;
+  int ngp;
+  int *nodel;
+  int *nodeg;
+  void *prop;
 
-}elem_t;
+} elem_t;
 
-typedef struct _node_t{
+typedef struct _node_t {
 
-    double coor[3];
-    list_t elemvL;
-    list_t elemsL;
+  double coor[3];
+  list_t elemvL;
+  list_t elemsL;
 
-}node_t;
+} node_t;
 
-typedef struct _mesh_t{
+typedef struct _mesh_t {
 
-    int nelemv;
-    int nelems;
-    int nnodes;
-    int nghost;
-    node_t *node;
-    elem_t *elemv;
-    elem_t *elems;
+  int nelemv;
+  int nelems;
+  int nnodes;
+  int nghost;
+  node_t *node;
+  elem_t *elemv;
+  elem_t *elems;
 
-}mesh_t;
+} mesh_t;
 
-typedef int (*cpyelem_t) (node_list_t *elem_nl, elem_t *elem);
-typedef int (*cpynode_t) (node_list_t *node_nl, node_t *node);
+typedef int (*cpyelem_t)(node_list_t *elem_nl, elem_t *elem);
+typedef int (*cpynode_t)(node_list_t *node_nl, node_t *node);
 
-enum {SEQUENCIAL, PARALLEL};
+enum { SEQUENCIAL, PARALLEL };
 
-typedef struct bit{
+typedef struct bit {
 
   unsigned int val : 1;
 
-}bit_t;
+} bit_t;
 
-typedef struct _propES_t{
+typedef struct _propES_t {
 
-  int gmshid;  /* ID that correspond to evewry element in the gmshfile */
-  int elemv;   /* The elemv local numeration at which belongs */
+  int gmshid; /* ID that correspond to evewry element in the gmshfile */
+  int elemv;  /* The elemv local numeration at which belongs */
 
-}ps_t;
+} ps_t;
 
-typedef struct _bound_t{
+typedef struct _bound_t {
 
   char name[16];
   int kind;
@@ -177,168 +181,167 @@ typedef struct _bound_t{
   list_t elemsL;
   list_t elemvL;
 
-}bound_t;
+} bound_t;
 
+typedef struct _pv_t {
 
-typedef struct _pv_t{
+  char *name;
+  int gmshid;
 
-  char     * name;
-  int        gmshid;
+  double *D;     // diffusion coeficient
+  double *xs_a;  // absortion XS
+  double *nxs_f; // nu x fission XS
+  double *exs_f; // energy x fission XS
+  double *xs_s;  // scattering XS
+  double *xs_r;  // remotion XS
+  double *chi;   // fission spectrum
 
-  double   * D;               // diffusion coeficient
-  double   * xs_a;            // absortion XS
-  double   * nxs_f;           // nu x fission XS
-  double   * exs_f;           // energy x fission XS
-  double   * xs_s;            // scattering XS
-  double   * xs_r;            // remotion XS
-  double   * chi;             // fission spectrum
+  int hasprec;
+  double *conc; // Fission precursors concentration  ( I groups )
 
-  int        hasprec;
-  double   * conc;            // Fission precursors concentration  ( I groups )
+} pv_t;
 
-}pv_t;
+typedef struct _pvl_t {
 
-typedef struct _pvl_t{
+  char name[16];
 
-  char       name[16];
+  double *D;     // diffusion coeficient
+  double *xs_a;  // absortion XS
+  double *nxs_f; // nu x fission XS
+  double *exs_f; // energy x fission XS
+  double *xs_s;  // scattering XS
+  double *xs_r;  // remotion XS
+  double *chi;   // fission spectrum
 
-  double   * D;               // diffusion coeficient
-  double   * xs_a;            // absortion XS
-  double   * nxs_f;           // nu x fission XS
-  double   * exs_f;           // energy x fission XS
-  double   * xs_s;            // scattering XS
-  double   * xs_r;            // remotion XS
-  double   * chi;             // fission spectrum
+  int hasprec;
 
-  int        hasprec;
-
-}pvl_t;
+} pvl_t;
 
 /*************************************************************/
-typedef struct _kind_1_t{
+typedef struct _kind_1_t {
 
-  char     phys[16];
+  char phys[16];
 
-}kind_1_t;
+} kind_1_t;
 
 /* this is used to print localized powers on physical entities on a file */
-typedef struct _kind_2_t{
+typedef struct _kind_2_t {
 
-  FILE     * fp;
-  char       file[16];
-  char    ** phys;     // array of Physical Entities names
-  int        nphy;
-  int      * ids ;
-  double   * pow;
+  FILE *fp;
+  char file[16];
+  char **phys; // array of Physical Entities names
+  int nphy;
+  int *ids;
+  double *pow;
 
-}kind_2_t;
+} kind_2_t;
 
-typedef struct _output_t{
+typedef struct _output_t {
 
   /* esto va a volar pronto */
-  char       file[16];
-  char       phys[16];
-  double     norm[3];
+  char file[16];
+  char phys[16];
+  double norm[3];
 
-  int        kind;
+  int kind;
 
-  kind_1_t   kind_1;
-  kind_2_t   kind_2;
+  kind_1_t kind_1;
+  kind_2_t kind_2;
 
-}output_t;
+} output_t;
 
-typedef struct _comm_1_t{
+typedef struct _comm_1_t {
 
-  char         friend_name[64];
-  int          nphy;
-  char      ** phys;          // array of Physical Entities names
-  int        * ids ;
-  int          remote_rank;;
+  char friend_name[64];
+  int nphy;
+  char **phys; // array of Physical Entities names
+  int *ids;
+  int remote_rank;
+  ;
 
   /* recv */
-  double     * xs;
+  double *xs;
 
   /* send */
-  double     * pow;
+  double *pow;
 
-  MPI_Comm   * intercomm;
+  MPI_Comm *intercomm;
 
-}comm_1_t;
+} comm_1_t;
 
-typedef struct _comm_t{
+typedef struct _comm_t {
 
-  int        kind;
+  int kind;
 
-  comm_1_t   comm_1;
+  comm_1_t comm_1;
 
-}comm_t;
+} comm_t;
 
 /*************************************************************/
 
-typedef struct _tcontrol_t{
+typedef struct _tcontrol_t {
 
   double tf;
   double dt;
 
-}tcontrol_t;
+} tcontrol_t;
 
-typedef struct _ctrlrod_t{
+typedef struct _ctrlrod_t {
 
-  char   name_ele[16]; /* elem physical entity name */
-  char   name_nod[16]; /* node physical entity name */
-  int    nfun;         /* function id number */
-  f1d_t  *funins;      /* insertion value function of time */
-  double n[3];         /* direction of control rod insertion */
-  double p[3];         /* reference point from where insertion starts */
-  double xsaval;       /* xsa value to perturb  */
-  list_t elemv;        /* list of vol elem that the ctrlrod intersects*/
-  list_t xsa;          /* list of absortion xs on element list*/
+  char name_ele[16]; /* elem physical entity name */
+  char name_nod[16]; /* node physical entity name */
+  int nfun;          /* function id number */
+  f1d_t *funins;     /* insertion value function of time */
+  double n[3];       /* direction of control rod insertion */
+  double p[3];       /* reference point from where insertion starts */
+  double xsaval;     /* xsa value to perturb  */
+  list_t elemv;      /* list of vol elem that the ctrlrod intersects*/
+  list_t xsa;        /* list of absortion xs on element list*/
 
-}ctrlrod_t;
+} ctrlrod_t;
 
-typedef struct{
+typedef struct {
 
   double t0;
   double t;
   list_t time;
 
-    int timedep;
-    int kmode;
-    int mode;
-    int exec;
+  int timedep;
+  int kmode;
+  int mode;
+  int exec;
 
-}calcu_t;
+} calcu_t;
 
 /*************************************************************/
 
-typedef struct _coupling_t{
+typedef struct _coupling_t {
 
-  char     world[64];
-  char  ** friends;
-  int      myID;
-  int    * IDs;
-  int      num_friends;
+  char world[64];
+  char **friends;
+  int myID;
+  int *IDs;
+  int num_friends;
 
-  MPI_Comm * INTER_Comm;   // array of inter-communicators to communicate
+  MPI_Comm *INTER_Comm; // array of inter-communicators to communicate
   // with other codes
-  int      * remote_ranks; // remotes ranks in INTER_Comm to communicate
-                         // with the others
+  int *remote_ranks; // remotes ranks in INTER_Comm to communicate
+                     // with the others
 
-}coupling_t;
+} coupling_t;
 
 #ifdef COMMDOM
-  #include "commdom_wrapper.h"
+#include "commdom_wrapper.h"
 #endif
 
 // Coupling orders used for external communication
 
-#define COUPLE_INIT  0
-#define COUPLE_RECV  1
-#define COUPLE_SEND  2
-#define COUPLE_ENDS  3
+#define COUPLE_INIT 0
+#define COUPLE_RECV 1
+#define COUPLE_SEND 2
+#define COUPLE_ENDS 3
 
-
-//parser.c
+// parser.c
 int parse_input(void);
 int parse_mesh(void);
 int parse_mats(void);
@@ -353,13 +356,13 @@ int cmp_mat(void *a, void *b);
 int parse_boundary(char *bufcpy, bound_t *bou);
 int cmp_bou(void *a, void *b);
 int cmp_time(void *a, void *b);
-int get_int(char *buf, const char *name,int *a);
-int get_char(char *buf, const char *name,char *a);
+int get_int(char *buf, const char *name, int *a);
+int get_char(char *buf, const char *name, char *a);
 int parse_coupling(const char file_c[]);
 
 int ferass_TR(int step);
 int ferass_ST(void);
-int ferinit(int argc,char **argv);
+int ferinit(int argc, char **argv);
 int ferfini(void);
 int ferstep_ST(void);
 int ferstep_TR(int step);
@@ -368,56 +371,55 @@ int fersolv_TR(void);
 int ferelem_AB(int e);
 int ferelem_ABM(int e);
 int ferelem_M(int e);
-int ferelem_R(int e,double xsa,double factor);
-//lst2msh.c
-int cpynode (node_list_t *node_nl, node_t *node);
-int cpyelemv (node_list_t *elem_nl, elem_t *elemv);
-int cpyelems (node_list_t *elem_nl, elem_t *elems);
-//ferboun.c
+int ferelem_R(int e, double xsa, double factor);
+// lst2msh.c
+int cpynode(node_list_t *node_nl, node_t *node);
+int cpyelemv(node_list_t *elem_nl, elem_t *elemv);
+int cpyelems(node_list_t *elem_nl, elem_t *elems);
+// ferboun.c
 int ferbouset(void);
 int cmp_nod(void *a, void *b);
 
-//fer_power.c
+// fer_power.c
 int fer_norm(void);
 int fer_pow(double *fpower);
-int fer_pow_phys(int n, int * ids, double *fpower);
+int fer_pow_phys(int n, int *ids, double *fpower);
 int fer_pow_elem(int e, double *fpower);
 
-//ferrods.c
+// ferrods.c
 int ferirods(void);
 int fersrods(double t);
-//output.c
+// output.c
 int print_struct(int step);
 int print_vtk(const char *name);
-int printMatrixR(char *name,double *A, int m, int n);
-int printMatrixRC(char *name,double **A, int m, int n);
-int printVector(char *name,double *vec, int m);
-int printMat(char *name,Mat *A, int m);
-int printVec(char *name,Vec *vec, int m);
-int vtkcode(int dim,int npe);
+int printMatrixR(char *name, double *A, int m, int n);
+int printMatrixRC(char *name, double **A, int m, int n);
+int printVector(char *name, double *vec, int m);
+int printMat(char *name, Mat *A, int m);
+int printVec(char *name, Vec *vec, int m);
+int vtkcode(int dim, int npe);
 int print_out(Vec *phi, int step);
 
-//fer_couple.c
-int fer_couple(int order, MPI_Comm * couple_comm, char * server_n);
-int fer_coinit(MPI_Comm * couple_comm, char * server_n);
-int fer_corecv(MPI_Comm * couple_comm);
-int fer_cosend(MPI_Comm * couple_comm, int * control_fg);
-int fer_coends(MPI_Comm * couple_comm);
+// fer_couple.c
+int fer_couple(int order, MPI_Comm *couple_comm, char *server_n);
+int fer_coinit(MPI_Comm *couple_comm, char *server_n);
+int fer_corecv(MPI_Comm *couple_comm);
+int fer_cosend(MPI_Comm *couple_comm, int *control_fg);
+int fer_coends(MPI_Comm *couple_comm);
 
 int fer_comm_init(void);
 int fer_comm_step(int order);
 
+extern MPI_Comm WORLD_Comm; // global communicator
+extern MPI_Comm FERMI_Comm; // local  communicator
 
-extern MPI_Comm   WORLD_Comm;   // global communicator
-extern MPI_Comm   FERMI_Comm;   // local  communicator
+extern int globa_rank; // rank in WORLD_Comm
+extern int globa_size; // size in WORLD_Comm
+extern int local_rank; // rank in FERMI_Comm
+extern int local_size; // size in FERMI_Comm
 
-extern int       globa_rank;    // rank in WORLD_Comm
-extern int       globa_size;    // size in WORLD_Comm
-extern int       local_rank;    // rank in FERMI_Comm
-extern int       local_size;    // size in FERMI_Comm
-
-enum {QS, TR};           //Quasi Static, transient
-enum {K1};               //Calculation of elemental matrix by this K modes
+enum { QS, TR }; // Quasi Static, transient
+enum { K1 };     // Calculation of elemental matrix by this K modes
 
 extern bool couple_fl;
 extern coupling_t coupling;
@@ -425,17 +427,17 @@ extern coupling_t coupling;
 extern PetscViewer kspview;
 extern PetscViewer viewer;
 
-extern int        rank;
-extern int        nproc;
-extern int        nummat;
+extern int rank;
+extern int nproc;
+extern int nummat;
 
-extern int      * loc2gold, *loc2gnew;
-extern int        ndir;
-extern int      * npp;
-extern int        ntot;
-extern int      * dirIndex;
-extern double   * dirValue;
-extern double   * dirZeros;
+extern int *loc2gold, *loc2gnew;
+extern int ndir;
+extern int *npp;
+extern int ntot;
+extern int *dirIndex;
+extern double *dirValue;
+extern double *dirZeros;
 
 extern int memory;
 
@@ -453,15 +455,15 @@ extern list_t list_comms;
 
 extern mesh_t mesh;
 
-extern int nke,nbe,nev,its;
-extern double *Ae,*Be,*Me,*be;
-extern Vec  phi_n,phi_o,b,b_a;
-extern Vec  xlocal;
-extern double ikeff,keff;
-extern Mat A,B,M,K;
+extern int nke, nbe, nev, its;
+extern double *Ae, *Be, *Me, *be;
+extern Vec phi_n, phi_o, b, b_a;
+extern Vec xlocal;
+extern double ikeff, keff;
+extern Mat A, B, M, K;
 extern KSP ksp;
-extern PC  pc;          /* preconditioner context */
-extern int Istart,Iend;
+extern PC pc; /* preconditioner context */
+extern int Istart, Iend;
 
 extern char inputfile[32];
 extern char meshfile[32];
@@ -470,17 +472,17 @@ extern char npartfile[32];
 
 extern calcu_t calcu;
 
-extern int      *idxm;
-extern double   **der,***ode,**sh,**jac,**ijac,**coor,*wp;
+extern int *idxm;
+extern double **der, ***ode, **sh, **jac, **ijac, **coor, *wp;
 
-extern int      egn, pgn;
-extern int      nxs_mat;      // number of xs values per material
-extern double   **phi;
-extern double   power;
-extern double   vol;
+extern int egn, pgn;
+extern int nxs_mat; // number of xs values per material
+extern double **phi;
+extern double power;
+extern double vol;
 
 /* Precursors constants */
-extern double *veloc,*lambda,*beta,*chi,beta_tot;
+extern double *veloc, *lambda, *beta, *chi, beta_tot;
 extern double dtn;
 
 int cmp_int(void *a, void *b);
@@ -491,21 +493,25 @@ int cmp_int(void *a, void *b);
 int cmp_dou(void *a, void *b);
 int strBin2Dec(char *str, int *dec);
 
-int mesh_alloc(list_t *list_nodes, list_t *list_ghost, cpynode_t cpynode, list_t *list_elemv, cpyelem_t cpyelemv, list_t *list_elems, cpyelem_t cpyelems, mesh_t *mesh);
+int mesh_alloc(list_t *list_nodes, list_t *list_ghost, cpynode_t cpynode,
+               list_t *list_elemv, cpyelem_t cpyelemv, list_t *list_elems,
+               cpyelem_t cpyelems, mesh_t *mesh);
 int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew);
 int mesh_neigh(mesh_t *mesh, int *loc2gnew);
 int mesh_vnorm(double *vec, int n, double *mod);
-int mesh_carea(mesh_t *mesh,elem_t *elem,int dim,double *area);
+int mesh_carea(mesh_t *mesh, elem_t *elem, int dim, double *area);
 int mesh_vcross(double *v1, double *v2, double *vr);
 int elem_cmp(void *a, void *b);
 
 int fem_inigau(void);
-int fem_caljac(double **coor,double ***ds, int npe, int gp, int dim, double **jac);
+int fem_caljac(double **coor, double ***ds, int npe, int gp, int dim,
+               double **jac);
 int fem_invjac(double **jac, int dim, double **ijac, double *det);
 int fem_calode(int npe, int dim, double ****oder);
 int fem_calshp(int npe, int dim, double ***sh);
 int fem_calwei(int npe, int dim, double **wp);
-int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder, double **der);
+int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder,
+               double **der);
 int fem_calare(double **pts, int npe, int dim, double *area);
 int fem_vecmod(double *vec, int n, double *mod);
 int fem_dotdsh(int i, int j, double **derivs, int dim, double *p);

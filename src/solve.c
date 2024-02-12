@@ -21,76 +21,74 @@
 
 #include "fermi.h"
 
-int fersolv_ST(void)
-{
-    /* Power Method
-    *
-    * Iterate with:
-    * s = Bx
-    * x = A^-1 s
-    *
-    * At the end:
-    * lambda = (Ax . x) / (x . x)
-    */
+int fersolv_ST(void) {
+  /* Power Method
+   *
+   * Iterate with:
+   * s = Bx
+   * x = A^-1 s
+   *
+   * At the end:
+   * lambda = (Ax . x) / (x . x)
+   */
 
-    int its = 0, ksp_its;
-    double x_dot_x, Ax_dot_x, lambda;
-    double error;
-    double power;
+  int its = 0, ksp_its;
+  double x_dot_x, Ax_dot_x, lambda;
+  double error;
+  double power;
 
-    Vec x, s, Ax;
+  Vec x, s, Ax;
 
-    VecDuplicate(phi_n, &x);
-    VecDuplicate(phi_n, &s);
-    VecDuplicate(phi_n, &Ax);
+  VecDuplicate(phi_n, &x);
+  VecDuplicate(phi_n, &s);
+  VecDuplicate(phi_n, &Ax);
 
-    VecSet(x, 1.0);
+  VecSet(x, 1.0);
 
-    while(its < MAX_ITS_POWER) {
+  while (its < MAX_ITS_POWER) {
 
-        VecSetValues(x, ndir, dirIndex, dirZeros, INSERT_VALUES);
-        VecAssemblyBegin(x);
-        VecAssemblyEnd(x);
+    VecSetValues(x, ndir, dirIndex, dirZeros, INSERT_VALUES);
+    VecAssemblyBegin(x);
+    VecAssemblyEnd(x);
 
-        MatMult(B, x, s);
+    MatMult(B, x, s);
 
-        KSPSetOperators(ksp, A, A);
-        KSPSolve(ksp, s, x);
-        KSPGetIterationNumber(ksp, &ksp_its);
+    KSPSetOperators(ksp, A, A);
+    KSPSolve(ksp, s, x);
+    KSPGetIterationNumber(ksp, &ksp_its);
 
-        MatMult(A, x, Ax);
-        VecDot(x, x, &x_dot_x);
-        VecDot(Ax, x, &Ax_dot_x);
-        lambda = Ax_dot_x / x_dot_x;
-        keff = 1 / lambda;
-        PetscPrintf(FERMI_Comm, "Keff: %lf KSP its: %d\n", keff, ksp_its);
+    MatMult(A, x, Ax);
+    VecDot(x, x, &x_dot_x);
+    VecDot(Ax, x, &Ax_dot_x);
+    lambda = Ax_dot_x / x_dot_x;
+    keff = 1 / lambda;
+    PetscPrintf(FERMI_Comm, "Keff: %lf KSP its: %d\n", keff, ksp_its);
 
-        VecCopy(Ax, x);
-
-        VecCopy(x, phi_n);
-        fer_pow(&power);
-        VecScale(x, 1 / power);
-
-        its++;
-    }
+    VecCopy(Ax, x);
 
     VecCopy(x, phi_n);
+    fer_pow(&power);
+    VecScale(x, 1 / power);
 
-    VecDestroy(&x);
-    VecDestroy(&s);
-    VecDestroy(&Ax);
+    its++;
+  }
 
-    return 0;
+  VecCopy(x, phi_n);
+
+  VecDestroy(&x);
+  VecDestroy(&s);
+  VecDestroy(&Ax);
+
+  return 0;
 }
 
-int fersolv_TR(void)
-{
-//    PetscViewerASCIIOpen(FERMI_Comm,"b.dat",&viewer);
-//    VecView(b,viewer);
-//    PetscViewerASCIIOpen(FERMI_Comm,"M.dat",&viewer);
-//    MatView(M,viewer);
-    KSPSetOperators(ksp,M,M);
-    KSPSolve(ksp,b,phi_n);
-    KSPGetIterationNumber(ksp,&its);
-    return 0;
+int fersolv_TR(void) {
+  //    PetscViewerASCIIOpen(FERMI_Comm,"b.dat",&viewer);
+  //    VecView(b,viewer);
+  //    PetscViewerASCIIOpen(FERMI_Comm,"M.dat",&viewer);
+  //    MatView(M,viewer);
+  KSPSetOperators(ksp, M, M);
+  KSPSolve(ksp, b, phi_n);
+  KSPGetIterationNumber(ksp, &its);
+  return 0;
 }
