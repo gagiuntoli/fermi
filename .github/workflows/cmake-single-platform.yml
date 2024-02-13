@@ -30,3 +30,12 @@ jobs:
           exit 1
         fi
         echo "No syntax issues."
+
+    - name: Create build directory
+      run: mkdir -p build
+
+    - name: Configure CMake
+      run: cmake -Bbuild -H.
+
+    - name: Build with make
+      run: cmake --build build --config Release

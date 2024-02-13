@@ -2,7 +2,7 @@
 FROM ubuntu:latest
 
 # Install additional dependencies if needed
-RUN apt-get update && apt-get install -y petsc-dev cmake libopenmpi-dev clang-format
+RUN apt-get update && apt-get install -y petsc-dev cmake libopenmpi-dev clang-format cmake
 
 ENV PETSC_DIR=/usr/lib/petscdir/petsc3.15/x86_64-linux-gnu-real
 
@@ -12,5 +12,3 @@ COPY . /fermi
 # Set working directory
 WORKDIR /fermi
 
-# Build and test your project
-RUN cmake . && make
