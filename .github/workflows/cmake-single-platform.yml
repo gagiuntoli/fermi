@@ -23,5 +23,11 @@ jobs:
       run: sudo apt install -y clang-format
 
     - name: Check syntax
-      run: clang-format -style=file -output-replacements-xml $(find src include -name '*.c' -o -name '*.h') | grep '<replacement ' || true
+      run: |
+        issues=$(clang-format -style=file -output-replacements-xml $(find src include -name '*.c' -o -name '*.h') | grep -c '<replacement ')
+        if [ $issues -gt 0 ]; then
+          echo "Found formatting issues. Exiting."
+          clang-format --dry-run $(find src include -name '*.c' -o -name '*.h') 
+          exit 1
+        fi
 
