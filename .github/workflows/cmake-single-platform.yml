@@ -27,6 +27,12 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
+    - name: Install clang-format for syntax check
+      run: sudo apt install -y clang-format
+
+    - name: Check syntax
+      run: clang-format -style=file -output-replacements-xml $(find src include -name '*.c' -o -name '*.h') | grep '<replacement ' || true
+
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

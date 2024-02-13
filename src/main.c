@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
 
   calcu.t = calcu.t0;
 
-  if (calcu.timedep == QS) {
+  if (calcu.timedep== QS) {
 
     pNod = calcu.time.head;
 
