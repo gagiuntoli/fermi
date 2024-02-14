@@ -1,8 +1,8 @@
 
 
+#include "fermi.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "fermi.h"
 
 int main() {
   printf("Running test success\n");
