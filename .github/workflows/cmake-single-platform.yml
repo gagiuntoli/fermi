@@ -39,3 +39,6 @@ jobs:
 
     - name: Build with make
       run: cmake --build build --config Release
+
+    - name: Run tests
+      run: ctest .

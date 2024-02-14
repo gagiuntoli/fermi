@@ -1,3 +1,7 @@
+# Warning
+
+**This code is the worst code you may have seen, I did it in 2016-2017. I am currently refactoring it.**
+
 # Fermi
 
 Fermi is a parallel Finite Element (FE) code to model the neutron diffusion in
@@ -9,41 +13,31 @@ Some additional features are expected to be implemented:
 
 - [x] Control rod simulation.
 - [ ] Xenon evolution and poisoning.
-- [ ] Coupling with other codes capabilities.
 
-# Installation
+# Run with Docker
 
-## Install Dependencies
-
-The only dependency of Fermi is the PETSc library for solving the systems of
-equations. For this, download and install [PETSc](www.mcs.anl.gov/petsc) library
-and declare the environmental variables:  
+Build the docker image:
 
 ```bash
-   export PETSC_DIR=<path>
-   export PETSC_ARCH=<path>
+docker build -t fermi .
+```
+
+Run the container and connect with the local volume. This is useful for local development:
+
+```bash
+docker run -v $PWD:/fermi -it --rm fermi /bin/bash
 ```
 
 ## Build and compile
 
-The values should be the same as those set during the compilation of the
-libraries. In the main folder:
+In the docker bash session execute:
 
 ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make
+mkdir build
+cd build
+cmake ..
+make
 ```
-If you want a `Release` version with the optimized compilations flag `-O3` do
-
-```bash
-   cmake -DCMAKE_BUILD_TYPE=Release ..
-```
-
-in the other case the compilation will not be optimized. We suggest to define
-different `build` directories if the user want different versions of the code
-for debugging or compare results in case of code improvements.
 
 # Input Definition
 
@@ -82,32 +76,12 @@ $Output
 $EndOutput
 ```
 
-## Docker
-
-Build the docker image:
-
-```bash
-docker build -t fermi .
-```
-
 ## Future Workflow
 
 - [ ] Testing
 - [ ] Parallelization and performance evaluation
 - [ ] Benchmarking
 - [ ] Documentation
-
-## Contributing
-
-Please read
-[CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for
-details on our code of conduct, and the process for submitting pull requests to
-us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available,
-see the [tags on this repository](https://github.com/your/project/tags).
 
 ## Contact
 

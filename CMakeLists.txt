@@ -34,8 +34,15 @@ set(SOURCES
 	src/power.c 
 )
 
-add_library(fermi STATIC ${SOURCES})
+add_library(fermi_lib SHARED ${SOURCES})
 
 add_executable(fermi_sim src/main.c)
 
-target_link_libraries(fermi_sim fermi)
+target_link_libraries(fermi_sim fermi_lib)
+
+# Tests
+add_executable(test_parser src/test_parser.c)
+target_link_libraries(test_parser fermi_lib)
+add_test(NAME test_1 COMMAND test_parser)
+
+enable_testing()
