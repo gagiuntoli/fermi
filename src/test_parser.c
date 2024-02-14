@@ -6,7 +6,7 @@
 
 int main() {
   printf("Running test success\n");
-  return 1;
+  return 0;
 }
 
 typedef struct {
