@@ -76,6 +76,16 @@ $Output
 $EndOutput
 ```
 
+## Push images
+
+Login, tag and push to ghcr:
+
+```bash
+echo $GITHUB_PAT | docker login ghcr.io -u USERNAME --password-stdin
+docker tag IMAGE_ID ghcr.io/USERNAME/IMAGE_NAME:TAG
+docker push ghcr.io/USERNAME/IMAGE_NAME:TAG
+```
+
 ## Future Workflow
 
 - [ ] Testing
