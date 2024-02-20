@@ -330,10 +330,6 @@ typedef struct _coupling_t {
 
 } coupling_t;
 
-#ifdef COMMDOM
-#include "commdom_wrapper.h"
-#endif
-
 // Coupling orders used for external communication
 
 #define COUPLE_INIT 0
