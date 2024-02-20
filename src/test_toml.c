@@ -11,21 +11,21 @@ bool test_toml_equal_tables_names_are_equal() {
   char *name_2 = "databases";
 
   TomlTableNames *table_names_1 = malloc(sizeof(TomlTableNames));
-  table_names_1->quantity = 3;
+  table_names_1->quantity = quantity;
   table_names_1->names = malloc(quantity * sizeof(char *));
   table_names_1->names[0] = strdup(name_0);
   table_names_1->names[1] = strdup(name_1);
   table_names_1->names[2] = strdup(name_2);
 
   TomlTableNames *table_names_2 = malloc(sizeof(TomlTableNames));
-  table_names_2->quantity = 3;
+  table_names_2->quantity = quantity;
   table_names_2->names = malloc(quantity * sizeof(char *));
   table_names_2->names[0] = strdup(name_0);
   table_names_2->names[1] = strdup(name_1);
   table_names_2->names[2] = strdup(name_2);
 
-  assert(toml_equal_table_names(table_names_1, table_names_2),
-         "table names should be equal", __FILE__, __LINE__);
+  assert(toml_equal_table_names(table_names_1, table_names_2), __func__,
+         __FILE__, __LINE__);
 
   return true;
 }
@@ -37,7 +37,7 @@ bool test_toml_equal_tables_names_are_different() {
   char *name_2 = "databases";
 
   TomlTableNames *table_names_1 = malloc(sizeof(TomlTableNames));
-  table_names_1->quantity = 3;
+  table_names_1->quantity = quantity;
   table_names_1->names = malloc(quantity * sizeof(char *));
   table_names_1->names[0] = strdup(name_0);
   table_names_1->names[1] = strdup(name_1);
@@ -46,15 +46,40 @@ bool test_toml_equal_tables_names_are_different() {
   char *name_2_diff = "database";
 
   TomlTableNames *table_names_2 = malloc(sizeof(TomlTableNames));
-  table_names_2->quantity = 3;
+  table_names_2->quantity = quantity;
   table_names_2->names = malloc(quantity * sizeof(char *));
   table_names_2->names[0] = strdup(name_0);
   table_names_2->names[1] = strdup(name_1);
   table_names_2->names[2] = strdup(name_2_diff);
 
-  // assert(!toml_equal_table_names(table_names_1, table_names_2));
-  assert(!toml_equal_table_names(table_names_1, table_names_2),
-         "table names should be different", __FILE__, __LINE__);
+  assert(!toml_equal_table_names(table_names_1, table_names_2), __func__,
+         __FILE__, __LINE__);
+
+  return true;
+}
+
+bool test_toml_equal_tables_names_are_different_in_number_of_fields() {
+  int quantity1 = 3;
+  char *name_0 = "servers";
+  char *name_1 = "ports";
+  char *name_2 = "databases";
+
+  TomlTableNames *table_names_1 = malloc(sizeof(TomlTableNames));
+  table_names_1->quantity = quantity1;
+  table_names_1->names = malloc(quantity1 * sizeof(char *));
+  table_names_1->names[0] = strdup(name_0);
+  table_names_1->names[1] = strdup(name_1);
+  table_names_1->names[2] = strdup(name_2);
+
+  int quantity2 = 2;
+  TomlTableNames *table_names_2 = malloc(sizeof(TomlTableNames));
+  table_names_2->quantity = quantity2;
+  table_names_2->names = malloc(quantity2 * sizeof(char *));
+  table_names_2->names[0] = strdup(name_0);
+  table_names_2->names[1] = strdup(name_1);
+
+  assert(!toml_equal_table_names(table_names_1, table_names_2), __func__,
+         __FILE__, __LINE__);
 
   return true;
 }
@@ -78,5 +103,6 @@ bool test_toml_equal_tables_names_are_different() {
 int main() {
   test_toml_equal_tables_names_are_equal();
   test_toml_equal_tables_names_are_different();
+  test_toml_equal_tables_names_are_different_in_number_of_fields();
   // assert(test_toml_get_table_names());
 }
