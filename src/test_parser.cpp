@@ -14,7 +14,7 @@ typedef struct {
 
 Config *parse_input_1(FILE *fd) {
 
-  Config *config = malloc(sizeof(Config));
+  Config *config = (Config*) malloc(sizeof(Config));
   if (fd == NULL)
     return NULL;
 

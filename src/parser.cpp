@@ -442,7 +442,7 @@ int parse_crod(void) {
                           ctrlrod.nfun, ln);
               return 1;
             }
-            ctrlrod.funins = nod->data;
+            ctrlrod.funins = (f1d_t*)nod->data;
           } else if (!strcmp(data, "norm")) {
             for (i = 0; i < 3; i++) {
               data = strtok(NULL, " \n");
@@ -758,9 +758,9 @@ int parse_outp(void) {
 
           if (get_int(buf, "nphy", &output.kind_2.nphy))
             return 1;
-          output.kind_2.phys = malloc(output.kind_2.nphy * sizeof(char *));
-          output.kind_2.ids = malloc(output.kind_2.nphy * sizeof(int *));
-          output.kind_2.pow = malloc(output.kind_2.nphy * sizeof(double *));
+          output.kind_2.phys = (char**) malloc(output.kind_2.nphy * sizeof(char *));
+          output.kind_2.ids = (int*) malloc(output.kind_2.nphy * sizeof(int *));
+          output.kind_2.pow = (double*) malloc(output.kind_2.nphy * sizeof(double *));
           for (i = 0; i < output.kind_2.nphy; i++) {
             output.kind_2.phys[i] = (char *)malloc(16 * sizeof(char));
           }
@@ -881,10 +881,10 @@ int parse_communication(void) {
         if (get_int(buf, "nphy", &comm.comm_1.nphy))
           return 1;
 
-        comm.comm_1.phys = malloc(comm.comm_1.nphy * sizeof(char **));
-        comm.comm_1.ids = malloc(comm.comm_1.nphy * sizeof(int *));
-        comm.comm_1.pow = malloc(comm.comm_1.nphy * sizeof(double *));
-        comm.comm_1.xs = malloc(comm.comm_1.nphy * nxs_mat * sizeof(double *));
+        comm.comm_1.phys = (char**) malloc(comm.comm_1.nphy * sizeof(char **));
+        comm.comm_1.ids = (int*) malloc(comm.comm_1.nphy * sizeof(int *));
+        comm.comm_1.pow = (double*) malloc(comm.comm_1.nphy * sizeof(double *));
+        comm.comm_1.xs = (double*) malloc(comm.comm_1.nphy * nxs_mat * sizeof(double *));
 
         if (!fgets(buf, NBUF, file))
           return 1;
@@ -1022,8 +1022,8 @@ int parse_coupling(const char file_c[]) {
         case 2:
 
           // read friend names
-          coupling.friends = malloc(coupling.num_friends * sizeof(char *));
-          coupling.IDs = malloc(coupling.num_friends * sizeof(int *));
+          coupling.friends = (char**) malloc(coupling.num_friends * sizeof(char *));
+          coupling.IDs = (int*) malloc(coupling.num_friends * sizeof(int *));
           for (i = 0; i < coupling.num_friends; i++) {
 
             if (data == NULL) {

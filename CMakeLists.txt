@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(Fermi VERSION 0.1 LANGUAGES C)
+project(Fermi VERSION 0.1 LANGUAGES CXX)
 
 find_package(MPI REQUIRED)
 
@@ -11,43 +11,44 @@ message("MPI " ${MPI_INCLUDE_PATH})
 
 include_directories(include ${MPI_INCLUDE_PATH} $ENV{PETSC_DIR}/include)
 
-link_libraries("-lm" $ENV{PETSC_DIR}/lib/libpetsc_real.so ${MPI_C_LIBRARIES})
+link_libraries("-lm" $ENV{PETSC_DIR}/lib/libpetsc_real.so ${MPI_CXX_LIBRARIES})
 
 set(SOURCES
-	src/gmsh.c 
-	src/list.c 
-	src/solve.c 
-	src/utils.c 
-	src/rods.c 
-	src/boundary.c 
-	src/finish.c 
-	src/assembly.c 
-	src/elemental.c 
-	src/fem.c 
-	src/finish.c 
-	src/init.c 
-	src/fun.c 
-	src/lst2msh.c 
-	src/mesh.c 
-	src/output.c 
-	src/parser.c 
-	src/power.c 
+	src/gmsh.cpp 
+	src/list.cpp 
+	src/solve.cpp 
+	src/utils.cpp 
+	src/rods.cpp 
+	src/boundary.cpp 
+	src/finish.cpp 
+	src/assembly.cpp 
+	src/elemental.cpp 
+	src/fem.cpp 
+	src/finish.cpp 
+	src/init.cpp 
+	src/fun.cpp 
+	src/lst2msh.cpp 
+	src/mesh.cpp 
+	src/output.cpp 
+	src/parser.cpp 
+	src/power.cpp 
 )
+
 
 add_library(fermi_lib SHARED ${SOURCES})
 
-add_executable(fermi_sim src/main.c)
+add_executable(fermi_sim src/main.cpp)
 
 target_link_libraries(fermi_sim fermi_lib)
 
 # Tests
-add_executable(test_parser src/test_parser.c)
+add_executable(test_parser src/test_parser.cpp)
 target_link_libraries(test_parser fermi_lib)
 add_test(NAME test_1 COMMAND test_parser)
 
-add_library(toml_lib SHARED src/toml.c)
+add_library(toml_lib SHARED src/toml.cpp src/assert.cpp)
 
-add_executable(test_toml src/test_toml.c src/assert.c)
+add_executable(test_toml src/test_toml.cpp )
 target_link_libraries(test_toml toml_lib)
 add_test(NAME test_toml COMMAND test_toml)
 

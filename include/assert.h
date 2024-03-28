@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-int assert(bool target, char *message, char *file_name, int line_number);
+int assert(bool target, const char *function_name, const char *file_name, int line_number);
 
 #endif
