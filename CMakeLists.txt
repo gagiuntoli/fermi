@@ -46,10 +46,4 @@ add_executable(test_parser src/test_parser.cpp)
 target_link_libraries(test_parser fermi_lib)
 add_test(NAME test_1 COMMAND test_parser)
 
-add_library(toml_lib SHARED src/toml.cpp src/assert.cpp)
-
-add_executable(test_toml src/test_toml.cpp )
-target_link_libraries(test_toml toml_lib)
-add_test(NAME test_toml COMMAND test_toml)
-
 enable_testing()
