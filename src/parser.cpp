@@ -48,8 +48,6 @@ int parse_input(void) {
     return 6;
   if (parse_outp())
     return 7;
-  if (parse_communication())
-    return 8;
   return 0;
 }
 
@@ -680,8 +678,6 @@ int parse_material(char *buff, pvl_t *mat) {
   return 0;
 }
 
-/***************************************************/
-
 int parse_outp(void) {
 
   /*
@@ -795,128 +791,6 @@ int parse_outp(void) {
   return 0;
 }
 
-/***************************************************/
-
-int parse_communication(void) {
-
-  /*
-     Parse for $Communication word on input file
-
-     The user is able to specify what "kind"
-     of communication wants to perform
-
-     kind 1: means (recv) cross sections (send) powers
-
-     Notes:
-
-     -> $Communication could be repeated various times on input
-     file with different arguments (and maybe the same, probably
-     is an error)
-
-   */
-
-  FILE *file = fopen(inputfile, "r");
-  char *data, buf[NBUF], buf_a[NBUF];
-  int fl = 0, ln = 0, i;
-  comm_t comm;
-
-  while (fgets(buf, NBUF, file)) {
-
-    ln++;
-    strcpy(buf_a, buf);
-    data = strtok(buf_a, " \n");
-
-    if (data) { // if the line is not empty
-
-      if (!strcmp(data, "$Communication")) {
-        fl = 1;
-      } else if (!strcmp(data, "$EndCommunication")) {
-        list_insertlast(&list_comms, (void *)&comm);
-        fl = 0;
-      }
-    }
-
-    if (fl == 2 && data[0] != '#') {
-
-      // we are in the line after $Communication
-      if (get_int(buf, "kind", &comm.kind))
-        return 1;
-
-      switch (comm.kind) {
-
-      case 1:
-
-        /*
-           kind     1
-           friend   <friend_name>
-           nphy     <num_of_phys>
-           <phys_1> <phys_2>      ... <phys_n>
-
-           -> friend is the program to communicate information
-           -> xs    on different physical are going to be recv
-           -> power on different physical are going to be send
-
-         */
-
-        // Search for its friend's name
-        // there is only one for this case
-        if (!fgets(buf, NBUF, file))
-          return 1;
-        ln++;
-        if (get_char(buf, "friend", comm.comm_1.friend_name))
-          return 1;
-
-        // we search for the intercommunicator
-        // acording to the friend name
-        for (i = 0; i < coupling.num_friends; i++) {
-          if (strcmp(coupling.friends[i], comm.comm_1.friend_name) == 0) {
-            comm.comm_1.intercomm = &coupling.INTER_Comm[i];
-            comm.comm_1.remote_rank = coupling.remote_ranks[i];
-          }
-        }
-
-        if (!fgets(buf, NBUF, file))
-          return 1;
-        ln++;
-        if (get_int(buf, "nphy", &comm.comm_1.nphy))
-          return 1;
-
-        comm.comm_1.phys = (char**) malloc(comm.comm_1.nphy * sizeof(char **));
-        comm.comm_1.ids = (int*) malloc(comm.comm_1.nphy * sizeof(int *));
-        comm.comm_1.pow = (double*) malloc(comm.comm_1.nphy * sizeof(double *));
-        comm.comm_1.xs = (double*) malloc(comm.comm_1.nphy * nxs_mat * sizeof(double *));
-
-        if (!fgets(buf, NBUF, file))
-          return 1;
-        ln++;
-
-        // now we read the physical entities names
-        data = strtok(buf, " \n");
-        i = 0;
-        while (i < comm.comm_1.nphy && data != NULL) {
-          comm.comm_1.phys[i] = strdup(data);
-          data = strtok(NULL, " \n");
-          i++;
-        }
-        if (i != comm.comm_1.nphy) {
-          return 1;
-        }
-
-        break;
-
-      default:
-        break;
-      }
-    }
-    if (fl == 1)
-      fl = 2;
-  }
-  fclose(file);
-  return 0;
-}
-
-/***************************************************/
-
 int get_int(char *buf, const char *name, int *a) {
 
   /*
@@ -949,8 +823,6 @@ int get_int(char *buf, const char *name, int *a) {
 
   return 0;
 }
-
-/***************************************************/
 
 int get_char(char *buf, const char *name, char *a) {
 
@@ -985,74 +857,6 @@ int get_char(char *buf, const char *name, char *a) {
   return 0;
 }
 
-/***************************************************/
-
-int parse_coupling(const char file_c[]) {
-
-  FILE *file = fopen(file_c, "r");
-  char *data, buf[NBUF];
-  int ln = 0, fl = 0, i;
-
-  while (fgets(buf, NBUF, file)) {
-
-    ln++;
-    data = strtok(buf, " \n");
-
-    if (data) {
-      if (data[0] != '#') {
-
-        switch (fl) {
-
-        case 0:
-
-          // read world name
-          strcpy(coupling.world, data);
-          fl++;
-          break;
-
-        case 1:
-
-          // read number of friend number
-          coupling.num_friends = atoi(data);
-          data = strtok(NULL, " \n");
-          coupling.myID = atoi(data);
-          fl++;
-          break;
-
-        case 2:
-
-          // read friend names
-          coupling.friends = (char**) malloc(coupling.num_friends * sizeof(char *));
-          coupling.IDs = (int*) malloc(coupling.num_friends * sizeof(int *));
-          for (i = 0; i < coupling.num_friends; i++) {
-
-            if (data == NULL) {
-              PetscPrintf(FERMI_Comm, "you should give at least %d",
-                          "friend names at line %d in %s.\n",
-                          coupling.num_friends, ln, file_c);
-              return 1;
-            }
-            coupling.friends[i] = strdup(data);
-            data = strtok(NULL, " \n");
-            coupling.IDs[i] = atoi(data);
-            data = strtok(NULL, " \n");
-          }
-          fl++;
-          break;
-
-        default:
-          return 1;
-        }
-      }
-    }
-  }
-
-  fclose(file);
-  return 0;
-}
-
-/***************************************************/
-
 int parse_boundary(char *buff, bound_t *bou) {
 
   char *data;
@@ -1083,8 +887,6 @@ int parse_boundary(char *buff, bound_t *bou) {
   return 0;
 }
 
-/***************************************************/
-
 int cmp_bou(void *a, void *b) {
 
   if (((bound_t *)a)->order > ((bound_t *)b)->order) {
@@ -1096,14 +898,9 @@ int cmp_bou(void *a, void *b) {
   }
 }
 
-/***************************************************/
-
 int cmp_mat(void *a, void *b) {
-
   return (strcmp(((pvl_t *)a)->name, ((pvl_t *)b)->name) == 0) ? 0 : -1;
 }
-
-/***************************************************/
 
 int cmp_time(void *a, void *b) {
 

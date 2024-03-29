@@ -315,28 +315,6 @@ typedef struct {
 
 /*************************************************************/
 
-typedef struct _coupling_t {
-
-  char world[64];
-  char **friends;
-  int myID;
-  int *IDs;
-  int num_friends;
-
-  MPI_Comm *INTER_Comm; // array of inter-communicators to communicate
-  // with other codes
-  int *remote_ranks; // remotes ranks in INTER_Comm to communicate
-                     // with the others
-
-} coupling_t;
-
-// Coupling orders used for external communication
-
-#define COUPLE_INIT 0
-#define COUPLE_RECV 1
-#define COUPLE_SEND 2
-#define COUPLE_ENDS 3
-
 // parser.c
 int parse_input(void);
 int parse_mesh(void);
@@ -354,7 +332,6 @@ int cmp_bou(void *a, void *b);
 int cmp_time(void *a, void *b);
 int get_int(char *buf, const char *name, int *a);
 int get_char(char *buf, const char *name, char *a);
-int parse_coupling(const char file_c[]);
 
 int ferass_TR(int step);
 int ferass_ST(void);
@@ -396,13 +373,6 @@ int printVec(char *name, Vec *vec, int m);
 int vtkcode(int dim, int npe);
 int print_out(Vec *phi, int step);
 
-// fer_couple.c
-int fer_couple(int order, MPI_Comm *couple_comm, char *server_n);
-int fer_coinit(MPI_Comm *couple_comm, char *server_n);
-int fer_corecv(MPI_Comm *couple_comm);
-int fer_cosend(MPI_Comm *couple_comm, int *control_fg);
-int fer_coends(MPI_Comm *couple_comm);
-
 int fer_comm_init(void);
 int fer_comm_step(int order);
 
@@ -416,9 +386,6 @@ extern int local_size; // size in FERMI_Comm
 
 enum { QS, TR }; // Quasi Static, transient
 enum { K1 };     // Calculation of elemental matrix by this K modes
-
-extern bool couple_fl;
-extern coupling_t coupling;
 
 extern PetscViewer kspview;
 extern PetscViewer viewer;

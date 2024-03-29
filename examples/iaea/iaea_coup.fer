@@ -59,10 +59,3 @@ $Output
   nphy 4
   "ROD1" "MAT1" "MAT2" "MAT3"
 $EndOutput
-
-$Communication
-  kind   1
-  friend control
-  nphy   4
-  "ROD1" "MAT1" "MAT2" "MAT3"
-$EndCommunication

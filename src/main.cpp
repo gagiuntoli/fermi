@@ -29,9 +29,6 @@ int globa_size; // size in WORLD_Comm
 int local_rank; // rank in FERMI_Comm
 int local_size; // size in FERMI_Comm
 
-bool couple_fl;
-coupling_t coupling;
-
 PetscViewer kspview;
 PetscViewer viewer;
 
@@ -168,11 +165,9 @@ int main(int argc, char **argv) {
     // Transient simulation
     //
     // 1) Calculate steady state solving Ax = (1/k) Bx
-    // 2) Recv information for coupling (if it required)
-    // 3) Calculates a "dt" increase in the flux solving
+    // 2) Calculates a "dt" increase in the flux solving
     //    Ax = b
-    // 4) Send information for coupling (if it required)
-    // 5) Repeat from "2)" up to achieving final time "tf"
+    // 3) Repeat from "2)" up to achieving final time "tf"
     //
     PetscPrintf(FERMI_Comm, "calculating stationary state.\n");
 
