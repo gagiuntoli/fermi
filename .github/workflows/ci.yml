@@ -16,7 +16,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/gagiuntoli/fermi-dev:0.0
+      image: ghcr.io/gagiuntoli/fermi-dev:latest
 
     steps:
     - uses: actions/checkout@v3

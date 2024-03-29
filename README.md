@@ -76,7 +76,7 @@ $Output
 $EndOutput
 ```
 
-## Push images
+## Push images to the GitHub Container Registry
 
 Login, tag and push to ghcr:
 
