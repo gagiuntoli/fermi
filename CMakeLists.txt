@@ -13,6 +13,8 @@ include_directories(include ${MPI_INCLUDE_PATH} $ENV{PETSC_DIR}/include submodul
 
 link_libraries("-lm" $ENV{PETSC_DIR}/lib/libpetsc_real.so ${MPI_CXX_LIBRARIES})
 
+add_compile_options(-Wfatal-errors)
+
 set(SOURCES
 	src/gmsh.cpp 
 	src/list.cpp 
