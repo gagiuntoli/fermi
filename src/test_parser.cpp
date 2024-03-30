@@ -1,22 +1,46 @@
+#include <string_view>
+#include <map>
+#include <vector>
+#include <toml.hpp>
 
+using namespace std;
 
-#include "fermi.h"
-#include <stdio.h>
-#include <stdlib.h>
+struct Material {
+  double F;
+  double D; // diffusion coefficient
+  vector<double> xs_a; // absorbsion XS
+  vector<double> xs_f; // fission XS
+  vector<double> chi;
+};
 
-int main() {
-  printf("Running test success\n");
+struct Config {
+  map<string, Material> materials;
+};
+
+Config parse(string_view toml) {
+  Config config;
+
+  return config;
+}
+
+int parse_input_1() {
+  static constexpr std::string_view some_toml = R"(
+    [geometry]
+    mesh = "cube.msh"
+    boundaries = { S1 = "dirichlet" }
+
+    [cross-sections]
+    MAT1 = { F = 0, D = 1.5, xs_absorption = 0.2, xs_fission = 0.3, chi = 1.0 }
+
+    [params]
+    calculation = "k_eff"
+    energy-groups = 1
+  )";
+
   return 0;
 }
 
-typedef struct {
-} Config;
-
-Config *parse_input_1(FILE *fd) {
-
-  Config *config = (Config*) malloc(sizeof(Config));
-  if (fd == NULL)
-    return NULL;
-
-  return config;
+int main() {
+  parse_input_1();
+  return 0;
 }
