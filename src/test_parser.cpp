@@ -1,6 +1,11 @@
+
+#include <string>
 #include <string_view>
 #include <map>
 #include <vector>
+#include <assert.h>
+#include <iostream>
+#include <optional>
 #include <toml.hpp>
 
 using namespace std;
@@ -13,12 +18,25 @@ struct Material {
   vector<double> chi;
 };
 
-struct Config {
-  map<string, Material> materials;
+enum BoundaryCondition {
+  Dirichlet,
+  Neumann,
 };
 
-Config parse(string_view toml) {
+struct Config {
+  string mesh_file;
+  map<string, BoundaryCondition> boundaries;
+  map<string, Material> materials;
+
+  static Config parse(string_view toml);
+};
+
+Config Config::parse(string_view toml_string) {
   Config config;
+
+  toml::table tbl = toml::parse(toml_string);
+
+  config.mesh_file = tbl["geometry"]["mesh"].value_or<std::string>("");
 
   return config;
 }
@@ -36,6 +54,10 @@ int parse_input_1() {
     calculation = "k_eff"
     energy-groups = 1
   )";
+
+  Config config = Config::parse(some_toml);
+
+  assert(config.mesh_file == "cube.msh");
 
   return 0;
 }

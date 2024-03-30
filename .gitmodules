@@ -1,3 +1,4 @@
 [submodule "submodules/tomlplusplus"]
 	path = submodules/tomlplusplus
 	url = https://github.com/marzer/tomlplusplus
+	ignore = dirty
