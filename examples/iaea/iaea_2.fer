@@ -30,21 +30,3 @@ $Boundary
   "TOP" 3 1
   "BOT" 4 1
 $EndBoundary
-
-#$Ctrlrod
-#  name_ele "ROD1"
-#  name_nod "PTO1"
-#  norm 0.0 0.0 -1.0
-#  func 1
-#  xsa  0.1
-#$EndCtrlrod
-#
-#$Function
-#  funcknd 1D
-#  funcnum 1
-#  funcint INTER1
-#  start
-#    0.0  0.0
-#    1.0  100.0
-#  end
-#$EndFunction

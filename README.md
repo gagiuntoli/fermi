@@ -28,7 +28,7 @@ Run the container and connect with the local volume. This is useful for local de
 docker run -v $PWD:/fermi -it --rm fermi /bin/bash
 ```
 
-## Build and compile
+# Build and compile
 
 In the docker bash session execute:
 
@@ -37,6 +37,12 @@ mkdir build
 cd build
 cmake ..
 make
+```
+
+Run tests with:
+
+```bash
+ctest
 ```
 
 # Input Definition
