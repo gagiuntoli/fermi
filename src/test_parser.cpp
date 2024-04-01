@@ -37,6 +37,10 @@ struct Material {
   }
 };
 
+enum Calculation {
+  Keff
+};
+
 enum BoundaryCondition {
   Dirichlet,
   Neumann,
@@ -46,6 +50,8 @@ struct Config {
   string mesh_file;
   map<string, BoundaryCondition> boundaries;
   map<string, Material> materials;
+  Calculation calculation;
+  uint groups;
 
   static optional<Config> parse(string_view toml);
 };
@@ -129,6 +135,32 @@ optional<Config> Config::parse(string_view toml_string) {
     }
   }
 
+  auto simulation_parameters = tbl["simulation-parameters"];
+  if (!simulation_parameters.is_table()) {
+    cerr << "Input error: No simulation-parameters table" << endl;
+    return {};
+  }
+
+  auto calculation = simulation_parameters["calculation"];
+  if (!calculation.is_value()) {
+    cerr << "Input error: No calculation type specified: calculation = \"k_eff\"" << endl;
+    return {};
+  }
+
+  if (calculation.value<string>().value() == "k_eff") {
+    config.calculation = Keff;
+  } else {
+    cerr << "Input error: calculation type not recognized, values available: \"k_eff\"" << endl;
+    return {};
+  }
+
+  auto groups = simulation_parameters["groups"];
+  if (!groups.is_value()) {
+    cerr << "Input error: No energy groups specified: groups = 1|2|..." << endl;
+    return {};
+  }
+  config.groups = groups.value<uint>().value();
+
   return config;
 }
 
@@ -140,6 +172,10 @@ int parse_input_mesh_file() {
 
     [materials]
     MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
+
+    [simulation-parameters]
+    calculation = "k_eff"
+    groups = 1
   )";
 
   optional<Config> result = Config::parse(some_toml);
@@ -167,6 +203,10 @@ int parse_input_boundaries() {
 
     [materials]
     MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
+
+    [simulation-parameters]
+    calculation = "k_eff"
+    groups = 1
   )";
 
   optional<Config> result = Config::parse(some_toml);
@@ -188,6 +228,11 @@ int parse_cross_sections() {
 
     [materials]
     MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
+    MAT2 = { D = [3.1], xs_a = [0.3], xs_f = [1.3], xs_s = [1.2], chi = [1.3] }
+
+    [simulation-parameters]
+    calculation = "k_eff"
+    groups = 1
   )";
 
   optional<Config> result = Config::parse(some_toml);
@@ -195,35 +240,44 @@ int parse_cross_sections() {
 
   Config config = result.value();
 
-  auto mat1 = Material {};
-  mat1.D = {1.5};
-  mat1.xs_a = {0.2};
-  mat1.xs_f = {0.3};
-  mat1.xs_s = {1.0};
-  mat1.chi = {1.0};
+  auto mat1 = Material {.D = {1.5}, .xs_a = {0.2}, .xs_f = {0.3}, .xs_s = {1.0}, .chi = {1.0}};
+  auto mat2 = Material {.D = {3.1}, .xs_a = {0.3}, .xs_f = {1.3}, .xs_s = {1.2}, .chi = {1.3}};
 
-  map<string, Material> expected = {{"MAT1", mat1}};
+  map<string, Material> expected = {{"MAT1", mat1}, {"MAT2", mat2}};
   assert(mapsAreEqual(config.materials, expected));
 
   return 0;
 }
 
-  // static constexpr std::string_view some_toml = R"(
-  //   [geometry]
-  //   mesh = "cube.msh"
-  //   boundaries = { S1 = "dirichlet" }
-  //
-  //   [cross-sections]
-  //   MAT1 = { F = 0, D = 1.5, xs_absorption = 0.2, xs_fission = 0.3, chi = 1.0 }
-  //
-  //   [params]
-  //   calculation = "k_eff"
-  //   energy-groups = 1
-  // )";
+int parse_simulation_parameters() {
+  static constexpr std::string_view some_toml = R"(
+    [geometry]
+    mesh = "cube.msh"
+    boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
+
+    [materials]
+    MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
+    MAT2 = { D = [3.1], xs_a = [0.3], xs_f = [1.3], xs_s = [1.2], chi = [1.3] }
+
+    [simulation-parameters]
+    calculation = "k_eff"
+    groups = 1
+  )";
+
+  optional<Config> result = Config::parse(some_toml);
+  if (!result) assert(false);
+
+  Config config = result.value();
+  assert(config.calculation == Keff);
+  assert(config.groups == 1);
+
+  return 0;
+}
 
 int main() {
   parse_input_mesh_file();
   parse_input_boundaries();
   parse_cross_sections();
+  parse_simulation_parameters();
   return 0;
 }
