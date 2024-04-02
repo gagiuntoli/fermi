@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fermi.h"
+#include "fermi.hpp"
 
 #define NBUF 128
 

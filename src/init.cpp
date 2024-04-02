@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fermi.h"
+#include <fermi.hpp>
 
 int ferinit(int argc, char **argv) {
 

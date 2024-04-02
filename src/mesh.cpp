@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fermi.h"
+#include "fermi.hpp"
 
 int mesh_alloc(list_t *list_nodes, list_t *list_ghost, cpynode_t cpynode,
                list_t *list_elemv, cpyelem_t cpyelemv, list_t *list_elems,

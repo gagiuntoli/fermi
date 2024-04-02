@@ -45,6 +45,12 @@ Run tests with:
 ctest
 ```
 
+# Generate `compile_commands.json`
+
+```bash
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+```
+
 # Input Definition
 
 ```bash

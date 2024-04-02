@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fermi.h"
+#include "fermi.hpp"
 
 MPI_Comm WORLD_Comm; // global communicator
 MPI_Comm FERMI_Comm; // local  communicator

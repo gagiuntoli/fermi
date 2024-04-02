@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fermi.h"
+#include "fermi.hpp"
 
 int ferirods(void) {
   /* determines the elems & elemv list for each control rod in the list

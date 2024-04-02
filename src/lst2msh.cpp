@@ -19,7 +19,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fermi.h"
+#include "fermi.hpp"
 
 int cpynode(node_list_t *node_nl, node_t *node) {
 
