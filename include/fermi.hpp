@@ -56,21 +56,6 @@ enum BoundaryCondition {
 
 enum { INTER1, INTER2 };
 
-typedef struct f1d_t_ {
-
-  int n;
-  int inter;
-  int fnum;
-
-  double *x;
-  double *y;
-
-} f1d_t;
-
-int f1d_init(double *x, double *y, int n, int inter, f1d_t *f1d);
-int f1d_eval(double x, f1d_t *f1d, double *y);
-int cmp_f1d(void *a, void *b);
-
 typedef int (*fcmp)(void *, void *);
 
 typedef struct _node_list_t {
@@ -313,7 +298,6 @@ typedef struct _ctrlrod_t {
   char name_ele[16]; /* elem physical entity name */
   char name_nod[16]; /* node physical entity name */
   int nfun;          /* function id number */
-  f1d_t *funins;     /* insertion value function of time */
   double n[3];       /* direction of control rod insertion */
   double p[3];       /* reference point from where insertion starts */
   double xsaval;     /* xsa value to perturb  */

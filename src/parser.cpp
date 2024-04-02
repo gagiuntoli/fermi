@@ -40,8 +40,6 @@ int parse_input(void) {
     return 2;
   if (parse_mode())
     return 3;
-  if (parse_func())
-    return 4;
   if (parse_boun())
     return 5;
   if (parse_crod())
@@ -422,25 +420,6 @@ int parse_crod(void) {
               return 1;
             }
             strcpy(ctrlrod.name_nod, data);
-          } else if (!strcmp(data, "func")) {
-            data = strtok(NULL, " \n");
-            if (!data) {
-              PetscPrintf(FERMI_Comm, "parser.c:BF line %d.\n", ln);
-              return 1;
-            }
-            ctrlrod.nfun = atoi(data);
-            nod = list_fun1d.head;
-            while (nod) {
-              if (ctrlrod.nfun == ((f1d_t *)nod->data)->fnum)
-                break;
-              nod = nod->next;
-            }
-            if (!nod) {
-              PetscPrintf(FERMI_Comm, "parser.c:func %d NF line %d.\n",
-                          ctrlrod.nfun, ln);
-              return 1;
-            }
-            ctrlrod.funins = (f1d_t*)nod->data;
           } else if (!strcmp(data, "norm")) {
             for (i = 0; i < 3; i++) {
               data = strtok(NULL, " \n");
@@ -458,105 +437,6 @@ int parse_crod(void) {
             }
             ctrlrod.xsaval = atof(data);
           }
-        }
-      }
-      if (fl == 1)
-        fl = 2;
-    }
-  }
-  fclose(file);
-  return 0;
-}
-
-int parse_func(void) {
-  FILE *file = fopen(inputfile, "r");
-  char *data, buf[NBUF];
-  int fl = 0, com = 0, ln = 0, i, fs;
-  double *xy;
-  f1d_t *f1d;
-  list_t list_xy;
-
-  list_init(&list_xy, 2 * sizeof(double), cmp_dou);
-  while (fgets(buf, NBUF, file)) {
-    ln++;
-    data = strtok(buf, " \n");
-    if (data) {
-      if (!strcmp(data, "$Function")) {
-        fl = 1;
-        fs = 0;
-      } else if (!strcmp(data, "$EndFunction")) {
-        if (com == 15) {
-          com = 0;
-          fl = 0;
-        } else if (fl == 0) {
-          PetscPrintf(FERMI_Comm, "parser.c:BF line %d.\n", ln);
-          return 1;
-        } else {
-          PetscPrintf(FERMI_Comm, "parser.c:incomplete $Function section.\n");
-          return 1;
-        }
-      }
-      if (fl == 2) {
-        if (strcmp(data, "funcknd") == 0) {
-          data = strtok(NULL, " \n");
-          if (!data)
-            return 1;
-          if (!strcmp(data, "1D")) {
-            f1d = (f1d_t *)calloc(1, sizeof(f1d_t));
-            com = com | 1;
-          }
-        } else if (strcmp(data, "funcnum") == 0) {
-          if (!f1d)
-            return 1;
-          data = strtok(NULL, " \n");
-          if (!data)
-            return 1;
-          f1d->fnum = atoi(data);
-          com = com | 2;
-        } else if (strcmp(data, "funcint") == 0) {
-          if (!f1d)
-            return 1;
-          data = strtok(NULL, " \n");
-          if (!data)
-            return 1;
-          if (!strcmp(data, "INTER1")) {
-            f1d->inter = atoi(data);
-          }
-          com = com | 4;
-        } else if (strcmp(data, "start") == 0) {
-          fs = 1;
-          if ((com & 1) != 1) {
-            PetscPrintf(FERMI_Comm,
-                        "parser.c:<funckind> should be < start>.\n");
-            return 1;
-          }
-        } else if (strcmp(data, "end") == 0) {
-          if (fs == 0) {
-            PetscPrintf(FERMI_Comm, "parser.c:BF line %d.\n", ln);
-            return 1;
-          }
-          if (!list_xy.sizelist) {
-            PetscPrintf(FERMI_Comm, "parser.c:BF line %d.\n", ln);
-            return 1;
-          }
-          f1d->n = list_xy.sizelist;
-          f1d->x = (double *)calloc(list_xy.sizelist, sizeof(double));
-          f1d->y = (double *)calloc(list_xy.sizelist, sizeof(double));
-          for (i = 0; i < f1d->n; i++) {
-            f1d->x[i] = *(((double *)(list_xy.head->data)) + 0);
-            f1d->y[i] = *(((double *)(list_xy.head->data)) + 1);
-            list_delfirst(&list_xy);
-          }
-          list_insert_se(&list_fun1d, (void *)f1d);
-          com = com | 8;
-        } else if (fs) {
-          xy = (double *)calloc(2, sizeof(double));
-          xy[0] = atof(data);
-          data = strtok(NULL, " \n");
-          if (!data)
-            return 1;
-          xy[1] = atof(data);
-          list_insert_se(&list_xy, (void *)xy);
         }
       }
       if (fl == 1)

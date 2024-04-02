@@ -28,7 +28,6 @@ set(SOURCES
 	src/fem.cpp 
 	src/finish.cpp 
 	src/init.cpp 
-	src/fun.cpp 
 	src/lst2msh.cpp 
 	src/mesh.cpp 
 	src/output.cpp 

@@ -104,7 +104,6 @@ int fersrods(double t) {
   node_list_t *pr, *pe, *px;
   pr = list_ctrlr.head;
   while (pr) {
-    f1d_eval(t, ((ctrlrod_t *)pr->data)->funins, &h);
     pe = ((ctrlrod_t *)pr->data)->elemv.head;
     px = ((ctrlrod_t *)pr->data)->xsa.head;
     while (pe) {
