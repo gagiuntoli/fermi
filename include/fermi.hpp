@@ -297,7 +297,6 @@ typedef struct _ctrlrod_t {
 
   char name_ele[16]; /* elem physical entity name */
   char name_nod[16]; /* node physical entity name */
-  int nfun;          /* function id number */
   double n[3];       /* direction of control rod insertion */
   double p[3];       /* reference point from where insertion starts */
   double xsaval;     /* xsa value to perturb  */
@@ -326,7 +325,6 @@ int parse_input(void);
 int parse_mesh(void);
 int parse_mats(void);
 int parse_mode(void);
-int parse_func(void);
 int parse_boun(void);
 int parse_crod(void);
 int parse_outp(void);
@@ -417,7 +415,6 @@ extern list_t list_elems;
 extern list_t list_physe;
 extern list_t list_mater;
 extern list_t list_bound;
-extern list_t list_fun1d; /* list of functions */
 extern list_t list_ctrlr; /* list of control rods */
 extern list_t list_outpu;
 extern list_t list_comms;

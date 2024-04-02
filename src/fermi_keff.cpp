@@ -53,7 +53,6 @@ list_t list_elems;
 list_t list_physe;
 list_t list_mater;
 list_t list_bound;
-list_t list_fun1d; /* list of functions */
 list_t list_ctrlr; /* list of control rods */
 list_t list_outpu;
 list_t list_comms;
@@ -132,44 +131,10 @@ int main(int argc, char **argv) {
 
   calcu.t = calcu.t0;
 
-  if (calcu.timedep == QS) {
+  pNod = calcu.time.head;
 
-    pNod = calcu.time.head;
-
-    while (pNod) {
-
-      dtn = ((tcontrol_t *)pNod->data)->dt;
-
-      fersrods(calcu.t);
-
-      ferass_ST();
-
-      fersolv_ST();
-
-      fer_norm();
-
-      sprintf(nam, "steady_r%d_t%d", rank, step);
-      print_vtk(nam);
-      print_out(&phi_n, step);
-
-      calcu.t = calcu.t + dtn;
-      step++;
-      if (calcu.t > ((tcontrol_t *)pNod->data)->tf - 1.0e-8)
-        pNod = pNod->next;
-    }
-  }
-
-  else if (calcu.timedep == TR) {
-
-    //==================================================
-    // Transient simulation
-    //
-    // 1) Calculate steady state solving Ax = (1/k) Bx
-    // 2) Calculates a "dt" increase in the flux solving
-    //    Ax = b
-    // 3) Repeat from "2)" up to achieving final time "tf"
-    //
-    PetscPrintf(FERMI_Comm, "calculating stationary state.\n");
+  while (pNod) {
+    dtn = ((tcontrol_t *)pNod->data)->dt;
 
     fersrods(calcu.t);
 
@@ -179,36 +144,14 @@ int main(int argc, char **argv) {
 
     fer_norm();
 
-    sprintf(nam, "steady_r%d", rank);
+    sprintf(nam, "steady_r%d_t%d", rank, step);
     print_vtk(nam);
+    print_out(&phi_n, step);
 
-    PetscPrintf(FERMI_Comm, "initial power:%e\n", power);
-    PetscPrintf(FERMI_Comm, "time    power   its\n");
-
-    pNod = calcu.time.head;
-    while (pNod) {
-
-      dtn = ((tcontrol_t *)pNod->data)->dt;
-
-      fersrods(calcu.t);
-
-      ferass_TR(step);
-
-      fersolv_TR();
-
-      fer_pow(&power);
-
-      PetscPrintf(FERMI_Comm, "%lf %e %d \n", calcu.t, power, its);
-
-      sprintf(nam, "tran_rank%d_t%d", rank, step);
-      print_vtk(nam);
-      print_out(&phi_n, step);
-
-      calcu.t = calcu.t + dtn;
-      step++;
-      if (calcu.t > ((tcontrol_t *)pNod->data)->tf - 1.0e-8)
-        pNod = pNod->next;
-    }
+    calcu.t = calcu.t + dtn;
+    step++;
+    if (calcu.t > ((tcontrol_t *)pNod->data)->tf - 1.0e-8)
+      pNod = pNod->next;
   }
 
 error:

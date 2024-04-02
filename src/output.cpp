@@ -162,7 +162,6 @@ int print_struct(int step) {
     fprintf(fout, "node : %d\n", i);
     fprintf(fout, "name_ele : %s\n", ((ctrlrod_t *)onode->data)->name_ele);
     fprintf(fout, "name_nod : %s\n", ((ctrlrod_t *)onode->data)->name_nod);
-    fprintf(fout, "nfun : %d\n", ((ctrlrod_t *)onode->data)->nfun);
     fprintf(fout, "n : ");
     for (d = 0; d < 3; d++)
       fprintf(fout, "%lf ", ((ctrlrod_t *)onode->data)->n[d]);

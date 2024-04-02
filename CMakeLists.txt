@@ -38,9 +38,9 @@ set(SOURCES
 
 add_library(fermi_lib SHARED ${SOURCES})
 
-add_executable(fermi_sim src/main.cpp)
+add_executable(fermi_keff src/fermi_keff.cpp)
 
-target_link_libraries(fermi_sim PUBLIC fermi_lib)
+target_link_libraries(fermi_keff PUBLIC fermi_lib)
 
 # Tests
 add_executable(test_parser src/test_parser.cpp)
