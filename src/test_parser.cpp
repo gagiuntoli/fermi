@@ -1,10 +1,10 @@
-#include <string_view>
 #include <assert.h>
-#include <iostream>
-#include <toml.hpp>
 #include <fermi.hpp>
-#include <utils.hpp>
+#include <iostream>
 #include <parser.hpp>
+#include <string_view>
+#include <toml.hpp>
+#include <utils.hpp>
 
 using namespace std;
 
@@ -19,7 +19,8 @@ int test_parse_input_mesh_file() {
   )";
 
   optional<Config> result = Config::parse(some_toml);
-  if (!result) assert(false);
+  if (!result)
+    assert(false);
 
   auto config = result.value();
 
@@ -38,11 +39,13 @@ int test_parse_input_boundaries() {
   )";
 
   optional<Config> result = Config::parse(some_toml);
-  if (!result) assert(false);
+  if (!result)
+    assert(false);
 
   Config config = result.value();
 
-  map<string, BoundaryCondition> expected = {{"S1", Dirichlet}, {"WALL8", Neumann}};
+  map<string, BoundaryCondition> expected = {{"S1", Dirichlet},
+                                             {"WALL8", Neumann}};
 
   assert(mapsAreEqual(config.boundaries, expected));
   return 0;
@@ -60,12 +63,15 @@ int test_parse_cross_sections() {
   )";
 
   optional<Config> result = Config::parse(some_toml);
-  if (!result) assert(false);
+  if (!result)
+    assert(false);
 
   Config config = result.value();
 
-  auto mat1 = Material {.D = {1.5}, .xs_a = {0.2}, .xs_f = {0.3}, .xs_s = {1.0}, .chi = {1.0}};
-  auto mat2 = Material {.D = {3.1}, .xs_a = {0.3}, .xs_f = {1.3}, .xs_s = {1.2}, .chi = {1.3}};
+  auto mat1 = Material{
+      .D = {1.5}, .xs_a = {0.2}, .xs_f = {0.3}, .xs_s = {1.0}, .chi = {1.0}};
+  auto mat2 = Material{
+      .D = {3.1}, .xs_a = {0.3}, .xs_f = {1.3}, .xs_s = {1.2}, .chi = {1.3}};
 
   map<string, Material> expected = {{"MAT1", mat1}, {"MAT2", mat2}};
   assert(mapsAreEqual(config.materials, expected));

@@ -1,24 +1,26 @@
 #include <fermi.hpp>
-#include <toml.hpp>
-#include <string>
-#include <vector>
 #include <iostream>
 #include <optional>
+#include <string>
+#include <toml.hpp>
+#include <vector>
 
 using namespace std;
 
 class Config {
 private:
-  static vector<double> parse_array_from_table(toml::v3::table table, string key) {
+  static vector<double> parse_array_from_table(toml::v3::table table,
+                                               string key) {
     auto arr = table[key];
     if (!arr.is_array()) {
-      cerr << "Input error: " << key << " not found or it is not an array" << endl;
+      cerr << "Input error: " << key << " not found or it is not an array"
+           << endl;
       return {};
     }
 
     vector<double> result;
-    for (auto&& elem : *arr.as_array()) {
-      elem.visit([&result, key](auto&& el) noexcept {
+    for (auto &&elem : *arr.as_array()) {
+      elem.visit([&result, key](auto &&el) noexcept {
         if constexpr (toml::is_number<decltype(el)>)
           result.push_back(*el);
       });
@@ -50,7 +52,7 @@ optional<Config> Config::parse(string_view toml_string) {
     cerr << "Input error: mesh file path is empty" << endl;
     return {};
   }
-  
+
   config.mesh_file = mesh_file_str;
 
   auto boundaries = tbl["geometry"]["boundaries"];
@@ -58,17 +60,17 @@ optional<Config> Config::parse(string_view toml_string) {
     cerr << "Input error: No boundaries table" << endl;
     return {};
   }
-  
+
   for (auto [k, v] : *boundaries.as_table()) {
     string key = static_cast<string>(k);
     if (key.empty()) {
-        cerr << "Input error: Empty key in boundaries" << endl;
-        return {};
+      cerr << "Input error: Empty key in boundaries" << endl;
+      return {};
     }
     string condition = *boundaries[k].value<string>();
     if (condition == "dirichlet") {
       config.boundaries[key] = Dirichlet;
-    }else if (condition == "neumann") {
+    } else if (condition == "neumann") {
       config.boundaries[key] = Neumann;
     } else {
       return {};
@@ -84,50 +86,59 @@ optional<Config> Config::parse(string_view toml_string) {
   for (auto [k, v] : *materials.as_table()) {
     string key = static_cast<string>(k);
     if (key.empty()) {
-        cerr << "Input error: Empty key in boundaries" << endl;
-        return {};
+      cerr << "Input error: Empty key in boundaries" << endl;
+      return {};
     }
     auto material = *materials[k].as_table();
 
     vector<double> vec_double;
     vec_double = Config::parse_array_from_table(material, "D");
 
-    // we decide the number of energy groups based on the length of the first D we find
+    // we decide the number of energy groups based on the length of the first D
+    // we find
     if (0 < vec_double.size()) {
       config.groups = vec_double.size();
     } else {
-        cerr << "Input error: D needs at least 1 element" << endl;
-        return {};
+      cerr << "Input error: D needs at least 1 element" << endl;
+      return {};
     }
-    copy(vec_double.begin(), vec_double.end(), back_inserter(config.materials[key].D));
+    copy(vec_double.begin(), vec_double.end(),
+         back_inserter(config.materials[key].D));
 
     vec_double = Config::parse_array_from_table(material, "chi");
     if (vec_double.size() != config.groups) {
-        cerr << "Input error: chi needs " << config.groups << " elements" << endl;
-        return {};
+      cerr << "Input error: chi needs " << config.groups << " elements" << endl;
+      return {};
     }
-    copy(vec_double.begin(), vec_double.end(), back_inserter(config.materials[key].chi));
+    copy(vec_double.begin(), vec_double.end(),
+         back_inserter(config.materials[key].chi));
 
     vec_double = Config::parse_array_from_table(material, "xs_a");
     if (vec_double.size() != config.groups) {
-        cerr << "Input error: xs_a needs " << config.groups << " elements" << endl;
-        return {};
+      cerr << "Input error: xs_a needs " << config.groups << " elements"
+           << endl;
+      return {};
     }
-    copy(vec_double.begin(), vec_double.end(), back_inserter(config.materials[key].xs_a));
+    copy(vec_double.begin(), vec_double.end(),
+         back_inserter(config.materials[key].xs_a));
 
     vec_double = Config::parse_array_from_table(material, "xs_f");
     if (vec_double.size() != config.groups) {
-        cerr << "Input error: xs_f needs " << config.groups << " elements" << endl;
-        return {};
+      cerr << "Input error: xs_f needs " << config.groups << " elements"
+           << endl;
+      return {};
     }
-    copy(vec_double.begin(), vec_double.end(), back_inserter(config.materials[key].xs_f));
+    copy(vec_double.begin(), vec_double.end(),
+         back_inserter(config.materials[key].xs_f));
 
     vec_double = Config::parse_array_from_table(material, "xs_s");
     if (vec_double.size() != config.groups * config.groups) {
-        cerr << "Input error: xs_s needs " << config.groups * config.groups << " elements" << endl;
-        return {};
+      cerr << "Input error: xs_s needs " << config.groups * config.groups
+           << " elements" << endl;
+      return {};
     }
-    copy(vec_double.begin(), vec_double.end(), back_inserter(config.materials[key].xs_s));
+    copy(vec_double.begin(), vec_double.end(),
+         back_inserter(config.materials[key].xs_s));
   }
 
   return config;

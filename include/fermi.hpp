@@ -34,16 +34,16 @@ struct Material {
   std::vector<double> xs_a; // absorbsion XS
   std::vector<double> xs_f; // fission XS
   std::vector<double> xs_s; // scattering XS
-  std::vector<double> chi;  // factor determing with % of all fissions ends in the groups
+  std::vector<double>
+      chi; // factor determing with % of all fissions ends in the groups
 
-  bool operator==(const Material& other) const {
-        return D == other.D && xs_a == other.xs_a && xs_f == other.xs_f && xs_s == other.xs_s && chi == other.chi;
+  bool operator==(const Material &other) const {
+    return D == other.D && xs_a == other.xs_a && xs_f == other.xs_f &&
+           xs_s == other.xs_s && chi == other.chi;
   }
 };
 
-enum Calculation {
-  Keff
-};
+enum Calculation { Keff };
 
 enum BoundaryCondition {
   Dirichlet,

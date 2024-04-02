@@ -634,9 +634,11 @@ int parse_outp(void) {
 
           if (get_int(buf, "nphy", &output.kind_2.nphy))
             return 1;
-          output.kind_2.phys = (char**) malloc(output.kind_2.nphy * sizeof(char *));
-          output.kind_2.ids = (int*) malloc(output.kind_2.nphy * sizeof(int *));
-          output.kind_2.pow = (double*) malloc(output.kind_2.nphy * sizeof(double *));
+          output.kind_2.phys =
+              (char **)malloc(output.kind_2.nphy * sizeof(char *));
+          output.kind_2.ids = (int *)malloc(output.kind_2.nphy * sizeof(int *));
+          output.kind_2.pow =
+              (double *)malloc(output.kind_2.nphy * sizeof(double *));
           for (i = 0; i < output.kind_2.nphy; i++) {
             output.kind_2.phys[i] = (char *)malloc(16 * sizeof(char));
           }
