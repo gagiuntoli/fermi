@@ -70,7 +70,6 @@ public:
   string mesh_file;
   map<string, BoundaryCondition> boundaries;
   map<string, Material> materials;
-  Calculation calculation;
   uint groups;
 
   static optional<Config> parse(string_view toml);
@@ -116,44 +115,6 @@ optional<Config> Config::parse(string_view toml_string) {
     }
   }
 
-  auto simulation_parameters = tbl["simulation-parameters"];
-  if (!simulation_parameters.is_table()) {
-    cerr << "Input error: No simulation-parameters table" << endl;
-    return {};
-  }
-
-  auto calculation = simulation_parameters["calculation"];
-  if (!calculation.is_value()) {
-    cerr << "Input error: No calculation type specified: calculation = \"k_eff\"" << endl;
-    return {};
-  }
-
-  if (calculation.value<string>().value() == "k_eff") {
-    config.calculation = Keff;
-  } else {
-    cerr << "Input error: calculation type not recognized, values available: \"k_eff\"" << endl;
-    return {};
-  }
-
-  auto groups = simulation_parameters["groups"];
-  if (!groups.is_value()) {
-    cerr << "Input error: No energy groups specified: groups = 1|2|..." << endl;
-    return {};
-  }
-
-  try {
-    uint groups_val = groups.value<uint>().value();
-    if (groups_val == 0 || groups_val > 3) {
-      cerr << "Input error: groups should be bigger than 0 and less than 3" << endl;
-      cerr << groups_val << endl;
-      return {};
-    }
-    config.groups = groups.value<uint>().value();
-  } catch (exception& e) {
-      cerr << "Input error: groups should be a positive number less or equal to 3" << endl;
-      return {};
-  }
-
   auto materials = tbl["materials"];
   if (!materials.is_table()) {
     cerr << "Input error: No materials table" << endl;
@@ -170,8 +131,10 @@ optional<Config> Config::parse(string_view toml_string) {
 
     vector<double> vec_double;
     vec_double = Config::parse_array_from_table(material, "D");
-    if (vec_double.size() != config.groups) {
-        cerr << "Input error: D needs " << config.groups << " elements" << endl;
+    if (0 < vec_double.size()) {
+      config.groups = vec_double.size();
+    } else {
+        cerr << "Input error: D needs at least 1 element" << endl;
         return {};
     }
     copy(vec_double.begin(), vec_double.end(), back_inserter(config.materials[key].D));
@@ -208,7 +171,7 @@ optional<Config> Config::parse(string_view toml_string) {
   return config;
 }
 
-int parse_input_mesh_file() {
+int test_parse_input_mesh_file() {
   static constexpr std::string_view some_toml = R"(
     [geometry]
     mesh = "cube.msh"
@@ -216,10 +179,6 @@ int parse_input_mesh_file() {
 
     [materials]
     MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
-
-    [simulation-parameters]
-    calculation = "k_eff"
-    groups = 1
   )";
 
   optional<Config> result = Config::parse(some_toml);
@@ -228,18 +187,10 @@ int parse_input_mesh_file() {
   auto config = result.value();
 
   assert(config.mesh_file == "cube.msh");
-
-  static constexpr std::string_view some_toml_wo_mesh_file = R"(
-    [geometry]
-  )";
-
-  result = Config::parse(some_toml_wo_mesh_file);
-  assert(!result.has_value());
-
   return 0;
 }
 
-int parse_input_boundaries() {
+int test_parse_input_boundaries() {
   static constexpr std::string_view some_toml = R"(
     [geometry]
     mesh = "cube.msh"
@@ -247,10 +198,6 @@ int parse_input_boundaries() {
 
     [materials]
     MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
-
-    [simulation-parameters]
-    calculation = "k_eff"
-    groups = 1
   )";
 
   optional<Config> result = Config::parse(some_toml);
@@ -264,7 +211,7 @@ int parse_input_boundaries() {
   return 0;
 }
 
-int parse_cross_sections() {
+int test_parse_cross_sections() {
   static constexpr std::string_view some_toml = R"(
     [geometry]
     mesh = "cube.msh"
@@ -273,10 +220,6 @@ int parse_cross_sections() {
     [materials]
     MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
     MAT2 = { D = [3.1], xs_a = [0.3], xs_f = [1.3], xs_s = [1.2], chi = [1.3] }
-
-    [simulation-parameters]
-    calculation = "k_eff"
-    groups = 1
   )";
 
   optional<Config> result = Config::parse(some_toml);
@@ -293,40 +236,11 @@ int parse_cross_sections() {
   return 0;
 }
 
-int parse_simulation_parameters() {
-  static constexpr std::string_view some_toml = R"(
-    [geometry]
-    mesh = "cube.msh"
-    boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
-
-    [materials]
-    MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
-    MAT2 = { D = [3.1], xs_a = [0.3], xs_f = [1.3], xs_s = [1.2], chi = [1.3] }
-
-    [simulation-parameters]
-    calculation = "k_eff"
-    groups = 1
-  )";
-
-  optional<Config> result = Config::parse(some_toml);
-  if (!result) assert(false);
-
-  Config config = result.value();
-  assert(config.calculation == Keff);
-  assert(config.groups == 1);
-
-  return 0;
-}
-
-int parse_bad_inputs() {
+int test_parse_bad_inputs() {
   { // miss geometry
     static constexpr std::string_view some_toml = R"(
       [materials]
       MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 1
     )";
 
     optional<Config> result = Config::parse(some_toml);
@@ -338,24 +252,6 @@ int parse_bad_inputs() {
       [geometry]
       mesh = "cube.msh"
       boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 1
-    )";
-
-    optional<Config> result = Config::parse(some_toml);
-    assert(!result.has_value());
-  }
-
-  { // miss simulation-parameters
-    static constexpr std::string_view some_toml = R"(
-      [geometry]
-      mesh = "cube.msh"
-      boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
-
-      [materials]
-      MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
     )";
 
     optional<Config> result = Config::parse(some_toml);
@@ -370,10 +266,6 @@ int parse_bad_inputs() {
 
       [materials]
       MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 1
     )";
 
     optional<Config> result = Config::parse(some_toml);
@@ -388,10 +280,6 @@ int parse_bad_inputs() {
 
       [materials]
       MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 1
     )";
 
     optional<Config> result = Config::parse(some_toml);
@@ -406,10 +294,6 @@ int parse_bad_inputs() {
 
       [materials]
       MAT1 = { D = [1.5], xs_a = [0.2], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 1
     )";
 
     optional<Config> result = Config::parse(some_toml);
@@ -424,64 +308,6 @@ int parse_bad_inputs() {
 
       [materials]
       MAT1 = { D = [1.5], xs_a = [0.2], xs_f = ["a"], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 1
-    )";
-
-    optional<Config> result = Config::parse(some_toml);
-    assert(!result.has_value());
-  }
-
-  { // calculation is not k_eff
-    static constexpr std::string_view some_toml = R"(
-      [geometry]
-      mesh = "cube.msh"
-      boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
-
-      [materials]
-      MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [1.3], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "transient"
-      groups = 1
-    )";
-
-    optional<Config> result = Config::parse(some_toml);
-    assert(!result.has_value());
-  }
-
-  { // groups is 0
-    static constexpr std::string_view some_toml = R"(
-      [geometry]
-      mesh = "cube.msh"
-      boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
-
-      [materials]
-      MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [1.3], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = 0
-    )";
-
-    optional<Config> result = Config::parse(some_toml);
-    assert(!result.has_value());
-  }
-
-  { // groups is 0
-    static constexpr std::string_view some_toml = R"(
-      [geometry]
-      mesh = "cube.msh"
-      boundaries = { S1 = "dirichlet", WALL8 = "neumann" }
-
-      [materials]
-      MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [1.3], xs_s = [1.0], chi = [1.0] }
-
-      [simulation-parameters]
-      calculation = "k_eff"
-      groups = -1
     )";
 
     optional<Config> result = Config::parse(some_toml);
@@ -492,10 +318,9 @@ int parse_bad_inputs() {
 }
 
 int main() {
-  parse_input_mesh_file();
-  parse_input_boundaries();
-  parse_cross_sections();
-  parse_simulation_parameters();
-  parse_bad_inputs();
+  test_parse_input_mesh_file();
+  test_parse_input_boundaries();
+  test_parse_cross_sections();
+  test_parse_bad_inputs();
   return 0;
 }
