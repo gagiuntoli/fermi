@@ -54,7 +54,6 @@ list_t list_physe;
 list_t list_mater;
 list_t list_bound;
 list_t list_outpu;
-list_t list_comms;
 
 mesh_t mesh;
 
@@ -72,8 +71,6 @@ char inputfile[32];
 char meshfile[32];
 char epartfile[32];
 char npartfile[32];
-
-calcu_t calcu;
 
 int *idxm;
 double **der, ***ode, **sh, **jac, **ijac, **coor, *wp;

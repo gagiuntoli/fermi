@@ -47,17 +47,10 @@ int ferinit(int argc, char **argv) {
   // SlepcInitialize  or PetscInitialize (internally)
   PetscInitialize(&argc, &argv, (char *)0, NULL);
 
-  calcu.exec = (nproc > 1) ? PARALLEL : SEQUENCIAL;
-  if (argc == 1) {
-    PetscPrintf(FERMI_Comm, "fer_init.c:input file NS.\n\n");
-    return 1;
-  }
-
   // PARCING INPUT FILE
   list_init(&list_mater, sizeof(pvl_t), cmp_mat);
   list_init(&list_bound, sizeof(bound_t), cmp_bou);
   list_init(&list_outpu, sizeof(output_t), NULL);
-  list_init(&list_comms, sizeof(comm_t), NULL);
   strcpy(inputfile, argv[1]);
   PetscPrintf(FERMI_Comm, "Parcing input file.\n");
   ierr = parse_input();

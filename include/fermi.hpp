@@ -43,8 +43,6 @@ struct Material {
   }
 };
 
-enum Calculation { Keff };
-
 enum BoundaryCondition {
   Dirichlet,
   Neumann,
@@ -53,8 +51,6 @@ enum BoundaryCondition {
 #define DIM 3
 #define NPE 8
 #define MAX_ITS_POWER 200
-
-enum { INTER1, INTER2 };
 
 typedef int (*fcmp)(void *, void *);
 
@@ -257,50 +253,6 @@ typedef struct _output_t {
 
 } output_t;
 
-typedef struct _comm_1_t {
-
-  char friend_name[64];
-  int nphy;
-  char **phys; // array of Physical Entities names
-  int *ids;
-  int remote_rank;
-  ;
-
-  /* recv */
-  double *xs;
-
-  /* send */
-  double *pow;
-
-  MPI_Comm *intercomm;
-
-} comm_1_t;
-
-typedef struct _comm_t {
-
-  int kind;
-
-  comm_1_t comm_1;
-
-} comm_t;
-
-/*************************************************************/
-
-typedef struct {
-
-  double t0;
-  double t;
-  list_t time;
-
-  int timedep;
-  int kmode;
-  int mode;
-  int exec;
-
-} calcu_t;
-
-/*************************************************************/
-
 // parser.c
 int parse_input(void);
 int parse_mesh(void);
@@ -308,12 +260,10 @@ int parse_mats(void);
 int parse_mode(void);
 int parse_boun(void);
 int parse_outp(void);
-int parse_communication(void);
 int parse_material(char *buff, pvl_t *mat);
 int cmp_mat(void *a, void *b);
 int parse_boundary(char *bufcpy, bound_t *bou);
 int cmp_bou(void *a, void *b);
-int cmp_time(void *a, void *b);
 int get_int(char *buf, const char *name, int *a);
 int get_char(char *buf, const char *name, char *a);
 
@@ -329,10 +279,12 @@ int ferelem_AB(int e);
 int ferelem_ABM(int e);
 int ferelem_M(int e);
 int ferelem_R(int e, double xsa, double factor);
+
 // lst2msh.c
 int cpynode(node_list_t *node_nl, node_t *node);
 int cpyelemv(node_list_t *elem_nl, elem_t *elemv);
 int cpyelems(node_list_t *elem_nl, elem_t *elems);
+
 // ferboun.c
 int ferbouset(void);
 int cmp_nod(void *a, void *b);
@@ -353,9 +305,6 @@ int printMat(char *name, Mat *A, int m);
 int printVec(char *name, Vec *vec, int m);
 int vtkcode(int dim, int npe);
 int print_out(Vec *phi, int step);
-
-int fer_comm_init(void);
-int fer_comm_step(int order);
 
 extern MPI_Comm WORLD_Comm; // global communicator
 extern MPI_Comm FERMI_Comm; // local  communicator
@@ -393,7 +342,6 @@ extern list_t list_physe;
 extern list_t list_mater;
 extern list_t list_bound;
 extern list_t list_outpu;
-extern list_t list_comms;
 
 extern mesh_t mesh;
 
@@ -411,8 +359,6 @@ extern char inputfile[32];
 extern char meshfile[32];
 extern char epartfile[32];
 extern char npartfile[32];
-
-extern calcu_t calcu;
 
 extern int *idxm;
 extern double **der, ***ode, **sh, **jac, **ijac, **coor, *wp;
