@@ -53,7 +53,6 @@ list_t list_elems;
 list_t list_physe;
 list_t list_mater;
 list_t list_bound;
-list_t list_ctrlr; /* list of control rods */
 list_t list_outpu;
 list_t list_comms;
 
@@ -141,8 +140,6 @@ int main(int argc, char **argv) {
   //
   PetscPrintf(FERMI_Comm, "calculating stationary state.\n");
 
-  fersrods(calcu.t);
-
   ferass_ST();
 
   fersolv_ST();
@@ -159,8 +156,6 @@ int main(int argc, char **argv) {
   while (pNod) {
 
     dtn = ((tcontrol_t *)pNod->data)->dt;
-
-    fersrods(calcu.t);
 
     ferass_TR(step);
 

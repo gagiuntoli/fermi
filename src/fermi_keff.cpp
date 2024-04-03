@@ -53,7 +53,6 @@ list_t list_elems;
 list_t list_physe;
 list_t list_mater;
 list_t list_bound;
-list_t list_ctrlr; /* list of control rods */
 list_t list_outpu;
 list_t list_comms;
 
@@ -120,7 +119,6 @@ double **sh_hexa_8;
 double ***ds_hexa_8;
 
 int main(int argc, char **argv) {
-
   int step = 0;
   char nam[32];
   node_list_t *pNod;
@@ -129,33 +127,17 @@ int main(int argc, char **argv) {
     goto error;
   }
 
-  calcu.t = calcu.t0;
+  ferass_ST();
 
-  pNod = calcu.time.head;
+  fersolv_ST();
 
-  while (pNod) {
-    dtn = ((tcontrol_t *)pNod->data)->dt;
+  fer_norm();
 
-    fersrods(calcu.t);
-
-    ferass_ST();
-
-    fersolv_ST();
-
-    fer_norm();
-
-    sprintf(nam, "steady_r%d_t%d", rank, step);
-    print_vtk(nam);
-    print_out(&phi_n, step);
-
-    calcu.t = calcu.t + dtn;
-    step++;
-    if (calcu.t > ((tcontrol_t *)pNod->data)->tf - 1.0e-8)
-      pNod = pNod->next;
-  }
+  sprintf(nam, "steady_r%d_t%d", rank, step);
+  print_vtk(nam);
+  print_out(&phi_n, step);
 
 error:
-
   ferfini();
 
   return 0;

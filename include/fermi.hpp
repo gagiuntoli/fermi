@@ -286,25 +286,6 @@ typedef struct _comm_t {
 
 /*************************************************************/
 
-typedef struct _tcontrol_t {
-
-  double tf;
-  double dt;
-
-} tcontrol_t;
-
-typedef struct _ctrlrod_t {
-
-  char name_ele[16]; /* elem physical entity name */
-  char name_nod[16]; /* node physical entity name */
-  double n[3];       /* direction of control rod insertion */
-  double p[3];       /* reference point from where insertion starts */
-  double xsaval;     /* xsa value to perturb  */
-  list_t elemv;      /* list of vol elem that the ctrlrod intersects*/
-  list_t xsa;        /* list of absortion xs on element list*/
-
-} ctrlrod_t;
-
 typedef struct {
 
   double t0;
@@ -326,7 +307,6 @@ int parse_mesh(void);
 int parse_mats(void);
 int parse_mode(void);
 int parse_boun(void);
-int parse_crod(void);
 int parse_outp(void);
 int parse_communication(void);
 int parse_material(char *buff, pvl_t *mat);
@@ -363,9 +343,6 @@ int fer_pow(double *fpower);
 int fer_pow_phys(int n, int *ids, double *fpower);
 int fer_pow_elem(int e, double *fpower);
 
-// ferrods.c
-int ferirods(void);
-int fersrods(double t);
 // output.c
 int print_struct(int step);
 int print_vtk(const char *name);
@@ -415,7 +392,6 @@ extern list_t list_elems;
 extern list_t list_physe;
 extern list_t list_mater;
 extern list_t list_bound;
-extern list_t list_ctrlr; /* list of control rods */
 extern list_t list_outpu;
 extern list_t list_comms;
 

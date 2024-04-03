@@ -155,41 +155,6 @@ int print_struct(int step) {
   fprintf(fout, "\n");
 
   fprintf(fout, "========================================\n");
-  fprintf(fout, "list_ctrlr :\n");
-  fprintf(fout, "sizelist : %d\n\n", list_ctrlr.sizelist);
-  onode = list_ctrlr.head;
-  for (i = 0; i < list_ctrlr.sizelist; i++) {
-    fprintf(fout, "node : %d\n", i);
-    fprintf(fout, "name_ele : %s\n", ((ctrlrod_t *)onode->data)->name_ele);
-    fprintf(fout, "name_nod : %s\n", ((ctrlrod_t *)onode->data)->name_nod);
-    fprintf(fout, "n : ");
-    for (d = 0; d < 3; d++)
-      fprintf(fout, "%lf ", ((ctrlrod_t *)onode->data)->n[d]);
-    fprintf(fout, "\n");
-    fprintf(fout, "p : ");
-    for (d = 0; d < 3; d++)
-      fprintf(fout, "%lf ", ((ctrlrod_t *)onode->data)->p[d]);
-    fprintf(fout, "\n");
-    fprintf(fout, "xsaval : %lf\n", ((ctrlrod_t *)onode->data)->xsaval);
-    fprintf(fout, "elemv : ");
-    pNod = ((ctrlrod_t *)onode->data)->elemv.head;
-    while (pNod) {
-      fprintf(fout, "%4d ", *(int *)pNod->data);
-      pNod = pNod->next;
-    }
-    fprintf(fout, "\n");
-    fprintf(fout, "xsa : ");
-    pNod = ((ctrlrod_t *)onode->data)->xsa.head;
-    while (pNod) {
-      fprintf(fout, "%lf ", *(double *)pNod->data);
-      pNod = pNod->next;
-    }
-    fprintf(fout, "\n\n");
-    onode = onode->next;
-  }
-  fprintf(fout, "\n");
-
-  fprintf(fout, "========================================\n");
   fprintf(fout, "Dirichlet indeces %3d : \n", ndir);
   for (i = 0; i < ndir; i++)
     fprintf(fout, "%2d ", dirIndex[i]);
@@ -479,28 +444,6 @@ int print_vtk(const char *name) {
   /* DATA IN CELLS                                            */
   /************************************************************/
   fprintf(vtkf, "CELL_DATA %i\n", mesh.nelemv);
-
-  pn = list_ctrlr.head;
-  while (pn) {
-    fprintf(vtkf, "SCALARS rod_%s FLOAT\n", ((ctrlrod_t *)pn->data)->name_ele);
-    fprintf(vtkf, "LOOKUP_TABLE default\n");
-    pe = ((ctrlrod_t *)pn->data)->elemv.head;
-    px = ((ctrlrod_t *)pn->data)->xsa.head;
-    for (e = 0; e < mesh.nelemv; e++) {
-      if (pe) {
-        if (e == *(int *)pe->data) {
-          fprintf(vtkf, "%lf\n", *(double *)px->data);
-          pe = pe->next;
-          px = px->next;
-        } else {
-          fprintf(vtkf, "%lf\n", 0.0);
-        }
-      } else {
-        fprintf(vtkf, "%lf\n", 0.0);
-      }
-    }
-    pn = pn->next;
-  }
 
   for (e = 0; e < egn; e++) {
     fprintf(vtkf, "SCALARS xs_a%d FLOAT\n", e);

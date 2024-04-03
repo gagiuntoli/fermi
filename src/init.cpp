@@ -56,7 +56,6 @@ int ferinit(int argc, char **argv) {
   // PARCING INPUT FILE
   list_init(&list_mater, sizeof(pvl_t), cmp_mat);
   list_init(&list_bound, sizeof(bound_t), cmp_bou);
-  list_init(&list_ctrlr, sizeof(ctrlrod_t), NULL);
   list_init(&list_outpu, sizeof(output_t), NULL);
   list_init(&list_comms, sizeof(comm_t), NULL);
   strcpy(inputfile, argv[1]);
@@ -146,15 +145,6 @@ int ferinit(int argc, char **argv) {
   ierr = mesh_renum(&mesh, loc2gold, loc2gnew);
   if (ierr) {
     PetscPrintf(FERMI_Comm, "fer_init.c:ierr renumbering mesh nodes.\n");
-    return 1;
-  }
-
-  // CONTROL RODS INIT
-  PetscPrintf(FERMI_Comm, "Initializing control rods.\n");
-  ierr = ferirods();
-  if (ierr) {
-    PetscPrintf(FERMI_Comm, "fer_init.c:ierr control rods initialization.\n",
-                ierr);
     return 1;
   }
 

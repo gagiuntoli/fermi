@@ -51,24 +51,6 @@ int ferass_TR(int step) {
   MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
 
-  /*control rods pertubations*/
-  pr = list_ctrlr.head;
-  while (pr) {
-    pe = ((ctrlrod_t *)pr->data)->elemv.head;
-    px = ((ctrlrod_t *)pr->data)->xsa.head;
-    while (pe) {
-      if (ferelem_R(*(int *)pe->data, *(double *)px->data, -1.0)) {
-        return 1;
-      }
-      pe = pe->next;
-      px = px->next;
-      MatSetValues(A, nke, idxm, nke, idxm, Be, ADD_VALUES);
-    }
-    pr = pr->next;
-  }
-  MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
-
   /* b = A*phi_n */
   MatMult(A, phi_n, b);
 
@@ -113,27 +95,6 @@ int ferass_TR_1(int step) {
     MatAXPY(A, ikeff, B, SAME_NONZERO_PATTERN);
     MatAXPY(A, 1.0, M, SAME_NONZERO_PATTERN);
   }
-  /*control rods pertubations*/
-  MatZeroEntries(B);
-  pr = list_ctrlr.head;
-  while (pr) {
-    pe = ((ctrlrod_t *)pr->data)->elemv.head;
-    px = ((ctrlrod_t *)pr->data)->xsa.head;
-    while (pe) {
-      if (ferelem_R(*(int *)pe->data, *(double *)px->data, -1.0)) {
-        PetscPrintf(
-            FERMI_Comm,
-            "ferassm.c:problem calculating rod element perturbation.\n");
-        return 1;
-      }
-      pe = pe->next;
-      px = px->next;
-      MatSetValues(B, nke, idxm, nke, idxm, Be, ADD_VALUES);
-    }
-    pr = pr->next;
-  }
-  MatAssemblyBegin(B, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(B, MAT_FINAL_ASSEMBLY);
   MatZeroEntries(K);
   MatAXPY(K, 1.0, A, SAME_NONZERO_PATTERN);
   //  MatAXPY(K,1.0,B,DIFFERENT_NONZERO_PATTERN);
@@ -182,24 +143,6 @@ int ferass_ST(void) {
   MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
   MatAssemblyBegin(B, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(B, MAT_FINAL_ASSEMBLY);
-
-  /*control rods pertubations*/
-  pr = list_ctrlr.head;
-  while (pr) {
-    pe = ((ctrlrod_t *)pr->data)->elemv.head;
-    px = ((ctrlrod_t *)pr->data)->xsa.head;
-    while (pe) {
-      if (ferelem_R(*(int *)pe->data, *(double *)px->data, +1.0)) {
-        return 1;
-      }
-      pe = pe->next;
-      px = px->next;
-      MatSetValues(A, nke, idxm, nke, idxm, Be, ADD_VALUES);
-    }
-    pr = pr->next;
-  }
-  MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);
-  MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);
 
   /* Dirichlet BC */
   MatSetOption(A, MAT_KEEP_NONZERO_PATTERN, PETSC_TRUE);

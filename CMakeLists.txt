@@ -20,7 +20,6 @@ set(SOURCES
 	src/list.cpp 
 	src/solve.cpp 
 	src/utils.cpp 
-	src/rods.cpp 
 	src/boundary.cpp 
 	src/finish.cpp 
 	src/assembly.cpp 
