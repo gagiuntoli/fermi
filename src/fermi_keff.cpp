@@ -122,13 +122,14 @@ int main(int argc, char **argv) {
   node_list_t *pNod;
 
   if (argc != 3) {
-    cerr << "Program requires 2 arguments to work: input.fermi input.toml" << endl;
+    cerr << "Program requires 2 arguments to work: input.fermi input.toml"
+         << endl;
     return 1;
   }
 
-  ifstream input(argv[2]); //taking file as inputstream
+  ifstream input(argv[2]); // taking file as inputstream
   string input_str;
-  if(input) {
+  if (input) {
     ostringstream ss;
     ss << input.rdbuf(); // reading data
     input_str = ss.str();
@@ -151,7 +152,7 @@ int main(int argc, char **argv) {
 
   fer_norm();
 
-  //sprintf(nam, "steady_r%d_t%d", rank, step);
+  // sprintf(nam, "steady_r%d_t%d", rank, step);
   print_vtk(nam);
   print_out(&phi_n, step);
 
