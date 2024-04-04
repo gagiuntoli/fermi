@@ -10,32 +10,35 @@ using namespace std;
 class Config {
 private:
   static vector<double> parse_array_from_table(toml::v3::table table,
-                                               string key) {
-    auto arr = table[key];
-    if (!arr.is_array()) {
-      cerr << "Input error: " << key << " not found or it is not an array"
-           << endl;
-      return {};
-    }
-
-    vector<double> result;
-    for (auto &&elem : *arr.as_array()) {
-      elem.visit([&result, key](auto &&el) noexcept {
-        if constexpr (toml::is_number<decltype(el)>)
-          result.push_back(*el);
-      });
-    }
-    return result;
-  }
+                                               string key);
 
 public:
   string mesh_file;
   map<string, BoundaryCondition> boundaries;
   map<string, Material> materials;
-  uint groups;
+  uint groups = 0;
 
   static optional<Config> parse(string_view toml);
 };
+
+vector<double> Config::parse_array_from_table(toml::v3::table table,
+                                              string key) {
+  auto arr = table[key];
+  if (!arr.is_array()) {
+    cerr << "Input error: " << key << " not found or it is not an array"
+         << endl;
+    return {};
+  }
+
+  vector<double> result;
+  for (auto &&elem : *arr.as_array()) {
+    elem.visit([&result, key](auto &&el) noexcept {
+      if constexpr (toml::is_number<decltype(el)>)
+        result.push_back(*el);
+    });
+  }
+  return result;
+}
 
 optional<Config> Config::parse(string_view toml_string) {
   Config config;
@@ -94,51 +97,44 @@ optional<Config> Config::parse(string_view toml_string) {
     vector<double> vec_double;
     vec_double = Config::parse_array_from_table(material, "D");
 
-    // we decide the number of energy groups based on the length of the first D
-    // we find
+    // the energy groups correspond to the first D length
     if (0 < vec_double.size()) {
-      config.groups = vec_double.size();
+      if (config.groups == 0) {
+        config.groups = vec_double.size();
+      }
+      cout << "groups : " << config.groups << endl;
     } else {
       cerr << "Input error: D needs at least 1 element" << endl;
       return {};
     }
+
     copy(vec_double.begin(), vec_double.end(),
          back_inserter(config.materials[key].D));
 
     vec_double = Config::parse_array_from_table(material, "chi");
-    if (vec_double.size() != config.groups) {
-      cerr << "Input error: chi needs " << config.groups << " elements" << endl;
-      return {};
-    }
     copy(vec_double.begin(), vec_double.end(),
          back_inserter(config.materials[key].chi));
 
     vec_double = Config::parse_array_from_table(material, "xs_a");
-    if (vec_double.size() != config.groups) {
-      cerr << "Input error: xs_a needs " << config.groups << " elements"
-           << endl;
-      return {};
-    }
     copy(vec_double.begin(), vec_double.end(),
          back_inserter(config.materials[key].xs_a));
 
     vec_double = Config::parse_array_from_table(material, "xs_f");
-    if (vec_double.size() != config.groups) {
-      cerr << "Input error: xs_f needs " << config.groups << " elements"
-           << endl;
-      return {};
-    }
     copy(vec_double.begin(), vec_double.end(),
          back_inserter(config.materials[key].xs_f));
 
     vec_double = Config::parse_array_from_table(material, "xs_s");
-    if (vec_double.size() != config.groups * config.groups) {
-      cerr << "Input error: xs_s needs " << config.groups * config.groups
-           << " elements" << endl;
-      return {};
-    }
     copy(vec_double.begin(), vec_double.end(),
          back_inserter(config.materials[key].xs_s));
+
+    if (config.materials[key].D.size() != config.groups ||
+        config.materials[key].chi.size() != config.groups ||
+        config.materials[key].xs_a.size() != config.groups ||
+        config.materials[key].xs_f.size() != config.groups ||
+        config.materials[key].xs_s.size() != config.groups * config.groups) {
+      cerr << "Input error: lenght in material parameters is wrong" << endl;
+      return {};
+    }
   }
 
   return config;
