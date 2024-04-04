@@ -1,0 +1,6 @@
+[geometry]
+mesh = "cube.msh"
+boundaries = { S1 = "dirichlet" }
+
+[materials]
+MAT1 = { D = [1.5], xs_a = [0.2], xs_f = [0.3], xs_s = [1.0], chi = [1.0] }

@@ -20,6 +20,7 @@
  */
 
 #include "fermi.hpp"
+#include <parser.hpp>
 
 MPI_Comm WORLD_Comm; // global communicator
 MPI_Comm FERMI_Comm; // local  communicator
@@ -120,6 +121,26 @@ int main(int argc, char **argv) {
   char nam[32];
   node_list_t *pNod;
 
+  if (argc != 3) {
+    cerr << "Program requires 2 arguments to work: input.fermi input.toml" << endl;
+    return 1;
+  }
+
+  ifstream input(argv[2]); //taking file as inputstream
+  string input_str;
+  if(input) {
+    ostringstream ss;
+    ss << input.rdbuf(); // reading data
+    input_str = ss.str();
+  }
+
+  optional<Config> result = Config::parse(input_str);
+  if (!result) {
+    cerr << "TOML input file could not be parsed" << endl;
+  }
+
+  Config config = result.value();
+
   if (ferinit(argc, argv)) {
     goto error;
   }
@@ -130,7 +151,7 @@ int main(int argc, char **argv) {
 
   fer_norm();
 
-  sprintf(nam, "steady_r%d_t%d", rank, step);
+  //sprintf(nam, "steady_r%d_t%d", rank, step);
   print_vtk(nam);
   print_out(&phi_n, step);
 

@@ -102,7 +102,6 @@ optional<Config> Config::parse(string_view toml_string) {
       if (config.groups == 0) {
         config.groups = vec_double.size();
       }
-      cout << "groups : " << config.groups << endl;
     } else {
       cerr << "Input error: D needs at least 1 element" << endl;
       return {};
