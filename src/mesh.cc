@@ -23,12 +23,6 @@
 
 #include <sstream>
 
-const std::string Node::toString() const {
-  std::ostringstream oss;
-  oss << x << "," << y << "," << z;
-  return oss.str();
-}
-
 const std::string Element::toString() const {
   std::ostringstream oss;
   for (const auto &node : nodes) {

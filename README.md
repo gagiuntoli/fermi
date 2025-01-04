@@ -1,18 +1,16 @@
-# Warning
-
-**This code is the worst code you may have seen, I did it in 2016-2017. I am currently refactoring it.**
-
 # Fermi
 
-Fermi is a parallel Finite Element (FE) code to model the neutron diffusion in
-nuclear reactors. The code was design to solve the steady-state, and also, the
-time-dependent multi-group equations. Fermi uses PETSc library to assemble and
+Fermi is a parallel Finite Element (FE) code to model the neutron diffusion in nuclear reactors. The code was design to
+solve the steady-state, and also, the time-dependent multi-group equations. Fermi uses PETSc library to assemble and
 solve the system of equations in distributed architectures.
 
-Some additional features are expected to be implemented:
+# Build, Compile and Test
 
-- [x] Control rod simulation.
-- [ ] Xenon evolution and poisoning.
+```shell
+cmake -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
 
 # Run with Docker
 
@@ -26,29 +24,6 @@ Run the container and connect with the local volume. This is useful for local de
 
 ```bash
 docker run -v $PWD:/fermi -it --rm fermi /bin/bash
-```
-
-# Build and compile
-
-In the docker bash session execute:
-
-```bash
-mkdir build
-cd build
-cmake ..
-make
-```
-
-Run tests with:
-
-```bash
-ctest
-```
-
-# Generate `compile_commands.json`
-
-```bash
-cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
 
 # Input Definition
@@ -98,13 +73,6 @@ docker tag IMAGE_ID ghcr.io/USERNAME/IMAGE_NAME:TAG
 docker push ghcr.io/USERNAME/IMAGE_NAME:TAG
 ```
 
-## Future Workflow
-
-- [ ] Testing
-- [ ] Parallelization and performance evaluation
-- [ ] Benchmarking
-- [ ] Documentation
-
-## Contact
+## Contact me
 
 Guido Giuntoli - [gagiuntoli@gmail.com]

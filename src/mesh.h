@@ -25,11 +25,7 @@
 #include <string>
 #include <vector>
 
-struct Node {
-  double x, y, z;
-
-  const std::string toString() const;
-};
+#include "node.h"
 
 struct Element {
   std::vector<size_t> nodes;

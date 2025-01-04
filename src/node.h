@@ -19,20 +19,20 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
+#ifndef NODE_H
+#define NODE_H
 
-#include "fem.h"
-#include "mesh.h"
-#include "solver.h"
+#include <sstream>
+#include <string>
 
-int main(int argc, char **argv) {
-  Mesh mesh = mesh_create_structured_1d(10, 10.0);
+struct Node {
+  double x, y, z;
 
-  std::cout << mesh.toString() << std::endl;
+  const std::string toString() const {
+    std::ostringstream oss;
+    oss << x << "," << y << "," << z;
+    return oss.str();
+  }
+};
 
-  Segment2 segment;
-  std::cout << segment.toString() << std::endl;
-
-  // solver_keff();
-  return 0;
-}
+#endif
