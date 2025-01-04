@@ -19,9 +19,16 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+
+#include "mesh.h"
 #include "solver.h"
 
 int main(int argc, char **argv) {
-  solver_keff();
+  Mesh mesh = mesh_create_structured_1d(10, 10.0);
+
+  std::cout << mesh.toString() << std::endl;
+
+  // solver_keff();
   return 0;
 }

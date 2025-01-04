@@ -19,11 +19,34 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SOLVER_H
-#define SOLVER_H
+#ifndef MESH_H
+#define MESH_H
 
-#include "ellpack.h"
+#include <string>
+#include <vector>
 
-double solver_keff(const ellpack_t &A, const ellpack_t &B);
+struct Node {
+  double x, y, z;
+
+  const std::string toString() const;
+};
+
+struct Element {
+  std::vector<size_t> nodes;
+
+  const std::string toString() const;
+};
+
+enum class MeshType { Dim1, Dim2, Dim3 };
+
+struct Mesh {
+  std::vector<Node> nodes;
+  std::vector<Element> elements;
+  MeshType type;
+
+  const std::string toString() const;
+};
+
+Mesh mesh_create_structured_1d(size_t npoints, double length);
 
 #endif

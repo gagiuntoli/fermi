@@ -11,8 +11,8 @@ add_library(FermiLib STATIC ${SOURCE_FILES})
 
 target_include_directories(FermiLib PUBLIC src)
 
-#add_executable(main_keff src/main/main_keff.cpp)
-#target_link_libraries(main_keff PRIVATE FermiLib)
+add_executable(main_keff src/main/main_keff.cc)
+target_link_libraries(main_keff PRIVATE FermiLib)
 
 file(GLOB TEST_FILES "src/*_test.cc")
 include(GoogleTest)
