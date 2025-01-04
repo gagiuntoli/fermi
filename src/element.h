@@ -25,17 +25,18 @@
 #include "fem.h"
 #include "mesh.h"
 
-struct ElementDiffusion : public ElementBase {
+template <size_t DIM>
+struct ElementDiffusion : public ElementBase<DIM> {
   double xs_a;
   double xs_f;
   double nu;
   double d;
 
   ElementDiffusion(std::vector<size_t> nodes_, double xs_a_, double xs_f_, double nu_, double d_)
-      : ElementBase(nodes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
+      : ElementBase<DIM>(nodes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
 };
 
-struct ElementSegment2 : public ElementDiffusion {
+struct ElementSegment2 : public ElementDiffusion<1> {
   using ElementDiffusion::ElementDiffusion;
 
   std::vector<double> computeElementMatrix() const override {
@@ -43,9 +44,15 @@ struct ElementSegment2 : public ElementDiffusion {
     std::vector<double> matrix(n * n, 0.0);
     Segment2 segment2;
 
-    for (const auto& gp : segment2.getGaussPoints()) {
+    auto shapes = segment2.getShapeFunctions();
+    auto dshapes = segment2.getShapeFunctions();
+    auto gauss_points = segment2.getGaussPoints();
+    auto wgp = segment2.getWeights();
+    double det = 1.0;
+    for (int gp = 0; gp < gauss_points.size(); gp++) {
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
+          matrix[n * i + j] += (-d + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
         }
       }
     }

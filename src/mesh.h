@@ -26,8 +26,10 @@
 #include <string>
 #include <vector>
 
+#include "matrix_operations.h"
 #include "node.h"
 
+template <size_t DIM>
 struct ElementBase {
   std::vector<size_t> nodes;
 
@@ -35,17 +37,36 @@ struct ElementBase {
 
   virtual std::vector<double> computeElementMatrix() const = 0;
 
-  const std::string toString() const;
+  // MatrixOperations<T>::Matrix computeJacobian();
+
+  const std::string toString() const {
+    std::ostringstream oss;
+    for (const auto &node : nodes) {
+      oss << node << ",";
+    }
+    auto result = oss.str();
+    return std::string(result.begin(), result.end() - 1);
+  }
 };
 
-enum class MeshType { Dim1, Dim2, Dim3 };
-
+template <size_t DIM>
 struct Mesh {
   std::vector<Node> nodes;
-  std::vector<std::shared_ptr<ElementBase>> elements;
-  MeshType type;
+  std::vector<std::shared_ptr<ElementBase<DIM>>> elements;
 
-  const std::string toString() const;
+  const std::string toString() const {
+    std::ostringstream oss;
+    oss << "Nodes:" << std::endl;
+    for (const Node &node : nodes) {
+      oss << node.toString() << std::endl;
+    }
+    oss << std::endl;
+    oss << "Elements:" << std::endl;
+    for (const auto &element : elements) {
+      oss << element->toString() << std::endl;
+    }
+    return oss.str();
+  }
 };
 
 #endif

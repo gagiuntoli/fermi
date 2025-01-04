@@ -22,8 +22,23 @@
 #ifndef MESH_FERMI_H
 #define MESH_FERMI_H
 
+#include "element.h"
 #include "mesh.h"
+#include "mesh_fermi.h"
 
-Mesh mesh_create_structured_1d(size_t npoints, double length);
+Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
+  std::vector<Node> nodes;
+  double h = length / (npoints - 1);
+  for (size_t i = 0; i < npoints; i++) {
+    nodes.push_back({i * h, 0, 0});
+  }
+
+  std::vector<std::shared_ptr<ElementBase<1>>> elements;
+  for (size_t i = 0; i < npoints - 1; i++) {
+    elements.push_back(std::make_shared<ElementSegment2>(std::vector<size_t>{i, i + 1}, 1.0, 1.0, 1.0, 1.0));
+  }
+
+  return Mesh<1>{.nodes = std::move(nodes), .elements = std::move(elements)};
+}
 
 #endif

@@ -26,7 +26,7 @@
 #include "solver.h"
 
 int main(int argc, char **argv) {
-  Mesh mesh = mesh_create_structured_1d(10, 10.0);
+  Mesh<1> mesh = mesh_create_structured_1d(10, 10.0);
 
   std::cout << mesh.toString() << std::endl;
 
