@@ -28,7 +28,7 @@
 #include "node.h"
 
 template <size_t N, size_t DIM>
-class ElementBase {
+class ShapeBase {
  public:
   using ShapeArray = std::array<std::array<double, N>, N>;
   using DShapeArray = std::array<std::array<std::array<double, N>, DIM>, N>;
@@ -71,10 +71,10 @@ class ElementBase {
     return oss.str();
   }
 
-  virtual ~ElementBase() = default;
+  virtual ~ShapeBase() = default;
 };
 
-class Segment2 : public ElementBase<2, 1> {
+class Segment2 : public ShapeBase<2, 1> {
  public:
   static constexpr size_t N = 2;
   static constexpr size_t DIM = 1;

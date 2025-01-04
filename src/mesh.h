@@ -22,13 +22,18 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "node.h"
 
-struct Element {
+struct ElementBase {
   std::vector<size_t> nodes;
+
+  ElementBase(std::vector<size_t> nodes_) : nodes(nodes_) {}
+
+  virtual std::vector<double> computeElementMatrix() const = 0;
 
   const std::string toString() const;
 };
@@ -37,12 +42,10 @@ enum class MeshType { Dim1, Dim2, Dim3 };
 
 struct Mesh {
   std::vector<Node> nodes;
-  std::vector<Element> elements;
+  std::vector<std::shared_ptr<ElementBase>> elements;
   MeshType type;
 
   const std::string toString() const;
 };
-
-Mesh mesh_create_structured_1d(size_t npoints, double length);
 
 #endif

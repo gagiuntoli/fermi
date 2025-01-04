@@ -22,7 +22,7 @@
 #include <iostream>
 
 #include "fem.h"
-#include "mesh.h"
+#include "mesh_fermi.h"
 #include "solver.h"
 
 int main(int argc, char **argv) {

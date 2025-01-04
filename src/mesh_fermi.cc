@@ -19,30 +19,21 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mesh.h"
+#include "mesh_fermi.h"
 
-#include <sstream>
+#include "element.h"
 
-const std::string ElementBase::toString() const {
-  std::ostringstream oss;
-  for (const auto &node : nodes) {
-    oss << node << ",";
+Mesh mesh_create_structured_1d(size_t npoints, double length) {
+  std::vector<Node> nodes;
+  double h = length / (npoints - 1);
+  for (size_t i = 0; i < npoints; i++) {
+    nodes.push_back({i * h, 0, 0});
   }
-  auto result = oss.str();
-  return std::string(result.begin(), result.end() - 1);
-}
 
-const std::string Mesh::toString() const {
-  std::ostringstream oss;
+  std::vector<std::shared_ptr<ElementBase>> elements;
+  for (size_t i = 0; i < npoints - 1; i++) {
+    elements.push_back(std::make_shared<ElementSegment2>(std::vector<size_t>{i, i + 1}, 1.0, 1.0, 1.0, 1.0));
+  }
 
-  oss << "Nodes:" << std::endl;
-  for (const Node &node : nodes) {
-    oss << node.toString() << std::endl;
-  }
-  oss << std::endl;
-  oss << "Elements:" << std::endl;
-  for (const auto &element : elements) {
-    oss << element->toString() << std::endl;
-  }
-  return oss.str();
+  return Mesh{.nodes = std::move(nodes), .elements = std::move(elements), .type = MeshType::Dim1};
 }

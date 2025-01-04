@@ -19,30 +19,39 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef ELEMENT_H
+#define ELEMENT_H
+
+#include "fem.h"
 #include "mesh.h"
 
-#include <sstream>
+struct ElementDiffusion : public ElementBase {
+  double xs_a;
+  double xs_f;
+  double nu;
+  double d;
 
-const std::string ElementBase::toString() const {
-  std::ostringstream oss;
-  for (const auto &node : nodes) {
-    oss << node << ",";
-  }
-  auto result = oss.str();
-  return std::string(result.begin(), result.end() - 1);
-}
+  ElementDiffusion(std::vector<size_t> nodes_, double xs_a_, double xs_f_, double nu_, double d_)
+      : ElementBase(nodes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
+};
 
-const std::string Mesh::toString() const {
-  std::ostringstream oss;
+struct ElementSegment2 : public ElementDiffusion {
+  using ElementDiffusion::ElementDiffusion;
 
-  oss << "Nodes:" << std::endl;
-  for (const Node &node : nodes) {
-    oss << node.toString() << std::endl;
+  std::vector<double> computeElementMatrix() const override {
+    size_t n = nodes.size();
+    std::vector<double> matrix(n * n, 0.0);
+    Segment2 segment2;
+
+    for (const auto& gp : segment2.getGaussPoints()) {
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+        }
+      }
+    }
+
+    return matrix;
   }
-  oss << std::endl;
-  oss << "Elements:" << std::endl;
-  for (const auto &element : elements) {
-    oss << element->toString() << std::endl;
-  }
-  return oss.str();
-}
+};
+
+#endif

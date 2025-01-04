@@ -19,30 +19,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef MESH_FERMI_H
+#define MESH_FERMI_H
+
 #include "mesh.h"
 
-#include <sstream>
+Mesh mesh_create_structured_1d(size_t npoints, double length);
 
-const std::string ElementBase::toString() const {
-  std::ostringstream oss;
-  for (const auto &node : nodes) {
-    oss << node << ",";
-  }
-  auto result = oss.str();
-  return std::string(result.begin(), result.end() - 1);
-}
-
-const std::string Mesh::toString() const {
-  std::ostringstream oss;
-
-  oss << "Nodes:" << std::endl;
-  for (const Node &node : nodes) {
-    oss << node.toString() << std::endl;
-  }
-  oss << std::endl;
-  oss << "Elements:" << std::endl;
-  for (const auto &element : elements) {
-    oss << element->toString() << std::endl;
-  }
-  return oss.str();
-}
+#endif
