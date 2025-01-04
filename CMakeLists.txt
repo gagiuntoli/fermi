@@ -2,40 +2,27 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Fermi VERSION 0.1 LANGUAGES CXX)
 
-find_package(MPI REQUIRED)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(NOT EXISTS "$ENV{PETSC_DIR}/include/" OR NOT EXISTS "$ENV{PETSC_DIR}/lib/")
- 	message(SEND_ERROR "PETSc not found")
-endif()
-message("MPI " ${MPI_INCLUDE_PATH})
+file(GLOB SOURCE_FILES src/*.cc)
 
-include_directories(include ${MPI_INCLUDE_PATH} $ENV{PETSC_DIR}/include submodules/tomlplusplus)
+add_library(FermiLib STATIC ${SOURCE_FILES})
 
-link_libraries("-lm" $ENV{PETSC_DIR}/lib/libpetsc_real.so ${MPI_CXX_LIBRARIES})
+target_include_directories(FermiLib PUBLIC src)
 
-add_compile_options(-Wfatal-errors)
+#add_executable(main_keff src/main/main_keff.cpp)
+#target_link_libraries(main_keff PRIVATE FermiLib)
 
-set(SOURCES
-	src/gmsh.cpp 
-	src/list.cpp 
-	src/solve.cpp 
-	src/utils.cpp 
-	src/boundary.cpp 
-	src/finish.cpp 
-	src/assembly.cpp 
-	src/elemental.cpp 
-	src/fem.cpp 
-	src/finish.cpp 
-	src/init.cpp 
-	src/lst2msh.cpp 
-	src/mesh.cpp 
-	src/output.cpp 
-	src/parser.cpp 
-	src/power.cpp 
-)
+file(GLOB TEST_FILES "src/*_test.cc")
+include(GoogleTest)
 
-add_library(fermi_lib SHARED ${SOURCES})
-add_executable(fermi_keff src/fermi_keff.cpp)
-target_link_libraries(fermi_keff PUBLIC fermi_lib)
+foreach(TEST_FILE ${TEST_FILES})
+    get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
+    add_executable(${TEST_NAME} ${TEST_FILE})
+    target_link_libraries(${TEST_NAME} FermiLib gtest gtest_main pthread)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+	gtest_discover_tests(${TEST_NAME})
+endforeach()
 
 enable_testing()
