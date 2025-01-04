@@ -37,42 +37,47 @@ struct ElementDiffusion : public ElementBase<DIM> {
       : ElementBase<DIM>(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
 
   virtual std::vector<double> computeElementMatrix() const = 0;
-  virtual MatrixOperations<1>::Matrix computeJacobian(size_t gp) = 0;
+  virtual int computeInverseJacobian(MatrixOperations<DIM>::Matrix &jacobian, double &det, size_t gp) const = 0;
 };
 
 struct ElementSegment2 : public ElementDiffusion<1> {
   using ElementDiffusion::ElementDiffusion;
 
-  MatrixOperations<1>::Matrix computeJacobian(size_t gp) {
-    typename MatrixOperations<1>::Matrix jacobian = {};
+  int computeInverseJacobian(MatrixOperations<1>::Matrix &inverseJacobian, double &det, size_t gp) const {
     Segment2 segment2;
     auto dshapes = segment2.getDShapeFunctions();
     size_t num_nodes = nodes.size();
+    MatrixOperations<1>::Matrix jacobian;
     for (int i = 0; i < 1; i++) {
       for (int j = 0; j < 1; j++) {
         jacobian[i][j] = 0.0;
         for (int n = 0; n < num_nodes; n++) {
-          // jacobian[i][j] += dshapes[n][i][gp] * coor[n][j];
+          jacobian[i][j] += dshapes[n][i][gp] * nodes[n].x;
         }
       }
     }
-    return jacobian;
+    MatrixOperations<1>::inverse(inverseJacobian, jacobian, det);
+    return 0;
   }
 
   std::vector<double> computeElementMatrix() const override {
     size_t n = nodes.size();
     std::vector<double> matrix(n * n, 0.0);
     Segment2 segment2;
+    MatrixOperations<1>::Matrix inverseJacobian;
+    double det;
 
     auto shapes = segment2.getShapeFunctions();
     auto dshapes = segment2.getShapeFunctions();
     auto gauss_points = segment2.getGaussPoints();
     auto wgp = segment2.getWeights();
-    double det = 1.0;
-    for (int gp = 0; gp < gauss_points.size(); gp++) {
+    for (size_t gp = 0; gp < gauss_points.size(); gp++) {
+      computeInverseJacobian(inverseJacobian, det, gp);
+      auto dtshapes = segment2.getTransformedDShapeFunctions(inverseJacobian);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          matrix[n * i + j] += (-d + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
+          double laplacian = dtshapes[i][0][gp] * dtshapes[j][0][gp];
+          matrix[n * i + j] += (-d * laplacian + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
         }
       }
     }
