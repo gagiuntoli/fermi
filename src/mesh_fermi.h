@@ -35,7 +35,12 @@ Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
 
   std::vector<std::shared_ptr<ElementBase<1>>> elements;
   for (size_t i = 0; i < npoints - 1; i++) {
-    elements.push_back(std::make_shared<ElementSegment2>(std::vector<size_t>{i, i + 1}, 1.0, 1.0, 1.0, 1.0));
+    std::vector<size_t> nodeIndexes = {i, i + 1};
+    std::vector<Node> elemNodes;
+    for (const size_t& index : nodeIndexes) {
+      elemNodes.push_back(nodes[index]);
+    }
+    elements.push_back(std::make_shared<ElementSegment2>(elemNodes, nodeIndexes, 1.0, 1.0, 1.0, 1.0));
   }
 
   return Mesh<1>{.nodes = std::move(nodes), .elements = std::move(elements)};

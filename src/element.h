@@ -32,12 +32,32 @@ struct ElementDiffusion : public ElementBase<DIM> {
   double nu;
   double d;
 
-  ElementDiffusion(std::vector<size_t> nodes_, double xs_a_, double xs_f_, double nu_, double d_)
-      : ElementBase<DIM>(nodes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
+  ElementDiffusion(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_, double xs_a_, double xs_f_, double nu_,
+                   double d_)
+      : ElementBase<DIM>(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
+
+  virtual std::vector<double> computeElementMatrix() const = 0;
+  virtual MatrixOperations<1>::Matrix computeJacobian(size_t gp) = 0;
 };
 
 struct ElementSegment2 : public ElementDiffusion<1> {
   using ElementDiffusion::ElementDiffusion;
+
+  MatrixOperations<1>::Matrix computeJacobian(size_t gp) {
+    typename MatrixOperations<1>::Matrix jacobian = {};
+    Segment2 segment2;
+    auto dshapes = segment2.getDShapeFunctions();
+    size_t num_nodes = nodes.size();
+    for (int i = 0; i < 1; i++) {
+      for (int j = 0; j < 1; j++) {
+        jacobian[i][j] = 0.0;
+        for (int n = 0; n < num_nodes; n++) {
+          // jacobian[i][j] += dshapes[n][i][gp] * coor[n][j];
+        }
+      }
+    }
+    return jacobian;
+  }
 
   std::vector<double> computeElementMatrix() const override {
     size_t n = nodes.size();

@@ -31,17 +31,14 @@
 
 template <size_t DIM>
 struct ElementBase {
-  std::vector<size_t> nodes;
+  std::vector<size_t> nodeIndexes;
+  std::vector<Node> nodes;
 
-  ElementBase(std::vector<size_t> nodes_) : nodes(nodes_) {}
-
-  virtual std::vector<double> computeElementMatrix() const = 0;
-
-  // MatrixOperations<T>::Matrix computeJacobian();
+  ElementBase(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_) : nodeIndexes(nodeIndexes_), nodes(nodes_) {}
 
   const std::string toString() const {
     std::ostringstream oss;
-    for (const auto &node : nodes) {
+    for (const auto &node : nodeIndexes) {
       oss << node << ",";
     }
     auto result = oss.str();
