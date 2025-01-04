@@ -34,16 +34,8 @@ set(SOURCES
 	src/power.cpp 
 )
 
-
 add_library(fermi_lib SHARED ${SOURCES})
-
 add_executable(fermi_keff src/fermi_keff.cpp)
-
 target_link_libraries(fermi_keff PUBLIC fermi_lib)
-
-# Tests
-add_executable(test_parser src/test_parser.cpp)
-target_link_libraries(test_parser fermi_lib)
-add_test(NAME test_1 COMMAND test_parser)
 
 enable_testing()

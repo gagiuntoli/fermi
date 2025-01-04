@@ -1,5 +1,3 @@
-syntax: glob
-
 build
 
 *.vtk
@@ -28,17 +26,9 @@ fermi
 *.swp
 *.a
 *.la
+*.json
 
-# examples
 tmpi
 tmpi2
 control
 test.sh
-
-
-#PLEPP
-ple-config
-libtool
-doxygen
-config.status
-Execs
