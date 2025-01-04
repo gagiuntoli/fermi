@@ -119,63 +119,62 @@ double **sh_hexa_8;
 double ***ds_hexa_8;
 
 int main(int argc, char **argv) {
-    int step = 0;
-    char nam[32];
-    node_list_t *pNod;
+  int step = 0;
+  char nam[32];
+  node_list_t *pNod;
 
-    if (ferinit(argc, argv)) {
-        goto error;
-    }
+  if (ferinit(argc, argv)) {
+    goto error;
+  }
 
-    calcu.t = calcu.t0;
+  calcu.t = calcu.t0;
 
-    //==================================================
-    // Transient simulation
-    //
-    // 1) Calculate steady state solving Ax = (1/k) Bx
-    // 2) Calculates a "dt" increase in the flux solving
-    //    Ax = b
-    // 3) Repeat from "2)" up to achieving final time "tf"
-    //
-    PetscPrintf(FERMI_Comm, "calculating stationary state.\n");
+  //==================================================
+  // Transient simulation
+  //
+  // 1) Calculate steady state solving Ax = (1/k) Bx
+  // 2) Calculates a "dt" increase in the flux solving
+  //    Ax = b
+  // 3) Repeat from "2)" up to achieving final time "tf"
+  //
+  PetscPrintf(FERMI_Comm, "calculating stationary state.\n");
 
-    ferass_ST();
+  ferass_ST();
 
-    fersolv_ST();
+  fersolv_ST();
 
-    fer_norm();
+  fer_norm();
 
-    sprintf(nam, "steady_r%d", rank);
+  sprintf(nam, "steady_r%d", rank);
+  print_vtk(nam);
+
+  PetscPrintf(FERMI_Comm, "initial power:%e\n", power);
+  PetscPrintf(FERMI_Comm, "time    power   its\n");
+
+  pNod = calcu.time.head;
+  while (pNod) {
+    dtn = ((tcontrol_t *)pNod->data)->dt;
+
+    ferass_TR(step);
+
+    fersolv_TR();
+
+    fer_pow(&power);
+
+    PetscPrintf(FERMI_Comm, "%lf %e %d \n", calcu.t, power, its);
+
+    sprintf(nam, "tran_rank%d_t%d", rank, step);
     print_vtk(nam);
+    print_out(&phi_n, step);
 
-    PetscPrintf(FERMI_Comm, "initial power:%e\n", power);
-    PetscPrintf(FERMI_Comm, "time    power   its\n");
-
-    pNod = calcu.time.head;
-    while (pNod) {
-        dtn = ((tcontrol_t *)pNod->data)->dt;
-
-        ferass_TR(step);
-
-        fersolv_TR();
-
-        fer_pow(&power);
-
-        PetscPrintf(FERMI_Comm, "%lf %e %d \n", calcu.t, power, its);
-
-        sprintf(nam, "tran_rank%d_t%d", rank, step);
-        print_vtk(nam);
-        print_out(&phi_n, step);
-
-        calcu.t = calcu.t + dtn;
-        step++;
-        if (calcu.t > ((tcontrol_t *)pNod->data)->tf - 1.0e-8)
-            pNod = pNod->next;
-    }
+    calcu.t = calcu.t + dtn;
+    step++;
+    if (calcu.t > ((tcontrol_t *)pNod->data)->tf - 1.0e-8) pNod = pNod->next;
+  }
 
 error:
 
-    ferfini();
+  ferfini();
 
-    return 0;
+  return 0;
 }

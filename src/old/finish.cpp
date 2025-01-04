@@ -22,7 +22,6 @@
 #include "fermi.hpp"
 
 int ferfini(void) {
-
   // CLOSING OUTPUT FILES (in those who need it)
   node_list_t *pn;
   output_t *po;
@@ -30,17 +29,16 @@ int ferfini(void) {
   while (pn) {
     po = (output_t *)pn->data;
     switch (po->kind) {
+      case 1:
+        break;
 
-    case 1:
-      break;
+      case 2:
+        // power on physical entities as a function of time
+        fclose(po->kind_2.fp);
+        break;
 
-    case 2:
-      // power on physical entities as a function of time
-      fclose(po->kind_2.fp);
-      break;
-
-    default:
-      return 1;
+      default:
+        return 1;
     }
     pn = pn->next;
   }

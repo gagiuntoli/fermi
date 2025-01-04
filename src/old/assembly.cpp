@@ -83,8 +83,7 @@ int ferass_TR_1(int step) {
     MatZeroEntries(M);
     for (e = 0; e < mesh.nelemv; e++) {
       if (ferelem_M(e)) {
-        PetscPrintf(FERMI_Comm,
-                    "Problem calculating elemental objects TR steps.\n");
+        PetscPrintf(FERMI_Comm, "Problem calculating elemental objects TR steps.\n");
         return 1;
       }
       MatSetValues(M, nke, idxm, nke, idxm, Me, ADD_VALUES);
@@ -119,7 +118,6 @@ int ferass_TR_1(int step) {
 }
 
 int ferass_ST(void) {
-
   /* Assemblies object for the ST simulation */
   int e;
   node_list_t *pr, *px, *pe;
@@ -131,8 +129,7 @@ int ferass_ST(void) {
 
   for (e = 0; e < mesh.nelemv; e++) {
     if (ferelem_AB(e)) {
-      PetscPrintf(FERMI_Comm,
-                  "Problem calculating elemental objects ST steps.\n");
+      PetscPrintf(FERMI_Comm, "Problem calculating elemental objects ST steps.\n");
       return 1;
     }
     MatSetValues(A, nke, idxm, nke, idxm, Ae, ADD_VALUES);

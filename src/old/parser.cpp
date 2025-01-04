@@ -28,25 +28,19 @@
 #define NBUF 128
 
 int parse_input(void) {
-
   if (access(inputfile, F_OK) == -1) {
     PetscPrintf(FERMI_Comm, "parser.c: file %s not found.\n", inputfile);
     return 1;
   }
 
-  if (parse_mesh())
-    return 1;
-  if (parse_mats())
-    return 2;
-  if (parse_boun())
-    return 5;
-  if (parse_outp())
-    return 7;
+  if (parse_mesh()) return 1;
+  if (parse_mats()) return 2;
+  if (parse_boun()) return 5;
+  if (parse_outp()) return 7;
   return 0;
 }
 
 int parse_mesh(void) {
-
   FILE *file = fopen(inputfile, "r");
   char *data, buf[NBUF];
   int fl = 0, com = 0, ln = 0;
@@ -112,8 +106,7 @@ int parse_mesh(void) {
           return 1;
         }
       }
-      if (fl == 1)
-        fl = 2;
+      if (fl == 1) fl = 2;
     }
   }
   fclose(file);
@@ -149,8 +142,7 @@ int parse_mats(void) {
           }
           egn = atoi(data);
           if (egn < 1) {
-            PetscPrintf(FERMI_Comm,
-                        "parser.c:egn should positive at line %d.\n", ln);
+            PetscPrintf(FERMI_Comm, "parser.c:egn should positive at line %d.\n", ln);
             return 1;
           }
           veloc = (double *)calloc(egn, sizeof(double));
@@ -168,8 +160,7 @@ int parse_mats(void) {
           }
           pgn = atoi(data);
           if (pgn < 1) {
-            PetscPrintf(FERMI_Comm,
-                        "parser.c:pgn should positive at line %d.\n", ln);
+            PetscPrintf(FERMI_Comm, "parser.c:pgn should positive at line %d.\n", ln);
             return 1;
           }
           beta = (double *)calloc(pgn, sizeof(double));
@@ -214,9 +205,7 @@ int parse_mats(void) {
           com = com | 8;
         } else if (data[0] != '#') {
           if ((com & 1) != 1) {
-            PetscPrintf(FERMI_Comm,
-                        "parser.c:egn should be before xs values at line %d.\n",
-                        ln);
+            PetscPrintf(FERMI_Comm, "parser.c:egn should be before xs values at line %d.\n", ln);
             return 1;
           }
           mat.D = (double *)calloc(egn, sizeof(double));
@@ -229,12 +218,10 @@ int parse_mats(void) {
             PetscPrintf(FERMI_Comm, "parser.c:BF line %d.\n", ln);
             return 1;
           }
-          if (list_insert_se(&list_mater, (void *)&mat))
-            return 1;
+          if (list_insert_se(&list_mater, (void *)&mat)) return 1;
         }
       }
-      if (fl == 1)
-        fl = 2;
+      if (fl == 1) fl = 2;
     }
   }
   fclose(file);
@@ -242,7 +229,6 @@ int parse_mats(void) {
 }
 
 int parse_boun(void) {
-
   FILE *file = fopen(inputfile, "r");
   char *data, buf[NBUF], bufcpy[NBUF];
   int fl = 0, ln = 0;
@@ -257,8 +243,7 @@ int parse_boun(void) {
         fl = 1;
       } else if (!strcmp(data, "$EndBoundary")) {
         if (!list_bound.sizelist) {
-          PetscPrintf(FERMI_Comm, "parser.c: No boundaries in %s.\n",
-                      inputfile);
+          PetscPrintf(FERMI_Comm, "parser.c: No boundaries in %s.\n", inputfile);
           return 1;
         }
         return 0;
@@ -272,8 +257,7 @@ int parse_boun(void) {
           list_insert_se(&list_bound, (void *)&bou);
         }
       }
-      if (fl == 1)
-        fl = 2;
+      if (fl == 1) fl = 2;
     }
   }
   fclose(file);
@@ -281,23 +265,18 @@ int parse_boun(void) {
 }
 
 int parse_material(char *buff, pvl_t *mat) {
-
   char *data;
   int i;
 
-  if (!strlen(buff))
-    return 1;
+  if (!strlen(buff)) return 1;
   data = strtok(buff, " \n");
-  if (!data)
-    return 1;
-  if (data[0] != '\"' || data[strlen(data) - 1] != '\"')
-    return 1;
+  if (!data) return 1;
+  if (data[0] != '\"' || data[strlen(data) - 1] != '\"') return 1;
   strcpy(mat->name, data);
 
   /* second column is 0|1 which means if the mat has or not has precursors */
   data = strtok(NULL, " \n");
-  if (!data)
-    return 1;
+  if (!data) return 1;
   if (atoi(data) == 1 || atoi(data) == 0) {
     mat->hasprec = atoi(data);
   }
@@ -305,55 +284,48 @@ int parse_material(char *buff, pvl_t *mat) {
   /* diffusion coeficients */
   for (i = 0; i < egn; i++) {
     data = strtok(NULL, " \n");
-    if (!data)
-      return 1;
+    if (!data) return 1;
     mat->D[i] = atof(data);
   }
 
   /* absortion cross sections */
   for (i = 0; i < egn; i++) {
     data = strtok(NULL, " \n");
-    if (!data)
-      return 1;
+    if (!data) return 1;
     mat->xs_a[i] = atof(data);
   }
 
   /* scattering cross sections */
   for (i = 0; i < egn * (egn - 1); i++) {
     data = strtok(NULL, " \n");
-    if (!data)
-      return 1;
+    if (!data) return 1;
     mat->xs_s[i] = atof(data);
   }
 
   /* fission cross sections */
   for (i = 0; i < egn; i++) {
     data = strtok(NULL, " \n");
-    if (!data)
-      return 1;
+    if (!data) return 1;
     mat->nxs_f[i] = atof(data);
   }
 
   /* energy cross sections */
   for (i = 0; i < egn; i++) {
     data = strtok(NULL, " \n");
-    if (!data)
-      return 1;
+    if (!data) return 1;
     mat->exs_f[i] = atof(data);
   }
 
   /* fission spectrum */
   for (i = 0; i < egn; i++) {
     data = strtok(NULL, " \n");
-    if (!data)
-      return 1;
+    if (!data) return 1;
     mat->chi[i] = atof(data);
   }
   return 0;
 }
 
 int parse_outp(void) {
-
   /*
      Parse for $Output word on parser
      it could be repeated, each one has a different kind
@@ -372,17 +344,15 @@ int parse_outp(void) {
     strcpy(buf_a, buf);
     data = strtok(buf_a, " \n");
 
-    if (data) { // if the line is not empty
+    if (data) {  // if the line is not empty
 
       if (!strcmp(data, "$Output")) {
         fl = 1;
       } else if (!strcmp(data, "$EndOutput")) {
         if (output.kind == 1) {
-
           list_insertlast(&list_outpu, (void *)&output);
 
         } else if (output.kind == 2) {
-
           list_insertlast(&list_outpu, (void *)&output);
 
         } else {
@@ -393,74 +363,63 @@ int parse_outp(void) {
       }
 
       if (fl == 2 && data[0] != '#') {
-
         // we are in the line after $Output
-        if (get_int(buf, "kind", &output.kind))
-          return 1;
+        if (get_int(buf, "kind", &output.kind)) return 1;
 
         switch (output.kind) {
+          case 1:
+            break;
 
-        case 1:
-          break;
+          case 2:
 
-        case 2:
+            /*
+               kind = 2
 
-          /*
-             kind = 2
+               power on different physical entities on ASCII file
+               file <file.dat>
+               nphy <num_of_phys>
+               "phys_1" "phys_2" ... "phys_n"
 
-             power on different physical entities on ASCII file
-             file <file.dat>
-             nphy <num_of_phys>
-             "phys_1" "phys_2" ... "phys_n"
+             */
 
-           */
+            if (!fgets(buf, NBUF, file)) return 1;
+            ln++;
 
-          if (!fgets(buf, NBUF, file))
-            return 1;
-          ln++;
+            if (get_char(buf, "file", output.kind_2.file)) return 1;
 
-          if (get_char(buf, "file", output.kind_2.file))
-            return 1;
+            if (!fgets(buf, NBUF, file)) return 1;
+            ln++;
 
-          if (!fgets(buf, NBUF, file))
-            return 1;
-          ln++;
+            if (get_int(buf, "nphy", &output.kind_2.nphy)) return 1;
+            output.kind_2.phys = (char **)malloc(output.kind_2.nphy * sizeof(char *));
+            output.kind_2.ids = (int *)malloc(output.kind_2.nphy * sizeof(int *));
+            output.kind_2.pow = (double *)malloc(output.kind_2.nphy * sizeof(double *));
+            for (i = 0; i < output.kind_2.nphy; i++) {
+              output.kind_2.phys[i] = (char *)malloc(16 * sizeof(char));
+            }
 
-          if (get_int(buf, "nphy", &output.kind_2.nphy))
-            return 1;
-          output.kind_2.phys =
-              (char **)malloc(output.kind_2.nphy * sizeof(char *));
-          output.kind_2.ids = (int *)malloc(output.kind_2.nphy * sizeof(int *));
-          output.kind_2.pow =
-              (double *)malloc(output.kind_2.nphy * sizeof(double *));
-          for (i = 0; i < output.kind_2.nphy; i++) {
-            output.kind_2.phys[i] = (char *)malloc(16 * sizeof(char));
-          }
+            if (!fgets(buf, NBUF, file)) return 1;
+            ln++;
 
-          if (!fgets(buf, NBUF, file))
-            return 1;
-          ln++;
+            // now we read the physical entities names
+            data = strtok(buf, " \n");
+            i = 0;
+            while (i < output.kind_2.nphy && data != NULL) {
+              strcpy(output.kind_2.phys[i], data);
+              data = strtok(NULL, " \n");
+              i++;
+            }
+            if (i != output.kind_2.nphy) {
+              return 1;
+            }
 
-          // now we read the physical entities names
-          data = strtok(buf, " \n");
-          i = 0;
-          while (i < output.kind_2.nphy && data != NULL) {
-            strcpy(output.kind_2.phys[i], data);
-            data = strtok(NULL, " \n");
-            i++;
-          }
-          if (i != output.kind_2.nphy) {
-            return 1;
-          }
+            break;
 
-          break;
-
-        default:
-          break;
+          default:
+            break;
         }
       }
-      if (fl == 1)
-        fl = 2;
+      if (fl == 1) fl = 2;
     }
   }
   fclose(file);
@@ -468,7 +427,6 @@ int parse_outp(void) {
 }
 
 int get_int(char *buf, const char *name, int *a) {
-
   /*
      Looks in "buf" for :
      "name" <(int) a>
@@ -501,7 +459,6 @@ int get_int(char *buf, const char *name, int *a) {
 }
 
 int get_char(char *buf, const char *name, char *a) {
-
   /*
      Looks in "buf" for :
      "name" <(char) a>
@@ -534,27 +491,21 @@ int get_char(char *buf, const char *name, char *a) {
 }
 
 int parse_boundary(char *buff, bound_t *bou) {
-
   char *data;
 
-  if (!strlen(buff))
-    return 1;
+  if (!strlen(buff)) return 1;
 
   data = strtok(buff, " \n");
-  if (!data)
-    return 1;
-  if (data[0] != '\"' || data[strlen(data) - 1] != '\"')
-    return 1;
+  if (!data) return 1;
+  if (data[0] != '\"' || data[strlen(data) - 1] != '\"') return 1;
   strcpy(bou->name, data);
 
   data = strtok(NULL, " \n");
-  if (!data)
-    return 1;
+  if (!data) return 1;
   bou->order = atoi(data);
 
   data = strtok(NULL, " \n");
-  if (!data)
-    return 1;
+  if (!data) return 1;
   bou->kind = atoi(data);
 
   list_init(&bou->nodeL, sizeof(int), cmp_int);
@@ -564,7 +515,6 @@ int parse_boundary(char *buff, bound_t *bou) {
 }
 
 int cmp_bou(void *a, void *b) {
-
   if (((bound_t *)a)->order > ((bound_t *)b)->order) {
     return 1;
   } else if (((bound_t *)a)->order == ((bound_t *)b)->order) {
@@ -574,6 +524,4 @@ int cmp_bou(void *a, void *b) {
   }
 }
 
-int cmp_mat(void *a, void *b) {
-  return (strcmp(((pvl_t *)a)->name, ((pvl_t *)b)->name) == 0) ? 0 : -1;
-}
+int cmp_mat(void *a, void *b) { return (strcmp(((pvl_t *)a)->name, ((pvl_t *)b)->name) == 0) ? 0 : -1; }

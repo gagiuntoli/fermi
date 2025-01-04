@@ -42,7 +42,6 @@ int cmp_dou(void *a, void *b) {
 }
 
 int strBin2Dec(char *str, int *dec) {
-
   /* Converts the string in "str" that suppose to have a continuue
    * sequence of "0" and "1" to its decimal representation.
    */
@@ -51,8 +50,7 @@ int strBin2Dec(char *str, int *dec) {
   *dec = 0;
   for (i = strlen(str) - 1; i >= 0; i--) {
     if (str[i] == '0' || str[i] == '1') {
-      if (str[i] == '1')
-        *dec += (int)pow(2, strlen(str) - 1 - i);
+      if (str[i] == '1') *dec += (int)pow(2, strlen(str) - 1 - i);
     } else {
       return 1;
     }

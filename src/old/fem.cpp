@@ -22,20 +22,17 @@
 #include "fermi.hpp"
 
 int fem_inigau(void) {
-
   int i, j, gp;
 
   xp_segm_2 = (double **)calloc(2, sizeof(double *));
   wp_segm_2 = (double *)calloc(2, sizeof(double));
   sh_segm_2 = (double **)calloc(2, sizeof(double *));
   ds_segm_2 = (double ***)calloc(2, sizeof(double **));
-  for (i = 0; i < 2; i++)
-    ds_segm_2[i] = (double **)calloc(1, sizeof(double *));
+  for (i = 0; i < 2; i++) ds_segm_2[i] = (double **)calloc(1, sizeof(double *));
   for (i = 0; i < 2; i++) {
     xp_segm_2[i] = (double *)calloc(1, sizeof(double));
     sh_segm_2[i] = (double *)calloc(2, sizeof(double));
-    for (j = 0; j < 1; j++)
-      ds_segm_2[i][j] = (double *)calloc(2, sizeof(double));
+    for (j = 0; j < 1; j++) ds_segm_2[i][j] = (double *)calloc(2, sizeof(double));
   }
   xp_segm_2[0][0] = -0.577350269189626;
   wp_segm_2[0] = +1.0;
@@ -53,13 +50,11 @@ int fem_inigau(void) {
   wp_tria_3 = (double *)calloc(3, sizeof(double));
   sh_tria_3 = (double **)calloc(3, sizeof(double *));
   ds_tria_3 = (double ***)calloc(3, sizeof(double **));
-  for (i = 0; i < 3; i++)
-    ds_tria_3[i] = (double **)calloc(2, sizeof(double *));
+  for (i = 0; i < 3; i++) ds_tria_3[i] = (double **)calloc(2, sizeof(double *));
   for (i = 0; i < 3; i++) {
     xp_tria_3[i] = (double *)calloc(2, sizeof(double));
     sh_tria_3[i] = (double *)calloc(3, sizeof(double));
-    for (j = 0; j < 2; j++)
-      ds_tria_3[i][j] = (double *)calloc(3, sizeof(double));
+    for (j = 0; j < 2; j++) ds_tria_3[i][j] = (double *)calloc(3, sizeof(double));
   }
   xp_tria_3[0][0] = +0.166666666666666;
   xp_tria_3[0][1] = +0.166666666666666;
@@ -92,13 +87,11 @@ int fem_inigau(void) {
   sh_quad_4 = (double **)calloc(4, sizeof(double *));
   ds_quad_4 = (double ***)calloc(4, sizeof(double **));
 
-  for (i = 0; i < 4; i++)
-    ds_quad_4[i] = (double **)calloc(2, sizeof(double *));
+  for (i = 0; i < 4; i++) ds_quad_4[i] = (double **)calloc(2, sizeof(double *));
   for (i = 0; i < 4; i++) {
     xp_quad_4[i] = (double *)calloc(2, sizeof(double));
     sh_quad_4[i] = (double *)calloc(4, sizeof(double));
-    for (j = 0; j < 2; j++)
-      ds_quad_4[i][j] = (double *)calloc(4, sizeof(double));
+    for (j = 0; j < 2; j++) ds_quad_4[i][j] = (double *)calloc(4, sizeof(double));
   }
 
   xp_quad_4[0][0] = -0.577350269189626;
@@ -114,23 +107,19 @@ int fem_inigau(void) {
   xp_quad_4[3][1] = +0.577350269189626;
   wp_quad_4[3] = +1.0;
   for (gp = 0; gp < 4; gp++) {
-    sh_quad_4[0][gp] =
-        (1.0 - xp_quad_4[gp][0]) * (1.0 - xp_quad_4[gp][1]) * 0.25;
+    sh_quad_4[0][gp] = (1.0 - xp_quad_4[gp][0]) * (1.0 - xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[0][0][gp] = -1.0 * (1.0 - xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[0][1][gp] = -1.0 * (1.0 - xp_quad_4[gp][0]) * 0.25;
 
-    sh_quad_4[1][gp] =
-        (1.0 + xp_quad_4[gp][0]) * (1.0 - xp_quad_4[gp][1]) * 0.25;
+    sh_quad_4[1][gp] = (1.0 + xp_quad_4[gp][0]) * (1.0 - xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[1][0][gp] = +1.0 * (1.0 - xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[1][1][gp] = -1.0 * (1.0 + xp_quad_4[gp][0]) * 0.25;
 
-    sh_quad_4[2][gp] =
-        (1.0 + xp_quad_4[gp][0]) * (1.0 + xp_quad_4[gp][1]) * 0.25;
+    sh_quad_4[2][gp] = (1.0 + xp_quad_4[gp][0]) * (1.0 + xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[2][0][gp] = +1.0 * (1.0 + xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[2][1][gp] = +1.0 * (1.0 + xp_quad_4[gp][0]) * 0.25;
 
-    sh_quad_4[3][gp] =
-        (1.0 - xp_quad_4[gp][0]) * (1.0 + xp_quad_4[gp][1]) * 0.25;
+    sh_quad_4[3][gp] = (1.0 - xp_quad_4[gp][0]) * (1.0 + xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[3][0][gp] = -1.0 * (1.0 + xp_quad_4[gp][1]) * 0.25;
     ds_quad_4[3][1][gp] = +1.0 * (1.0 - xp_quad_4[gp][0]) * 0.25;
   }
@@ -139,13 +128,11 @@ int fem_inigau(void) {
   wp_tetra_4 = (double *)calloc(4, sizeof(double));
   sh_tetra_4 = (double **)calloc(4, sizeof(double *));
   ds_tetra_4 = (double ***)calloc(4, sizeof(double **));
-  for (i = 0; i < 4; i++)
-    ds_tetra_4[i] = (double **)calloc(3, sizeof(double *));
+  for (i = 0; i < 4; i++) ds_tetra_4[i] = (double **)calloc(3, sizeof(double *));
   for (i = 0; i < 4; i++) {
     xp_tetra_4[i] = (double *)calloc(3, sizeof(double));
     sh_tetra_4[i] = (double *)calloc(4, sizeof(double));
-    for (j = 0; j < 3; j++)
-      ds_tetra_4[i][j] = (double *)calloc(4, sizeof(double));
+    for (j = 0; j < 3; j++) ds_tetra_4[i][j] = (double *)calloc(4, sizeof(double));
   }
   xp_tetra_4[0][0] = +0.138196601125011;
   xp_tetra_4[0][1] = +0.138196601125011;
@@ -168,8 +155,7 @@ int fem_inigau(void) {
   wp_tetra_4[3] = +0.041666666666666;
 
   for (gp = 0; gp < 4; gp++) {
-    sh_tetra_4[0][gp] =
-        1.0 - xp_tetra_4[gp][0] - xp_tetra_4[gp][1] - xp_tetra_4[gp][2];
+    sh_tetra_4[0][gp] = 1.0 - xp_tetra_4[gp][0] - xp_tetra_4[gp][1] - xp_tetra_4[gp][2];
     ds_tetra_4[0][0][gp] = -1.0;
     ds_tetra_4[0][1][gp] = -1.0;
     ds_tetra_4[0][2][gp] = -1.0;
@@ -194,51 +180,47 @@ int fem_inigau(void) {
   wp_prism_6 = (double *)calloc(6, sizeof(double));
   sh_prism_6 = (double **)calloc(6, sizeof(double *));
   ds_prism_6 = (double ***)calloc(6, sizeof(double **));
-  for (i = 0; i < 6; i++)
-    ds_prism_6[i] = (double **)calloc(3, sizeof(double *));
+  for (i = 0; i < 6; i++) ds_prism_6[i] = (double **)calloc(3, sizeof(double *));
   for (i = 0; i < 6; i++) {
     xp_prism_6[i] = (double *)calloc(3, sizeof(double));
     sh_prism_6[i] = (double *)calloc(6, sizeof(double));
-    for (j = 0; j < 3; j++)
-      ds_prism_6[i][j] = (double *)calloc(6, sizeof(double));
+    for (j = 0; j < 3; j++) ds_prism_6[i][j] = (double *)calloc(6, sizeof(double));
   }
   xp_prism_6[0][0] = +0.166666666666666;
   xp_prism_6[0][1] = +0.166666666666666;
-  xp_prism_6[0][2] = -0.577350269189626; //+0.166666666666666;
+  xp_prism_6[0][2] = -0.577350269189626;  //+0.166666666666666;
   wp_prism_6[0] = +0.166666666666666;
 
   xp_prism_6[1][0] = +0.666666666666666;
   xp_prism_6[1][1] = +0.166666666666666;
-  xp_prism_6[1][2] = -0.577350269189626; //+0.166666666666666;
+  xp_prism_6[1][2] = -0.577350269189626;  //+0.166666666666666;
   wp_prism_6[1] = +0.166666666666666;
 
   xp_prism_6[2][0] = +0.166666666666666;
   xp_prism_6[2][1] = +0.666666666666666;
-  xp_prism_6[2][2] = -0.577350269189626; //+0.166666666666666;
+  xp_prism_6[2][2] = -0.577350269189626;  //+0.166666666666666;
   wp_prism_6[2] = +0.166666666666666;
 
   xp_prism_6[3][0] = +0.166666666666666;
   xp_prism_6[3][1] = +0.166666666666666;
-  xp_prism_6[3][2] = +0.577350269189626; //+0.666666666666666;
+  xp_prism_6[3][2] = +0.577350269189626;  //+0.666666666666666;
   wp_prism_6[3] = +0.166666666666666;
 
   xp_prism_6[4][0] = +0.666666666666666;
   xp_prism_6[4][1] = +0.166666666666666;
-  xp_prism_6[4][2] = +0.577350269189626; //+0.666666666666666;
+  xp_prism_6[4][2] = +0.577350269189626;  //+0.666666666666666;
   wp_prism_6[4] = +0.166666666666666;
 
   xp_prism_6[5][0] = +0.166666666666666;
   xp_prism_6[5][1] = +0.666666666666666;
-  xp_prism_6[5][2] = +0.577350269189626; //+0.666666666666666;
+  xp_prism_6[5][2] = +0.577350269189626;  //+0.666666666666666;
   wp_prism_6[5] = +0.166666666666666;
 
   for (gp = 0; gp < 6; gp++) {
-    sh_prism_6[0][gp] = (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) *
-                        (1.0 - xp_prism_6[gp][2]) * 0.5;
+    sh_prism_6[0][gp] = (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) * (1.0 - xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[0][0][gp] = -1.0 * (1.0 - xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[0][1][gp] = -1.0 * (1.0 - xp_prism_6[gp][2]) * 0.5;
-    ds_prism_6[0][2][gp] =
-        -1.0 * (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) * 0.5;
+    ds_prism_6[0][2][gp] = -1.0 * (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) * 0.5;
 
     sh_prism_6[1][gp] = xp_prism_6[gp][0] * (1.0 - xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[1][0][gp] = +1.0 * (1.0 - xp_prism_6[gp][2]) * 0.5;
@@ -250,12 +232,10 @@ int fem_inigau(void) {
     ds_prism_6[2][1][gp] = +1.0 * (1.0 - xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[2][2][gp] = -1.0 * xp_prism_6[gp][1] * 0.5;
 
-    sh_prism_6[3][gp] = (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) *
-                        (1.0 + xp_prism_6[gp][2]) * 0.5;
+    sh_prism_6[3][gp] = (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) * (1.0 + xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[3][0][gp] = -1.0 * (1.0 + xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[3][1][gp] = -1.0 * (1.0 + xp_prism_6[gp][2]) * 0.5;
-    ds_prism_6[3][2][gp] =
-        +1.0 * (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) * 0.5;
+    ds_prism_6[3][2][gp] = +1.0 * (1.0 - xp_prism_6[gp][0] - xp_prism_6[gp][1]) * 0.5;
 
     sh_prism_6[4][gp] = xp_prism_6[gp][0] * (1.0 + xp_prism_6[gp][2]) * 0.5;
     ds_prism_6[4][0][gp] = +1.0 * (1.0 + xp_prism_6[gp][2]) * 0.5;
@@ -272,13 +252,11 @@ int fem_inigau(void) {
   wp_hexa_8 = (double *)calloc(8, sizeof(double));
   sh_hexa_8 = (double **)calloc(8, sizeof(double *));
   ds_hexa_8 = (double ***)calloc(8, sizeof(double **));
-  for (i = 0; i < 8; i++)
-    ds_hexa_8[i] = (double **)calloc(3, sizeof(double *));
+  for (i = 0; i < 8; i++) ds_hexa_8[i] = (double **)calloc(3, sizeof(double *));
   for (i = 0; i < 8; i++) {
     xp_hexa_8[i] = (double *)calloc(3, sizeof(double));
     sh_hexa_8[i] = (double *)calloc(8, sizeof(double));
-    for (j = 0; j < 3; j++)
-      ds_hexa_8[i][j] = (double *)calloc(8, sizeof(double));
+    for (j = 0; j < 3; j++) ds_hexa_8[i][j] = (double *)calloc(8, sizeof(double));
   }
   xp_hexa_8[0][0] = -0.577350269189626;
   xp_hexa_8[0][1] = -0.577350269189626;
@@ -321,87 +299,53 @@ int fem_inigau(void) {
   wp_hexa_8[7] = +1.0;
 
   for (gp = 0; gp < 8; gp++) {
-    sh_hexa_8[0][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) *
-                       (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[0][0][gp] =
-        -1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[0][1][gp] =
-        -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[0][2][gp] =
-        -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[0][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[0][0][gp] = -1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[0][1][gp] = -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[0][2][gp] = -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[1][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) *
-                       (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[1][0][gp] =
-        +1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[1][1][gp] =
-        -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[1][2][gp] =
-        -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[1][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[1][0][gp] = +1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[1][1][gp] = -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[1][2][gp] = -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[2][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) *
-                       (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[2][0][gp] =
-        +1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[2][1][gp] =
-        +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[2][2][gp] =
-        -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[2][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[2][0][gp] = +1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[2][1][gp] = +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[2][2][gp] = -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[3][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) *
-                       (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[3][0][gp] =
-        -1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[3][1][gp] =
-        +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[3][2][gp] =
-        -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[3][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[3][0][gp] = -1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[3][1][gp] = +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[3][2][gp] = -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[4][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) *
-                       (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[4][0][gp] =
-        -1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[4][1][gp] =
-        -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[4][2][gp] =
-        +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[4][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[4][0][gp] = -1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[4][1][gp] = -1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[4][2][gp] = +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[5][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) *
-                       (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[5][0][gp] =
-        +1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[5][1][gp] =
-        -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[5][2][gp] =
-        +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[5][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[5][0][gp] = +1.0 * (1.0 - xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[5][1][gp] = -1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[5][2][gp] = +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 - xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[6][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) *
-                       (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[6][0][gp] =
-        +1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[6][1][gp] =
-        +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[6][2][gp] =
-        +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[6][gp] = (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[6][0][gp] = +1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[6][1][gp] = +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[6][2][gp] = +1.0 * (1.0 + xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
 
-    sh_hexa_8[7][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) *
-                       (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[7][0][gp] =
-        -1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[7][1][gp] =
-        +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
-    ds_hexa_8[7][2][gp] =
-        +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
+    sh_hexa_8[7][gp] = (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[7][0][gp] = -1.0 * (1.0 + xp_hexa_8[gp][1]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[7][1][gp] = +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][2]) * 0.125;
+    ds_hexa_8[7][2][gp] = +1.0 * (1.0 - xp_hexa_8[gp][0]) * (1.0 + xp_hexa_8[gp][1]) * 0.125;
   }
 
   return 0;
 }
 
-int fem_caljac(double **coor, double ***ds, int npe, int gp, int dim,
-               double **jac) {
+int fem_caljac(double **coor, double ***ds, int npe, int gp, int dim, double **jac) {
   int i, j, n;
-  if (!jac || !coor || !ds)
-    return 1;
+  if (!jac || !coor || !ds) return 1;
   for (i = 0; i < dim; i++) {
     for (j = 0; j < dim; j++) {
       jac[i][j] = 0.0;
@@ -414,9 +358,7 @@ int fem_caljac(double **coor, double ***ds, int npe, int gp, int dim,
 }
 
 int fem_invjac(double **jac, int dim, double **ijac, double *det) {
-
-  if (!jac || !ijac)
-    return 1;
+  if (!jac || !ijac) return 1;
   if (dim == 1) {
     *det = jac[0][0];
     ijac[0][0] = 1.0 / (*det);
@@ -460,11 +402,9 @@ int fem_invjac(double **jac, int dim, double **ijac, double *det) {
   return 1;
 }
 
-int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder,
-               double **der) {
+int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder, double **der) {
   int i, j, sh;
-  if (!ijac || !oder || !der)
-    return 1;
+  if (!ijac || !oder || !der) return 1;
   for (sh = 0; sh < nsh; sh++) {
     for (i = 0; i < dim; i++) {
       der[sh][i] = 0.0;
@@ -478,131 +418,127 @@ int fem_calder(double **ijac, int nsh, int dim, int gp, double ***oder,
 
 int fem_calshp(int npe, int dim, double ***sh) {
   switch (dim) {
-  case 1:
-    break;
-  case 2:
-    switch (npe) {
+    case 1:
+      break;
+    case 2:
+      switch (npe) {
+        case 3:
+          *sh = sh_tria_3;
+          break;
+        case 4:
+          *sh = sh_quad_4;
+          break;
+        default:
+          return 1;
+          break;
+      }
+      break;
     case 3:
-      *sh = sh_tria_3;
-      break;
-    case 4:
-      *sh = sh_quad_4;
-      break;
-    default:
-      return 1;
-      break;
-    }
-    break;
-  case 3:
-    switch (npe) {
-    case 4:
-      *sh = sh_tetra_4;
-      break;
-    case 6:
-      *sh = sh_prism_6;
-      break;
-    case 8:
-      *sh = sh_hexa_8;
+      switch (npe) {
+        case 4:
+          *sh = sh_tetra_4;
+          break;
+        case 6:
+          *sh = sh_prism_6;
+          break;
+        case 8:
+          *sh = sh_hexa_8;
+          break;
+        default:
+          return 1;
+          break;
+      }
       break;
     default:
       return 1;
       break;
-    }
-    break;
-  default:
-    return 1;
-    break;
   }
   return 0;
 }
 
 int fem_calode(int npe, int dim, double ****oder) {
-
   switch (dim) {
-  case 1:
-    break;
-  case 2:
-    switch (npe) {
+    case 1:
+      break;
+    case 2:
+      switch (npe) {
+        case 3:
+          *oder = ds_tria_3;
+          break;
+        case 4:
+          *oder = ds_quad_4;
+          break;
+        default:
+          return 1;
+          break;
+      }
+      break;
     case 3:
-      *oder = ds_tria_3;
-      break;
-    case 4:
-      *oder = ds_quad_4;
-      break;
-    default:
-      return 1;
-      break;
-    }
-    break;
-  case 3:
-    switch (npe) {
-    case 4:
-      *oder = ds_tetra_4;
-      break;
-    case 6:
-      *oder = ds_prism_6;
-      break;
-    case 8:
-      *oder = ds_hexa_8;
+      switch (npe) {
+        case 4:
+          *oder = ds_tetra_4;
+          break;
+        case 6:
+          *oder = ds_prism_6;
+          break;
+        case 8:
+          *oder = ds_hexa_8;
+          break;
+        default:
+          return 1;
+          break;
+      }
       break;
     default:
       return 1;
       break;
-    }
-    break;
-  default:
-    return 1;
-    break;
   }
   return 0;
 }
 
 int fem_calwei(int npe, int dim, double **wp) {
   switch (dim) {
-  case 1:
-    break;
-  case 2:
-    switch (npe) {
+    case 1:
+      break;
+    case 2:
+      switch (npe) {
+        case 3:
+          *wp = wp_tria_3;
+          return 0;
+        case 4:
+          *wp = wp_quad_4;
+          return 0;
+        default:
+          return 1;
+      }
+      break;
     case 3:
-      *wp = wp_tria_3;
-      return 0;
-    case 4:
-      *wp = wp_quad_4;
-      return 0;
+      switch (npe) {
+        case 4:
+          *wp = wp_tetra_4;
+          return 0;
+        case 6:
+          *wp = wp_prism_6;
+          return 0;
+        case 8:
+          *wp = wp_hexa_8;
+          return 0;
+        default:
+          return 1;
+      }
     default:
       return 1;
-    }
-    break;
-  case 3:
-    switch (npe) {
-    case 4:
-      *wp = wp_tetra_4;
-      return 0;
-    case 6:
-      *wp = wp_prism_6;
-      return 0;
-    case 8:
-      *wp = wp_hexa_8;
-      return 0;
-    default:
-      return 1;
-    }
-  default:
-    return 1;
   }
   return 1;
 }
 
 int fem_calare(double **pts, int npe, int dim, double *area) {
-
   int d;
   double v1[3], v2[3], v3[3], vr[3], mod;
   *area = 0.0;
   if (dim == 1) {
-
     return 0;
   } else if (dim == 2) {
-
     return 0;
   } else if (dim == 3) {
     if (npe == 3) {
@@ -633,21 +569,16 @@ int fem_calare(double **pts, int npe, int dim, double *area) {
 }
 
 int fem_vecmod(double *vec, int n, double *mod) {
-
   int d;
-  if (!vec || !mod)
-    return 1;
+  if (!vec || !mod) return 1;
   *mod = 0.0;
-  for (d = 0; d < n; d++)
-    *mod += pow(vec[d], 2);
+  for (d = 0; d < n; d++) *mod += pow(vec[d], 2);
   *mod = sqrt(*mod);
   return 0;
 }
 
 int fem_vcross(double *v1, double *v2, double *vr) {
-
-  if (!v1 || !v2 || !vr)
-    return 1;
+  if (!v1 || !v2 || !vr) return 1;
   vr[0] = v1[1] * v2[2] - v2[1] * v1[2];
   vr[1] = v1[0] * v2[2] - v2[2] * v1[0];
   vr[2] = v1[0] * v2[1] - v2[0] * v1[1];
@@ -655,7 +586,6 @@ int fem_vcross(double *v1, double *v2, double *vr) {
 }
 
 int fem_dotdsh(int i, int j, double **derivs, int dim, double *p) {
-
   int d;
 
   *p = 0.0;

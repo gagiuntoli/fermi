@@ -22,7 +22,6 @@
 #include "fermi.hpp"
 
 int ferbouset(void) {
-
   /* For every boundary on the list list_bound searchs for
    * the physical entity associated with the same name and assigns
    * the dimS value for each bound.
@@ -42,14 +41,11 @@ int ferbouset(void) {
   while (pNod) {
     pNodA = list_physe.head;
     while (pNodA) {
-      if (!strcmp(((bound_t *)pNod->data)->name,
-                  ((gmshP_t *)pNodA->data)->name))
-        break;
+      if (!strcmp(((bound_t *)pNod->data)->name, ((gmshP_t *)pNodA->data)->name)) break;
       pNodA = pNodA->next;
     }
     if (!pNodA) {
-      PetscPrintf(FERMI_Comm, "bound.c:boundary %s has no phys entity.\n",
-                  ((bound_t *)pNod->data)->name);
+      PetscPrintf(FERMI_Comm, "bound.c:boundary %s has no phys entity.\n", ((bound_t *)pNod->data)->name);
       return 1;
     }
     gmshid = ((gmshP_t *)pNodA->data)->gmshid;
@@ -58,8 +54,7 @@ int ferbouset(void) {
     for (e = 0; e < mesh.nelems; e++) {
       if (gmshid == ((ps_t *)mesh.elems[e].prop)->gmshid) {
         for (n = 0; n < mesh.elems[e].npe; n++)
-          list_insert_se(&((bound_t *)pNod->data)->nodeL,
-                         (void *)&mesh.elems[e].nodeg[n]);
+          list_insert_se(&((bound_t *)pNod->data)->nodeL, (void *)&mesh.elems[e].nodeg[n]);
       }
     }
     pNod = pNod->next;
@@ -103,8 +98,7 @@ int ferbouset(void) {
     while (pna) {
       for (d = 0; d < egn; d++) {
         index = *(int *)pna->data * egn + d;
-        if (((bound_t *)pba->data)->kind == 0)
-          /* kind = 0 es dirichlet */
+        if (((bound_t *)pba->data)->kind == 0) /* kind = 0 es dirichlet */
           list_insertlast(&dirIndexL, (void *)&index);
       }
       pna = pna->next;

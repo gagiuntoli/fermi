@@ -4,11 +4,11 @@
 #include <vector>
 
 typedef struct {
-    size_t nrows;
-    size_t ncols;
-    size_t non_zeros_per_row;
-    std::vector<size_t> cols;
-    std::vector<double> vals;
+  size_t nrows;
+  size_t ncols;
+  size_t non_zeros_per_row;
+  std::vector<size_t> cols;
+  std::vector<double> vals;
 } ellpack_t;
 
 int ellpack_mvp(std::vector<double> y, ellpack_t matrix, std::vector<double> x);

@@ -21,54 +21,41 @@
 
 #include "fermi.hpp"
 
-int mesh_alloc(list_t *list_nodes, list_t *list_ghost, cpynode_t cpynode,
-               list_t *list_elemv, cpyelem_t cpyelemv, list_t *list_elems,
-               cpyelem_t cpyelems, mesh_t *mesh) {
-
+int mesh_alloc(list_t *list_nodes, list_t *list_ghost, cpynode_t cpynode, list_t *list_elemv, cpyelem_t cpyelemv,
+               list_t *list_elems, cpyelem_t cpyelems, mesh_t *mesh) {
   int i;
 
-  if (!mesh)
-    return 1;
+  if (!mesh) return 1;
   mesh->nnodes = list_nodes->sizelist;
   mesh->nghost = list_ghost->sizelist;
   mesh->node = (node_t *)calloc((mesh->nnodes + mesh->nghost), sizeof(node_t));
-  if (!mesh->node)
-    return 1;
+  if (!mesh->node) return 1;
   for (i = 0; i < mesh->nnodes; i++) {
     cpynode(list_nodes->head, &mesh->node[i]);
-    if (list_delfirst(list_nodes))
-      return 1;
+    if (list_delfirst(list_nodes)) return 1;
   }
   for (i = 0; i < mesh->nghost; i++) {
     cpynode(list_ghost->head, &mesh->node[mesh->nnodes + i]);
-    if (list_delfirst(list_ghost))
-      return 1;
+    if (list_delfirst(list_ghost)) return 1;
   }
   mesh->nelemv = list_elemv->sizelist;
   mesh->elemv = (elem_t *)calloc(mesh->nelemv, sizeof(elem_t));
-  if (!mesh->elemv)
-    return 1;
+  if (!mesh->elemv) return 1;
   for (i = 0; i < mesh->nelemv; i++) {
-    if (cpyelemv(list_elemv->head, &mesh->elemv[i]))
-      return 1;
-    if (list_delfirst(list_elemv))
-      return 1;
+    if (cpyelemv(list_elemv->head, &mesh->elemv[i])) return 1;
+    if (list_delfirst(list_elemv)) return 1;
   }
   mesh->nelems = list_elems->sizelist;
   mesh->elems = (elem_t *)calloc(mesh->nelems, sizeof(elem_t));
-  if (!mesh->elems)
-    return 1;
+  if (!mesh->elems) return 1;
   for (i = 0; i < mesh->nelems; i++) {
-    if (cpyelems(list_elems->head, &mesh->elems[i]))
-      return 1;
-    if (list_delfirst(list_elems))
-      return 1;
+    if (cpyelems(list_elems->head, &mesh->elems[i])) return 1;
+    if (list_delfirst(list_elems)) return 1;
   }
   return 0;
 }
 
 int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew) {
-
   /* Renumbers the nodes of each element acording to the loc2glo vector*/
 
   int e, n, i, fl;
@@ -83,8 +70,7 @@ int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew) {
           break;
         }
       }
-      if (!fl)
-        return 1;
+      if (!fl) return 1;
     }
   }
   for (e = 0; e < mesh->nelems; e++) {
@@ -98,8 +84,7 @@ int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew) {
           break;
         }
       }
-      if (!fl)
-        return 1;
+      if (!fl) return 1;
     }
   }
 
@@ -107,7 +92,6 @@ int mesh_renum(mesh_t *mesh, int *loc2gold, int *loc2gnew) {
 }
 
 int mesh_neigh(mesh_t *mesh, int *loc2gnew) {
-
   /* completes the mesh.node[i].elemv & mesh.node[i].elems lists
    * for both : local nodes and ghosts nodes. The lists contains
    * the local element numeration of those which have the node
@@ -142,25 +126,21 @@ int mesh_neigh(mesh_t *mesh, int *loc2gnew) {
 }
 
 int mesh_carea(mesh_t *mesh, elem_t *elem, int dim, double *area) {
-
   int d;
   double v1[3], v2[3], v3[3], vr[3], mod;
   *area = 0.0;
 
   if (elem->npe == 2) {
     for (d = 0; d < 3; d++) {
-      v1[d] = mesh->node[elem->nodel[1]].coor[d] -
-              mesh->node[elem->nodel[0]].coor[d];
+      v1[d] = mesh->node[elem->nodel[1]].coor[d] - mesh->node[elem->nodel[0]].coor[d];
     }
     mesh_vnorm(vr, 3, &mod);
     *area += mod;
     return 0;
   } else if (elem->npe == 3) {
     for (d = 0; d < 3; d++) {
-      v1[d] = mesh->node[elem->nodel[1]].coor[d] -
-              mesh->node[elem->nodel[0]].coor[d];
-      v2[d] = mesh->node[elem->nodel[2]].coor[d] -
-              mesh->node[elem->nodel[0]].coor[d];
+      v1[d] = mesh->node[elem->nodel[1]].coor[d] - mesh->node[elem->nodel[0]].coor[d];
+      v2[d] = mesh->node[elem->nodel[2]].coor[d] - mesh->node[elem->nodel[0]].coor[d];
     }
     mesh_vcross(v1, v2, vr);
     mesh_vnorm(vr, 3, &mod);
@@ -168,12 +148,9 @@ int mesh_carea(mesh_t *mesh, elem_t *elem, int dim, double *area) {
     return 0;
   } else if (elem->npe == 4) {
     for (d = 0; d < 3; d++) {
-      v1[d] = mesh->node[elem->nodel[1]].coor[d] -
-              mesh->node[elem->nodel[0]].coor[d];
-      v2[d] = mesh->node[elem->nodel[2]].coor[d] -
-              mesh->node[elem->nodel[0]].coor[d];
-      v3[d] = mesh->node[elem->nodel[3]].coor[d] -
-              mesh->node[elem->nodel[0]].coor[d];
+      v1[d] = mesh->node[elem->nodel[1]].coor[d] - mesh->node[elem->nodel[0]].coor[d];
+      v2[d] = mesh->node[elem->nodel[2]].coor[d] - mesh->node[elem->nodel[0]].coor[d];
+      v3[d] = mesh->node[elem->nodel[3]].coor[d] - mesh->node[elem->nodel[0]].coor[d];
     }
     mesh_vcross(v1, v2, vr);
     mesh_vnorm(vr, 3, &mod);
@@ -187,21 +164,16 @@ int mesh_carea(mesh_t *mesh, elem_t *elem, int dim, double *area) {
 }
 
 int mesh_vnorm(double *vec, int n, double *mod) {
-
   int d;
-  if (!vec || !mod)
-    return 1;
+  if (!vec || !mod) return 1;
   *mod = 0.0;
-  for (d = 0; d < n; d++)
-    *mod += pow(vec[d], 2);
+  for (d = 0; d < n; d++) *mod += pow(vec[d], 2);
   *mod = sqrt(*mod);
   return 0;
 }
 
 int mesh_vcross(double *v1, double *v2, double *vr) {
-
-  if (!v1 || !v2 || !vr)
-    return 1;
+  if (!v1 || !v2 || !vr) return 1;
   vr[0] = v1[1] * v2[2] - v2[1] * v1[2];
   vr[1] = v1[0] * v2[2] - v2[2] * v1[0];
   vr[2] = v1[0] * v2[1] - v2[0] * v1[1];

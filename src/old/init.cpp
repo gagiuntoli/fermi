@@ -22,7 +22,6 @@
 #include <fermi.hpp>
 
 int ferinit(int argc, char **argv) {
-
   /*
    * Reads the input file
    * Reads the mesh
@@ -66,16 +65,14 @@ int ferinit(int argc, char **argv) {
   list_init(&list_elems, sizeof(gmshE_t), cmp_int);
   list_init(&list_physe, sizeof(gmshP_t), cmp_int);
   PetscPrintf(FERMI_Comm, "Reading mesh.\n");
-  ierr = gmsh_read(meshfile, epartfile, npartfile, rank, DIM, &list_nodes,
-                   &list_ghost, &list_elemv, &list_elems, &list_physe,
-                   &loc2gold, &loc2gnew, &npp, nproc);
+  ierr = gmsh_read(meshfile, epartfile, npartfile, rank, DIM, &list_nodes, &list_ghost, &list_elemv, &list_elems,
+                   &list_physe, &loc2gold, &loc2gnew, &npp, nproc);
   if (ierr != 0) {
     PetscPrintf(FERMI_Comm, "fer_init.c:ierr reading mesh.\n");
     return 1;
   }
   ntot = 0;
-  for (i = 0; i < nproc; i++)
-    ntot += npp[i];
+  for (i = 0; i < nproc; i++) ntot += npp[i];
 
   // complete the volume element list inside each
   // physical entity
@@ -88,33 +85,30 @@ int ferinit(int argc, char **argv) {
   while (pn) {
     po = (output_t *)pn->data;
     switch (po->kind) {
-
-    case 1:
-      break;
-    case 2:
-      // power on physical entities as a function of time
-      po->kind_2.fp = fopen(po->kind_2.file, "w");
-      // we try to find the gmshid of the physical entities specified on input
-      // file and save them on "ids" array inside kind_2
-      for (i = 0; i < po->kind_2.nphy; i++) {
-        pp = list_physe.head;
-        while (strcmp(po->kind_2.phys[i], ((gmshP_t *)pp->data)->name) != 0) {
-          pp = pp->next;
+      case 1:
+        break;
+      case 2:
+        // power on physical entities as a function of time
+        po->kind_2.fp = fopen(po->kind_2.file, "w");
+        // we try to find the gmshid of the physical entities specified on input
+        // file and save them on "ids" array inside kind_2
+        for (i = 0; i < po->kind_2.nphy; i++) {
+          pp = list_physe.head;
+          while (strcmp(po->kind_2.phys[i], ((gmshP_t *)pp->data)->name) != 0) {
+            pp = pp->next;
+          }
+          if (pp != NULL) {
+            po->kind_2.ids[i] = ((gmshP_t *)pp->data)->gmshid;
+          } else {
+            PetscPrintf(FERMI_Comm, "Physical entity %s not found in gmsh file.\n", po->kind_2.phys[i]);
+            return 1;
+          }
         }
-        if (pp != NULL) {
-          po->kind_2.ids[i] = ((gmshP_t *)pp->data)->gmshid;
-        } else {
-          PetscPrintf(FERMI_Comm,
-                      "Physical entity %s not found in gmsh file.\n",
-                      po->kind_2.phys[i]);
-          return 1;
-        }
-      }
 
-      break;
+        break;
 
-    default:
-      return 1;
+      default:
+        return 1;
     }
     pn = pn->next;
   }
@@ -129,8 +123,7 @@ int ferinit(int argc, char **argv) {
 
   // CONSTRUCTING MESH
   PetscPrintf(FERMI_Comm, "Constructing mesh.\n");
-  ierr = mesh_alloc(&list_nodes, &list_ghost, cpynode, &list_elemv, cpyelemv,
-                    &list_elems, cpyelems, &mesh);
+  ierr = mesh_alloc(&list_nodes, &list_ghost, cpynode, &list_elemv, cpyelemv, &list_elems, cpyelems, &mesh);
   if (ierr) {
     PetscPrintf(FERMI_Comm, "fer_init.c:ierr allocating mesh.\n");
     return 1;
@@ -153,23 +146,17 @@ int ferinit(int argc, char **argv) {
   PetscPrintf(FERMI_Comm, "Allocating Matrices/Vectors.\n");
   ghost = (int *)calloc(mesh.nghost * DIM, sizeof(int));
   for (i = 0; i < mesh.nghost; i++) {
-    for (d = 0; d < DIM; d++)
-      ghost[i * egn + d] = loc2gnew[mesh.nnodes + i] * egn + d;
+    for (d = 0; d < DIM; d++) ghost[i * egn + d] = loc2gnew[mesh.nnodes + i] * egn + d;
   }
 
-  VecCreateGhost(FERMI_Comm, mesh.nnodes * egn, ntot * egn, mesh.nghost * egn,
-                 (PetscInt *)ghost, &phi_n);
+  VecCreateGhost(FERMI_Comm, mesh.nnodes * egn, ntot * egn, mesh.nghost * egn, (PetscInt *)ghost, &phi_n);
   VecDuplicate(phi_n, &phi_o);
   VecDuplicate(phi_n, &b);
   VecDuplicate(phi_n, &b_a);
-  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn,
-               ntot * egn, 78, NULL, 78, NULL, &A);
-  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn,
-               ntot * egn, 78, NULL, 78, NULL, &B);
-  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn,
-               ntot * egn, 78, NULL, 78, NULL, &M);
-  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn,
-               ntot * egn, 78, NULL, 78, NULL, &K);
+  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn, ntot * egn, 78, NULL, 78, NULL, &A);
+  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn, ntot * egn, 78, NULL, 78, NULL, &B);
+  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn, ntot * egn, 78, NULL, 78, NULL, &M);
+  MatCreateAIJ(FERMI_Comm, mesh.nnodes * egn, mesh.nnodes * egn, ntot * egn, ntot * egn, 78, NULL, 78, NULL, &K);
 
   Ae = (double *)calloc(NPE * egn * NPE * egn, sizeof(double));
   Be = (double *)calloc(NPE * egn * NPE * egn, sizeof(double));
@@ -177,17 +164,13 @@ int ferinit(int argc, char **argv) {
   be = (double *)calloc(NPE * egn, sizeof(double));
   idxm = (int *)calloc(NPE * egn, sizeof(int));
   jac = (double **)calloc(DIM, sizeof(double *));
-  for (i = 0; i < DIM; i++)
-    jac[i] = (double *)calloc(DIM, sizeof(double));
+  for (i = 0; i < DIM; i++) jac[i] = (double *)calloc(DIM, sizeof(double));
   ijac = (double **)calloc(DIM, sizeof(double *));
-  for (i = 0; i < DIM; i++)
-    ijac[i] = (double *)calloc(DIM, sizeof(double));
+  for (i = 0; i < DIM; i++) ijac[i] = (double *)calloc(DIM, sizeof(double));
   der = (double **)calloc(NPE, sizeof(double *));
-  for (i = 0; i < NPE; i++)
-    der[i] = (double *)calloc(DIM, sizeof(double));
+  for (i = 0; i < NPE; i++) der[i] = (double *)calloc(DIM, sizeof(double));
   coor = (double **)calloc(NPE, sizeof(double *));
-  for (i = 0; i < NPE; i++)
-    coor[i] = (double *)calloc(DIM, sizeof(double));
+  for (i = 0; i < NPE; i++) coor[i] = (double *)calloc(DIM, sizeof(double));
 
   fem_inigau();
   if (ierr) {

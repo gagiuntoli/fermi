@@ -32,10 +32,8 @@ int ferelem_ABM(int e) {
   nke = npe * egn;
 
   for (i = 0; i < npe; i++) {
-    for (d = 0; d < egn; d++)
-      idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
-    for (d = 0; d < DIM; d++)
-      coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
+    for (d = 0; d < egn; d++) idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
+    for (d = 0; d < DIM; d++) coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
   }
   memset(Ae, 0.0, nke * nke * sizeof(double));
   memset(Be, 0.0, nke * nke * sizeof(double));
@@ -56,10 +54,8 @@ int ferelem_ABM(int e) {
       for (i = 0; i < npe; i++) {
         for (j = 0; j < npe; j++) {
           fem_dotdsh(i, j, der, 3, &val);
-          Ae[i * npe + j] +=
-              -(D * val + xs_a * sh[i][gp] * sh[j][gp]) * wp[gp] * det;
-          Be[i * npe + j] +=
-              ikeff * nxs_f * sh[i][gp] * sh[j][gp] * wp[gp] * det;
+          Ae[i * npe + j] += -(D * val + xs_a * sh[i][gp] * sh[j][gp]) * wp[gp] * det;
+          Be[i * npe + j] += ikeff * nxs_f * sh[i][gp] * sh[j][gp] * wp[gp] * det;
           Me[i * npe + j] += sh[i][gp] * sh[j][gp] / (dtn * vel) * wp[gp] * det;
         }
       }
@@ -78,10 +74,8 @@ int ferelem_AB(int e) {
   ngp = mesh.elemv[e].ngp;
   nke = npe * egn;
   for (i = 0; i < npe; i++) {
-    for (d = 0; d < egn; d++)
-      idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
-    for (d = 0; d < DIM; d++)
-      coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
+    for (d = 0; d < egn; d++) idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
+    for (d = 0; d < DIM; d++) coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
   }
   memset(Ae, 0.0, nke * nke * sizeof(double));
   memset(Be, 0.0, nke * nke * sizeof(double));
@@ -100,8 +94,7 @@ int ferelem_AB(int e) {
       for (i = 0; i < npe; i++) {
         for (j = 0; j < npe; j++) {
           fem_dotdsh(i, j, der, 3, &val);
-          Ae[i * npe + j] +=
-              (D * val + xs_a * sh[i][gp] * sh[j][gp]) * wp[gp] * det;
+          Ae[i * npe + j] += (D * val + xs_a * sh[i][gp] * sh[j][gp]) * wp[gp] * det;
           Be[i * npe + j] += nxs_f * sh[i][gp] * sh[j][gp] * wp[gp] * det;
         }
       }
@@ -121,10 +114,8 @@ int ferelem_M(int e) {
   nke = npe * egn;
 
   for (i = 0; i < npe; i++) {
-    for (d = 0; d < egn; d++)
-      idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
-    for (d = 0; d < DIM; d++)
-      coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
+    for (d = 0; d < egn; d++) idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
+    for (d = 0; d < DIM; d++) coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
   }
 
   memset(Ae, 0.0, nke * nke * sizeof(double));
@@ -147,13 +138,11 @@ int ferelem_M(int e) {
       for (i = 0; i < npe; i++) {
         for (j = 0; j < npe; j++) {
           fem_dotdsh(i, j, der, 3, &val);
-          Ae[i * npe + j] +=
-              (D * val + xs_a * sh[i][gp] * sh[j][gp]) * wp[gp] * det;
+          Ae[i * npe + j] += (D * val + xs_a * sh[i][gp] * sh[j][gp]) * wp[gp] * det;
           Be[i * npe + j] += nxs_f * sh[i][gp] * sh[j][gp] * wp[gp] * det;
           Me[i * npe + j] += sh[i][gp] * sh[j][gp] / (dtn * vel) * wp[gp] * det;
           if (pv->hasprec) {
-            for (p = 0; p < pgn; p++)
-              be[j] += lambda[p] * pv->conc[p] * wp[gp] * det;
+            for (p = 0; p < pgn; p++) be[j] += lambda[p] * pv->conc[p] * wp[gp] * det;
           }
         }
       }
@@ -172,10 +161,8 @@ int ferelem_R(int e, double xs_a, double factor) {
   nke = npe * egn;
 
   for (i = 0; i < npe; i++) {
-    for (d = 0; d < egn; d++)
-      idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
-    for (d = 0; d < DIM; d++)
-      coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
+    for (d = 0; d < egn; d++) idxm[i * egn + d] = mesh.elemv[e].nodeg[i] * egn + d;
+    for (d = 0; d < DIM; d++) coor[i][d] = mesh.node[mesh.elemv[e].nodel[i]].coor[d];
   }
 
   memset(Be, 0.0, nke * nke * sizeof(double));
@@ -188,9 +175,7 @@ int ferelem_R(int e, double xs_a, double factor) {
     fem_invjac(jac, DIM, ijac, &det);
     if (egn == 1) {
       for (i = 0; i < npe; i++) {
-        for (j = 0; j < npe; j++)
-          Be[i * npe + j] +=
-              factor * xs_a * sh[i][gp] * sh[j][gp] * wp[gp] * det;
+        for (j = 0; j < npe; j++) Be[i * npe + j] += factor * xs_a * sh[i][gp] * sh[j][gp] * wp[gp] * det;
       }
     }
   } /*gp loop*/

@@ -46,7 +46,6 @@ int fersolv_ST(void) {
   VecSet(x, 1.0);
 
   while (its < MAX_ITS_POWER) {
-
     VecSetValues(x, ndir, dirIndex, dirZeros, INSERT_VALUES);
     VecAssemblyBegin(x);
     VecAssemblyEnd(x);

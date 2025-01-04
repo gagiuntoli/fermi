@@ -19,9 +19,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "fermi.hpp"
 #include <stdio.h>
 #include <string.h>
+
+#include "fermi.hpp"
 
 #define VTK_POINT 1
 #define VTK_LINE 3
@@ -32,7 +33,6 @@
 #define VTK_6N_PRISM 13
 
 int print_struct(int step) {
-
   char file_name[64];
   int i, d, e, *pInt;
   gmshN_t *p_gmsh_node;
@@ -46,9 +46,7 @@ int print_struct(int step) {
   FILE *fout = fopen(file_name, "w");
 
   if (!fout) {
-    PetscPrintf(
-        FERMI_Comm,
-        "output.c: (output_print_structures) Error opening output file.");
+    PetscPrintf(FERMI_Comm, "output.c: (output_print_structures) Error opening output file.");
     return 1;
   }
 
@@ -62,8 +60,7 @@ int print_struct(int step) {
     p_gmsh_node = (gmshN_t *)onode->data;
     fprintf(fout, "list_nodes - node : %d\n", i + 1);
     fprintf(fout, "n : %d  coor :", p_gmsh_node->n);
-    for (d = 0; d < DIM; d++)
-      fprintf(fout, "%4.3lf ", p_gmsh_node->coor[d]);
+    for (d = 0; d < DIM; d++) fprintf(fout, "%4.3lf ", p_gmsh_node->coor[d]);
     fprintf(fout, "\n");
     onode = onode->next;
   }
@@ -77,8 +74,7 @@ int print_struct(int step) {
     p_gmsh_node = (gmshN_t *)onode->data;
     fprintf(fout, "list_ghost - node : %d\n", i + 1);
     fprintf(fout, "n : %d  coor :", p_gmsh_node->n);
-    for (d = 0; d < DIM; d++)
-      fprintf(fout, "%4.3lf ", p_gmsh_node->coor[d]);
+    for (d = 0; d < DIM; d++) fprintf(fout, "%4.3lf ", p_gmsh_node->coor[d]);
     fprintf(fout, "\n");
     onode = onode->next;
   }
@@ -94,8 +90,7 @@ int print_struct(int step) {
     fprintf(fout, "npe : %d ", p_gmsh_elem->npe);
     fprintf(fout, "gmshid : %d ", p_gmsh_elem->gmshid);
     fprintf(fout, "node : ");
-    for (d = 0; d < p_gmsh_elem->npe; d++)
-      fprintf(fout, "%3d ", p_gmsh_elem->node[d]);
+    for (d = 0; d < p_gmsh_elem->npe; d++) fprintf(fout, "%3d ", p_gmsh_elem->node[d]);
     fprintf(fout, "\n");
     onode = onode->next;
   }
@@ -111,8 +106,7 @@ int print_struct(int step) {
     fprintf(fout, "npe : %d ", p_gmsh_elem->npe);
     fprintf(fout, "gmshid : %d ", p_gmsh_elem->gmshid);
     fprintf(fout, "node : ");
-    for (d = 0; d < p_gmsh_elem->npe; d++)
-      fprintf(fout, "%3d ", p_gmsh_elem->node[d]);
+    for (d = 0; d < p_gmsh_elem->npe; d++) fprintf(fout, "%3d ", p_gmsh_elem->node[d]);
     fprintf(fout, "\n");
     onode = onode->next;
   }
@@ -156,14 +150,12 @@ int print_struct(int step) {
 
   fprintf(fout, "========================================\n");
   fprintf(fout, "Dirichlet indeces %3d : \n", ndir);
-  for (i = 0; i < ndir; i++)
-    fprintf(fout, "%2d ", dirIndex[i]);
+  for (i = 0; i < ndir; i++) fprintf(fout, "%2d ", dirIndex[i]);
   fprintf(fout, "\n\n");
 
   fprintf(fout, "========================================\n");
   fprintf(fout, "npp : \n");
-  for (i = 0; i < nproc; i++)
-    fprintf(fout, "rank %d : npp[%d] = %d \n", i, i, npp[i]);
+  for (i = 0; i < nproc; i++) fprintf(fout, "rank %d : npp[%d] = %d \n", i, i, npp[i]);
   fprintf(fout, "\n");
 
   fprintf(fout, "========================================\n");
@@ -171,8 +163,7 @@ int print_struct(int step) {
   fprintf(fout, " local: \n");
   for (i = 0; i < mesh.nnodes; i++) {
     fprintf(fout, "%d ", i);
-    for (d = 0; d < 3; d++)
-      fprintf(fout, "%+4.3lf ", mesh.node[i].coor[d]);
+    for (d = 0; d < 3; d++) fprintf(fout, "%+4.3lf ", mesh.node[i].coor[d]);
     onode = mesh.node[i].elemvL.head;
     fprintf(fout, "\nelemvL: ");
     e = 0;
@@ -207,8 +198,7 @@ int print_struct(int step) {
   fprintf(fout, "ghosts:\n");
   for (i = 0; i < mesh.nghost; i++) {
     fprintf(fout, "%d ", i);
-    for (d = 0; d < 3; d++)
-      fprintf(fout, "%+4.3lf ", mesh.node[mesh.nnodes + i].coor[d]);
+    for (d = 0; d < 3; d++) fprintf(fout, "%+4.3lf ", mesh.node[mesh.nnodes + i].coor[d]);
     onode = mesh.node[i].elemvL.head;
     fprintf(fout, "\nelemvL: ");
     e = 0;
@@ -243,11 +233,9 @@ int print_struct(int step) {
   fprintf(fout, "elemv : \n");
   for (i = 0; i < mesh.nelemv; i++) {
     fprintf(fout, "e=%4d npe: %d\nnodel:", i, mesh.elemv[i].npe);
-    for (d = 0; d < mesh.elemv[i].npe; d++)
-      fprintf(fout, "%4d ", mesh.elemv[i].nodel[d]);
+    for (d = 0; d < mesh.elemv[i].npe; d++) fprintf(fout, "%4d ", mesh.elemv[i].nodel[d]);
     fprintf(fout, "\nnodeg:");
-    for (d = 0; d < mesh.elemv[i].npe; d++)
-      fprintf(fout, "%4d ", mesh.elemv[i].nodeg[d]);
+    for (d = 0; d < mesh.elemv[i].npe; d++) fprintf(fout, "%4d ", mesh.elemv[i].nodeg[d]);
     fprintf(fout, "\n");
   }
   fprintf(fout, "\n");
@@ -256,11 +244,9 @@ int print_struct(int step) {
   fprintf(fout, "elems : \n");
   for (i = 0; i < mesh.nelems; i++) {
     fprintf(fout, "e=%4d npe: %d\nnodel:", i, mesh.elems[i].npe);
-    for (d = 0; d < mesh.elems[i].npe; d++)
-      fprintf(fout, "%4d ", mesh.elems[i].nodel[d]);
+    for (d = 0; d < mesh.elems[i].npe; d++) fprintf(fout, "%4d ", mesh.elems[i].nodel[d]);
     fprintf(fout, "\nnodeg: ");
-    for (d = 0; d < mesh.elems[i].npe; d++)
-      fprintf(fout, "%4d ", mesh.elems[i].nodeg[d]);
+    for (d = 0; d < mesh.elems[i].npe; d++) fprintf(fout, "%4d ", mesh.elems[i].nodeg[d]);
     ps = (ps_t *)mesh.elems[i].prop;
     fprintf(fout, "gmshid: %4d \n", ps->gmshid);
   }
@@ -268,12 +254,10 @@ int print_struct(int step) {
 
   fprintf(fout, "========================================\n");
   fprintf(fout, "loc2gold : \n");
-  for (i = 0; i < (mesh.nnodes + mesh.nghost); i++)
-    fprintf(fout, "%5d %5d \n", i, loc2gold[i]);
+  for (i = 0; i < (mesh.nnodes + mesh.nghost); i++) fprintf(fout, "%5d %5d \n", i, loc2gold[i]);
   fprintf(fout, "\n");
   fprintf(fout, "loc2gnew : \n");
-  for (i = 0; i < (mesh.nnodes + mesh.nghost); i++)
-    fprintf(fout, "%5d %5d \n", i, loc2gnew[i]);
+  for (i = 0; i < (mesh.nnodes + mesh.nghost); i++) fprintf(fout, "%5d %5d \n", i, loc2gnew[i]);
   fprintf(fout, "\n");
 
   fclose(fout);
@@ -282,7 +266,6 @@ int print_struct(int step) {
 }
 
 int print_out(Vec *phi, int step) {
-
   /*
      It travels all the list.outpu and determines if it has to print something
      in this time step "step" the kind of the structure output_t means what it
@@ -306,54 +289,52 @@ int print_out(Vec *phi, int step) {
   pNod = list_outpu.head;
 
   while (pNod) {
-
     po = (output_t *)pNod->data;
 
     switch (po->kind) {
+      case 1:
 
-    case 1:
+        //        double        vloc[2], vglo[2];
+        //
+        //        bthdisf(po->phys, po->norm, vloc, u);
+        //        MPI_Reduce(vloc, vglo, 2, MPI_DOUBLE, MPI_SUM, 0, FERMI_Comm);
+        //
+        //        if(!rank){
+        //          fl=fopen(po->file,"a");
+        //        }
+        //
+        //        fprintf(fl,"%lf %lf \n",vglo[0],vglo[1]);
+        //
+        //        fclose(fl);
+        break;
 
-      //        double        vloc[2], vglo[2];
-      //
-      //        bthdisf(po->phys, po->norm, vloc, u);
-      //        MPI_Reduce(vloc, vglo, 2, MPI_DOUBLE, MPI_SUM, 0, FERMI_Comm);
-      //
-      //        if(!rank){
-      //          fl=fopen(po->file,"a");
-      //        }
-      //
-      //        fprintf(fl,"%lf %lf \n",vglo[0],vglo[1]);
-      //
-      //        fclose(fl);
-      break;
+      case 2:
 
-    case 2:
+        /*
+           prints power on different physical entities on ASCII file
 
-      /*
-         prints power on different physical entities on ASCII file
+           kind = 2
+           file <file_name.dat>
+           nphy <# of physical entities>
+           <"phys_1"> <"phys_2"> ... <"phys_n">
 
-         kind = 2
-         file <file_name.dat>
-         nphy <# of physical entities>
-         <"phys_1"> <"phys_2"> ... <"phys_n">
+         */
 
-       */
+        fer_pow_phys(po->kind_2.nphy, po->kind_2.ids, po->kind_2.pow);
 
-      fer_pow_phys(po->kind_2.nphy, po->kind_2.ids, po->kind_2.pow);
-
-      if (local_rank == 0) {
-        for (i = 0; i < po->kind_2.nphy; i++) {
-          fprintf(po->kind_2.fp, "%e ", po->kind_2.pow[i]);
-          pow_tot += po->kind_2.pow[i];
+        if (local_rank == 0) {
+          for (i = 0; i < po->kind_2.nphy; i++) {
+            fprintf(po->kind_2.fp, "%e ", po->kind_2.pow[i]);
+            pow_tot += po->kind_2.pow[i];
+          }
+          // we print the sum of all the powers in the Physical Entities
+          fprintf(po->kind_2.fp, "%e\n", pow_tot);
         }
-        // we print the sum of all the powers in the Physical Entities
-        fprintf(po->kind_2.fp, "%e\n", pow_tot);
-      }
 
-      break;
+        break;
 
-    default:
-      return 1;
+      default:
+        return 1;
     }
 
     if (error) {
@@ -369,7 +350,6 @@ int print_out(Vec *phi, int step) {
 /****************************************************************************************************/
 
 int print_vtk(const char *name) {
-
   int n, e, d, count, index;
   double vald;
   char filevtk[32], ending[16];
@@ -392,25 +372,21 @@ int print_vtk(const char *name) {
   fprintf(vtkf, "POINTS %d double\n", (mesh.nnodes + mesh.nghost));
 
   for (n = 0; n < (mesh.nnodes + mesh.nghost); n++) {
-    for (d = 0; d < 3; d++)
-      fprintf(vtkf, "%lf ", mesh.node[n].coor[d]);
+    for (d = 0; d < 3; d++) fprintf(vtkf, "%lf ", mesh.node[n].coor[d]);
     fprintf(vtkf, "\n");
   }
 
   count = 0;
-  for (e = 0; e < mesh.nelemv; e++)
-    count += mesh.elemv[e].npe + 1;
+  for (e = 0; e < mesh.nelemv; e++) count += mesh.elemv[e].npe + 1;
   fprintf(vtkf, "CELLS %d %d\n", mesh.nelemv, count);
   for (e = 0; e < mesh.nelemv; e++) {
     fprintf(vtkf, "%d ", mesh.elemv[e].npe);
-    for (n = 0; n < mesh.elemv[e].npe; n++)
-      fprintf(vtkf, "%d ", mesh.elemv[e].nodel[n]);
+    for (n = 0; n < mesh.elemv[e].npe; n++) fprintf(vtkf, "%d ", mesh.elemv[e].nodel[n]);
     fprintf(vtkf, "\n");
   }
 
   fprintf(vtkf, "CELL_TYPES %i\n", mesh.nelemv);
-  for (e = 0; e < mesh.nelemv; e++)
-    fprintf(vtkf, "%d\n", vtkcode(DIM, mesh.elemv[e].npe));
+  for (e = 0; e < mesh.nelemv; e++) fprintf(vtkf, "%d\n", vtkcode(DIM, mesh.elemv[e].npe));
 
   /************************************************************/
   /* DATA IN NODES                                            */
@@ -420,10 +396,8 @@ int print_vtk(const char *name) {
   /* Ownership */
   fprintf(vtkf, "SCALARS ownership FLOAT\n");
   fprintf(vtkf, "LOOKUP_TABLE default\n");
-  for (n = 0; n < mesh.nnodes; n++)
-    fprintf(vtkf, "%lf\n", 1.0);
-  for (n = 0; n < mesh.nghost; n++)
-    fprintf(vtkf, "%lf\n", 0.0);
+  for (n = 0; n < mesh.nnodes; n++) fprintf(vtkf, "%lf\n", 1.0);
+  for (n = 0; n < mesh.nghost; n++) fprintf(vtkf, "%lf\n", 0.0);
 
   /* Displacement */
   VecGhostUpdateBegin(phi_n, INSERT_VALUES, SCATTER_FORWARD);
@@ -448,25 +422,21 @@ int print_vtk(const char *name) {
   for (e = 0; e < egn; e++) {
     fprintf(vtkf, "SCALARS xs_a%d FLOAT\n", e);
     fprintf(vtkf, "LOOKUP_TABLE default\n");
-    for (d = 0; d < mesh.nelemv; d++)
-      fprintf(vtkf, "%lf\n", ((pv_t *)mesh.elemv[d].prop)->xs_a[e]);
+    for (d = 0; d < mesh.nelemv; d++) fprintf(vtkf, "%lf\n", ((pv_t *)mesh.elemv[d].prop)->xs_a[e]);
 
     fprintf(vtkf, "SCALARS nxs_f%d FLOAT\n", e);
     fprintf(vtkf, "LOOKUP_TABLE default\n");
-    for (d = 0; d < mesh.nelemv; d++)
-      fprintf(vtkf, "%lf\n", ((pv_t *)mesh.elemv[d].prop)->nxs_f[e]);
+    for (d = 0; d < mesh.nelemv; d++) fprintf(vtkf, "%lf\n", ((pv_t *)mesh.elemv[d].prop)->nxs_f[e]);
 
     fprintf(vtkf, "SCALARS D%d FLOAT\n", e);
     fprintf(vtkf, "LOOKUP_TABLE default\n");
-    for (d = 0; d < mesh.nelemv; d++)
-      fprintf(vtkf, "%lf\n", ((pv_t *)mesh.elemv[d].prop)->D[e]);
+    for (d = 0; d < mesh.nelemv; d++) fprintf(vtkf, "%lf\n", ((pv_t *)mesh.elemv[d].prop)->D[e]);
   }
   fclose(vtkf);
   return 0;
 }
 
 int printMatrixR(char *name, double *A, int m, int n) {
-
   int i, j;
 
   FILE *f = fopen(name, "w");
@@ -482,7 +452,6 @@ int printMatrixR(char *name, double *A, int m, int n) {
 }
 
 int printMatrixRC(char *name, double **A, int m, int n) {
-
   int i, j;
 
   FILE *f = fopen(name, "w");
@@ -498,7 +467,6 @@ int printMatrixRC(char *name, double **A, int m, int n) {
 }
 
 int printMat(char *name, Mat *A, int n) {
-
   int i, j;
   double val;
 
@@ -517,7 +485,6 @@ int printMat(char *name, Mat *A, int n) {
 }
 
 int printVector(char *name, double *vec, int m) {
-
   int j;
 
   FILE *f = fopen(name, "w");
@@ -531,7 +498,6 @@ int printVector(char *name, double *vec, int m) {
 }
 
 int printVec(char *name, Vec *vec, int m) {
-
   /* Prints the values of a Vec, it can include ghost values*/
 
   int j;
@@ -551,36 +517,35 @@ int printVec(char *name, Vec *vec, int m) {
 }
 
 int vtkcode(int dim, int npe) {
-
   switch (dim) {
-  case 1:
-    switch (npe) {
+    case 1:
+      switch (npe) {
+        case 2:
+          return VTK_LINE;
+        default:
+          return -1;
+      }
     case 2:
-      return VTK_LINE;
-    default:
-      return -1;
-    }
-  case 2:
-    switch (npe) {
+      switch (npe) {
+        case 3:
+          return VTK_TRIANGLE;
+        case 4:
+          return VTK_QUADRANGLE;
+        default:
+          return -1;
+      }
     case 3:
-      return VTK_TRIANGLE;
-    case 4:
-      return VTK_QUADRANGLE;
+      switch (npe) {
+        case 4:
+          return VTK_TETRAHEDRON;
+        case 6:
+          return VTK_6N_PRISM;
+        case 8:
+          return VTK_HEXAHEDRON;
+        default:
+          return -1;
+      }
     default:
       return -1;
-    }
-  case 3:
-    switch (npe) {
-    case 4:
-      return VTK_TETRAHEDRON;
-    case 6:
-      return VTK_6N_PRISM;
-    case 8:
-      return VTK_HEXAHEDRON;
-    default:
-      return -1;
-    }
-  default:
-    return -1;
   }
 }
