@@ -35,8 +35,7 @@ struct ElementBase {
   std::vector<Node> nodes;
 
   ElementBase(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_) : nodeIndexes(nodeIndexes_), nodes(nodes_) {}
-
-  virtual std::vector<double> computeElementMatrix() const = 0;
+  virtual ~ElementBase() = default;
 
   const std::string toString() const {
     std::ostringstream oss;
