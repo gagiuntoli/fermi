@@ -36,7 +36,8 @@ struct ElementDiffusion : public ElementBase<DIM> {
                    double d_)
       : ElementBase<DIM>(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
 
-  virtual std::vector<double> computeElementMatrix() const = 0;
+  virtual std::vector<double> computeAe() const = 0;
+  virtual std::vector<double> computeBe() const = 0;
   virtual int computeInverseJacobian(MatrixOperations<DIM>::Matrix &jacobian, double &det, size_t gp) const = 0;
 };
 
@@ -60,29 +61,47 @@ struct ElementSegment2 : public ElementDiffusion<1> {
     return 0;
   }
 
-  std::vector<double> computeElementMatrix() const override {
+  std::vector<double> computeAe() const override {
     size_t n = nodes.size();
-    std::vector<double> matrix(n * n, 0.0);
+    std::vector<double> Ae(n * n, 0.0);
     Segment2 segment2;
     MatrixOperations<1>::Matrix inverseJacobian;
     double det;
 
     auto shapes = segment2.getShapeFunctions();
     auto dshapes = segment2.getShapeFunctions();
-    auto gauss_points = segment2.getGaussPoints();
     auto wgp = segment2.getWeights();
-    for (size_t gp = 0; gp < gauss_points.size(); gp++) {
+    for (size_t gp = 0; gp < wgp.size(); gp++) {
       computeInverseJacobian(inverseJacobian, det, gp);
       auto dtshapes = segment2.getTransformedDShapeFunctions(inverseJacobian);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
           double laplacian = dtshapes[i][0][gp] * dtshapes[j][0][gp];
-          matrix[n * i + j] += (-d * laplacian + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
+          Ae[n * i + j] += (-d * laplacian + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
         }
       }
     }
+    return Ae;
+  }
 
-    return matrix;
+  std::vector<double> computeBe() const override {
+    size_t n = nodes.size();
+    std::vector<double> Be(n * n, 0.0);
+    Segment2 segment2;
+    MatrixOperations<1>::Matrix inverseJacobian;
+    double det;
+
+    auto shapes = segment2.getShapeFunctions();
+    auto wgp = segment2.getWeights();
+    for (size_t gp = 0; gp < wgp.size(); gp++) {
+      computeInverseJacobian(inverseJacobian, det, gp);
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
+        }
+      }
+    }
+    return Be;
   }
 };
 

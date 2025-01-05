@@ -28,11 +28,12 @@
 
 #include <vector>
 
-int ellpack_mvp(std::vector<double> y, Ellpack matrix, std::vector<double> x) {
+int ellpack_mvp(std::vector<double> &y, Ellpack matrix, std::vector<double> x) {
   for (size_t row = 0; row < matrix.nrows; row++) {
     double tmp = 0;
     for (size_t j = 0; j < matrix.non_zeros_per_row; j++) {
-      size_t index = matrix.cols[row * matrix.non_zeros_per_row + j];
+      int index = matrix.cols[row * matrix.non_zeros_per_row + j];
+      if (index < 0) break;
 
       tmp += matrix.vals[row * matrix.non_zeros_per_row + j] * x[index];
     }
@@ -41,7 +42,7 @@ int ellpack_mvp(std::vector<double> y, Ellpack matrix, std::vector<double> x) {
   return 0;
 }
 
-int ellpack_solve_cg(std::vector<double> x, Ellpack matrix, std::vector<double> b) {
+int ellpack_solve_cg(std::vector<double> &x, Ellpack matrix, std::vector<double> b) {
   int max_iters = 10000000;
   int n = matrix.nrows;
   std::vector<double> r(n);
@@ -82,7 +83,7 @@ int ellpack_solve_cg(std::vector<double> x, Ellpack matrix, std::vector<double> 
   return 0;
 }
 
-double dot(std::vector<double> y, std::vector<double> x, size_t n) {
+double dot(const std::vector<double> &y, const std::vector<double> &x, size_t n) {
   double result = 0.0;
   for (size_t i = 0; i < n; i++) {
     result += x[i] * y[i];
@@ -90,4 +91,4 @@ double dot(std::vector<double> y, std::vector<double> x, size_t n) {
   return result;
 }
 
-double norm(std::vector<double> x, size_t n) { return sqrt(dot(x, x, n)); }
+double norm(const std::vector<double> &x, size_t n) { return sqrt(dot(x, x, n)); }

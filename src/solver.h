@@ -24,6 +24,6 @@
 
 #include "ellpack.h"
 
-double solver_keff(const Ellpack &A, const Ellpack &B);
+double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B);
 
 #endif

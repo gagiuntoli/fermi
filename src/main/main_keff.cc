@@ -31,6 +31,11 @@ int main(int argc, char **argv) {
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 3);
+  Ellpack B(nnodes, nnodes, 3);
+
+  std::vector<double> phi(nnodes, 1.0);
+  phi[0] = 0.0;
+  phi[nnodes - 1] = 0.0;
 
   assemblyA(A, mesh);
   A.deleteRow(0);
@@ -38,13 +43,16 @@ int main(int argc, char **argv) {
   A.insert(0, 0, 1.0);
   A.insert(nnodes - 1, nnodes - 1, 1.0);
 
+  assemblyB(B, mesh);
+  B.deleteRow(0);
+  B.deleteRow(nnodes - 1);
+  B.insert(0, 0, 1.0);
+  B.insert(nnodes - 1, nnodes - 1, 1.0);
+
   std::cout << A.toString() << std::endl;
+  std::cout << B.toString() << std::endl;
 
-  // std::cout << mesh.toString() << std::endl;
-
-  // Segment2 segment;
-  // std::cout << segment.toString() << std::endl;
-
-  // solver_keff();
+  double keff = solver_keff(phi, A, B);
+  std::cout << "keff: " << keff << std::endl;
   return 0;
 }

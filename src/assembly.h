@@ -33,7 +33,7 @@ int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
   std::fill(A.vals.begin(), A.vals.end(), 0.0);
   for (const auto &elem_ : mesh.elements) {
     if (auto elem = std::dynamic_pointer_cast<ElementDiffusion<DIM>>(elem_)) {
-      auto Ae = elem->computeElementMatrix();
+      auto Ae = elem->computeAe();
 
       size_t n = elem->nodeIndexes.size();
       assert(Ae.size() == n * n);
@@ -52,18 +52,23 @@ int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
 }
 
 template <size_t DIM>
-int assemblyB(Ellpack &A, Mesh<DIM> &mesh) {
-  std::fill(A.vals.begin(), A.vals.end(), 0.0);
-  for (const auto &elem : mesh.elements) {
-    auto Ae = elem->computeElementMatrix();
-    size_t n = elem->nodeIndexes.size();
-    assert(Ae.size() == n * n);
-    for (size_t i = 0; i < n; i++) {
-      for (size_t j = 0; j < n; j++) {
-        size_t row = elem->nodeIndexes[i];
-        size_t col = elem->nodeIndexes[j];
-        A.add(row, col, Ae[i * n + j]);
+int assemblyB(Ellpack &B, Mesh<DIM> &mesh) {
+  std::fill(B.vals.begin(), B.vals.end(), 0.0);
+  for (const auto &elem_ : mesh.elements) {
+    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion<DIM>>(elem_)) {
+      auto Be = elem->computeBe();
+      size_t n = elem->nodeIndexes.size();
+      assert(Be.size() == n * n);
+
+      for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+          size_t row = elem->nodeIndexes[i];
+          size_t col = elem->nodeIndexes[j];
+          B.add(row, col, Be[i * n + j]);
+        }
       }
+    } else {
+      return 1;
     }
   }
   return 0;

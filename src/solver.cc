@@ -22,21 +22,21 @@
 #include "solver.h"
 
 #include <cmath>
+#include <iostream>
 
-double solver_keff(const Ellpack &A, const Ellpack &B, std::vector<size_t> dirichlet) {
-  const size_t MAX_ITERS = 100;
+double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B) {
+  const size_t MAX_ITERS = 5;
   size_t n = A.nrows;
-  std::vector<double> phi(n, 1.0);
   std::vector<double> source(n);
   std::vector<double> source_new(n);
 
   double keff = 1.0;
   size_t iters = 0;
   while (true) {
-    for (const size_t &node : dirichlet) {
-      phi[node] = 0.0;
+    for (auto p : phi) {
+      std::cout << p << std::endl;
     }
-
+    std::cout << std::endl;
     ellpack_mvp(source, B, phi);
     double norm_source = 0;
     for (size_t i = 0; i < n; i++) {
@@ -53,8 +53,10 @@ double solver_keff(const Ellpack &A, const Ellpack &B, std::vector<size_t> diric
       norm_source_new += source_new[i];
     }
     double keff_new = keff * norm_source_new / norm_source;
+    std::cout << "i:" << iters << " keff: " << keff << std::endl;
 
-    if (iters > MAX_ITERS || (std::abs(keff_new - keff) / keff) < 0.01) return keff_new;
+    if (iters > MAX_ITERS) return keff_new;
+    // if (iters > MAX_ITERS || (std::abs(keff_new - keff) / keff) < 0.01) return keff_new;
     keff = keff_new;
 
     double power = norm(phi, n);

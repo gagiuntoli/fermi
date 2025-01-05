@@ -107,9 +107,9 @@ struct Ellpack {
   }
 };
 
-int ellpack_mvp(std::vector<double> y, Ellpack matrix, std::vector<double> x);
-int ellpack_solve_cg(std::vector<double> x, Ellpack matrix, std::vector<double> b);
-double dot(std::vector<double> y, std::vector<double> x, size_t n);
-double norm(std::vector<double> x, size_t n);
+int ellpack_mvp(std::vector<double> &y, Ellpack matrix, std::vector<double> x);
+int ellpack_solve_cg(std::vector<double> &x, Ellpack matrix, std::vector<double> b);
+double dot(const std::vector<double> &y, const std::vector<double> &x, size_t n);
+double norm(const std::vector<double> &x, size_t n);
 
 #endif
