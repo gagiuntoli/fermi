@@ -24,6 +24,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "algebra.h"
+
 double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B) {
   const size_t MAX_ITERS = 15;
   size_t n = A.nrows;
@@ -37,16 +39,16 @@ double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B)
       std::cout << p << std::endl;
     }
     std::cout << std::endl;
-    ellpack_mvp(source, B, phi);
+    B.mvp(source, phi);
     double norm_source = 0;
     for (size_t i = 0; i < n; i++) {
       norm_source += source[i];
       source[i] /= keff;
     }
 
-    ellpack_solve_cg(phi, A, source);
+    A.solve_cg(phi, source);
 
-    ellpack_mvp(source_new, B, phi);
+    B.mvp(source_new, phi);
 
     double norm_source_new = 0;
     for (size_t i = 0; i < n; i++) {

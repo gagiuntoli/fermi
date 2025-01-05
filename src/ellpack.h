@@ -43,73 +43,16 @@ struct Ellpack {
         cols(std::vector<int>(ncols * non_zeros_per_row, -1)),
         vals(std::vector<double>(ncols * non_zeros_per_row, 0.0)) {}
 
-  size_t getIndex(size_t rowTarget, size_t colTarget) {
-    size_t index = rowTarget * non_zeros_per_row;
-    for (; index < (rowTarget + 1) * non_zeros_per_row; index++) {
-      if (cols[index] == -1 || cols[index] == colTarget) {
-        return index;
-      }
-    }
-    return index;
-  }
+  size_t getIndex(size_t rowTarget, size_t colTarget) const;
+  int deleteRow(size_t row);
+  int insert(size_t row, size_t col, double value);
+  int add(size_t row, size_t col, double value);
+  bool get(double &value, size_t row, size_t col) const;
 
-  int deleteRow(size_t row) {
-    size_t start = row * non_zeros_per_row;
-    size_t end = (row + 1) * non_zeros_per_row;
-    std::fill(cols.begin() + start, cols.begin() + end, -1);
-    std::fill(vals.begin() + start, vals.begin() + end, 0.0);
-    return 0;
-  }
+  int mvp(std::vector<double> &y, std::vector<double> x) const;
+  int solve_cg(std::vector<double> &x, std::vector<double> b) const;
 
-  int insert(size_t row, size_t col, double value) {
-    int index = getIndex(row, col);
-    if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty
-      cols[index] = col;
-      vals[index] = value;
-      return 0;
-    }
-    return 1;
-  }
-
-  int add(size_t row, size_t col, double value) {
-    // useful for the finite element method in the assembly stage
-    int index = getIndex(row, col);
-    if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty
-      cols[index] = col;
-      vals[index] += value;
-      return 0;
-    }
-    return 1;
-  }
-
-  bool get(double &value, size_t row, size_t col) {
-    int index = getIndex(row, col);
-    if (index < (row + 1) * non_zeros_per_row && cols[index] == col) {  // value exists
-      value = vals[index];
-      return true;
-    }
-    return false;
-  }
-
-  std::string toString() const {
-    std::ostringstream oss;
-    oss << "Row: (col, val)" << std::endl;
-    for (int i = 0; i < nrows; i++) {
-      oss << i << " : ";
-      for (int j = 0; j < non_zeros_per_row; j++) {
-        int col = cols[i * non_zeros_per_row + j];
-        if (col < 0) break;
-        oss << "(" << col << "," << std::scientific << std::setprecision(4) << vals[i * non_zeros_per_row + j] << "), ";
-      }
-      oss << std::endl;
-    }
-    return oss.str();
-  }
+  std::string toString() const;
 };
-
-int ellpack_mvp(std::vector<double> &y, Ellpack matrix, std::vector<double> x);
-int ellpack_solve_cg(std::vector<double> &x, Ellpack matrix, std::vector<double> b);
-double dot(const std::vector<double> &y, const std::vector<double> &x, size_t n);
-double norm(const std::vector<double> &x, size_t n);
 
 #endif

@@ -21,37 +21,35 @@
 
 #include "ellpack.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cmath>
+#include <cstdlib>
 
-#include <vector>
+#include "algebra.h"
 
-int ellpack_mvp(std::vector<double> &y, Ellpack matrix, std::vector<double> x) {
-  for (size_t row = 0; row < matrix.nrows; row++) {
+int Ellpack::mvp(std::vector<double> &y, std::vector<double> x) const {
+  for (size_t row = 0; row < nrows; row++) {
     double tmp = 0;
-    for (size_t j = 0; j < matrix.non_zeros_per_row; j++) {
-      int index = matrix.cols[row * matrix.non_zeros_per_row + j];
+    for (size_t j = 0; j < non_zeros_per_row; j++) {
+      int index = cols[row * non_zeros_per_row + j];
       if (index < 0) break;
 
-      tmp += matrix.vals[row * matrix.non_zeros_per_row + j] * x[index];
+      tmp += vals[row * non_zeros_per_row + j] * x[index];
     }
     y[row] = tmp;
   }
   return 0;
 }
 
-int ellpack_solve_cg(std::vector<double> &x, Ellpack matrix, std::vector<double> b) {
+int Ellpack::solve_cg(std::vector<double> &x, std::vector<double> b) const {
   int max_iters = 10000000;
-  int n = matrix.nrows;
+  int n = nrows;
   std::vector<double> r(n);
   std::vector<double> p(n);
   std::vector<double> Ap(n);
 
   std::fill(x.begin(), x.end(), 0.0);
 
-  ellpack_mvp(r, matrix, x);
+  mvp(r, x);
   for (int i = 0; i < n; i++) {
     r[i] = b[i] - r[i];
     p[i] = r[i];
@@ -60,7 +58,7 @@ int ellpack_solve_cg(std::vector<double> &x, Ellpack matrix, std::vector<double>
   double residual = norm(r, n);
   int iters = 0;
   while (residual / norm(b, n) > 1.0e-3 && iters < max_iters) {
-    ellpack_mvp(Ap, matrix, p);
+    mvp(Ap, p);
 
     double rr_old = dot(r, r, n);
     double alpha = rr_old / dot(p, Ap, n);
@@ -76,19 +74,70 @@ int ellpack_solve_cg(std::vector<double> &x, Ellpack matrix, std::vector<double>
       p[i] = r[i] + beta * p[i];
     }
 
-    // printf("iter: %d residual: %lf alpha: %lf beta: %lf\n", iters, residual, alpha, beta);
     residual = norm(r, n);
     iters++;
   }
   return 0;
 }
 
-double dot(const std::vector<double> &y, const std::vector<double> &x, size_t n) {
-  double result = 0.0;
-  for (size_t i = 0; i < n; i++) {
-    result += x[i] * y[i];
+size_t Ellpack::getIndex(size_t rowTarget, size_t colTarget) const {
+  size_t index = rowTarget * non_zeros_per_row;
+  for (; index < (rowTarget + 1) * non_zeros_per_row; index++) {
+    if (cols[index] == -1 || cols[index] == colTarget) {
+      return index;
+    }
   }
-  return result;
+  return index;
 }
 
-double norm(const std::vector<double> &x, size_t n) { return sqrt(dot(x, x, n)); }
+int Ellpack::deleteRow(size_t row) {
+  size_t start = row * non_zeros_per_row;
+  size_t end = (row + 1) * non_zeros_per_row;
+  std::fill(cols.begin() + start, cols.begin() + end, -1);
+  std::fill(vals.begin() + start, vals.begin() + end, 0.0);
+  return 0;
+}
+
+int Ellpack::insert(size_t row, size_t col, double value) {
+  int index = getIndex(row, col);
+  if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty
+    cols[index] = col;
+    vals[index] = value;
+    return 0;
+  }
+  return 1;
+}
+
+int Ellpack::add(size_t row, size_t col, double value) {
+  int index = getIndex(row, col);
+  if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty
+    cols[index] = col;
+    vals[index] += value;
+    return 0;
+  }
+  return 1;
+}
+
+bool Ellpack::get(double &value, size_t row, size_t col) const {
+  int index = getIndex(row, col);
+  if (index < (row + 1) * non_zeros_per_row && cols[index] == col) {  // value exists
+    value = vals[index];
+    return true;
+  }
+  return false;
+}
+
+std::string Ellpack::toString() const {
+  std::ostringstream oss;
+  oss << "Row: (col, val)" << std::endl;
+  for (int i = 0; i < nrows; i++) {
+    oss << i << " : ";
+    for (int j = 0; j < non_zeros_per_row; j++) {
+      int col = cols[i * non_zeros_per_row + j];
+      if (col < 0) break;
+      oss << "(" << col << "," << std::scientific << std::setprecision(4) << vals[i * non_zeros_per_row + j] << "), ";
+    }
+    oss << std::endl;
+  }
+  return oss.str();
+}
