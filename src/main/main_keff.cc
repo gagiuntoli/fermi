@@ -29,19 +29,17 @@
 int main(int argc, char **argv) {
   Mesh<1> mesh = mesh_create_structured_1d(10, 10.0);
 
-  Ellpack A;
-  A.nrows = mesh.nodes.size();
-  A.ncols = A.nrows;
-  A.non_zeros_per_row = 3;
-  A.cols = std::vector<int>(A.nrows * A.non_zeros_per_row);
-  A.vals = std::vector<double>(A.nrows * A.non_zeros_per_row);
+  size_t nnodes = mesh.nodes.size();
+  Ellpack A(nnodes, nnodes, 3);
 
   assemblyA(A, mesh);
 
-  std::cout << mesh.toString() << std::endl;
+  std::cout << A.toString() << std::endl;
 
-  Segment2 segment;
-  std::cout << segment.toString() << std::endl;
+  // std::cout << mesh.toString() << std::endl;
+
+  // Segment2 segment;
+  // std::cout << segment.toString() << std::endl;
 
   // solver_keff();
   return 0;

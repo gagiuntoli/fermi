@@ -22,6 +22,9 @@
 #ifndef ELLPACK_H
 #define ELLPACK_H
 
+#include <iomanip>
+#include <sstream>
+#include <string>
 #include <vector>
 
 struct Ellpack {
@@ -60,6 +63,17 @@ struct Ellpack {
     return 1;
   }
 
+  int add(size_t row, size_t col, double value) {
+    // useful for the finite element method in the assembly stage
+    int index = getIndex(row, col);
+    if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty
+      cols[index] = col;
+      vals[index] += value;
+      return 0;
+    }
+    return 1;
+  }
+
   bool get(double &value, size_t row, size_t col) {
     int index = getIndex(row, col);
     if (index < (row + 1) * non_zeros_per_row && cols[index] == col) {  // value exists
@@ -67,6 +81,21 @@ struct Ellpack {
       return true;
     }
     return false;
+  }
+
+  std::string toString() const {
+    std::ostringstream oss;
+    oss << "Row: (col, val)" << std::endl;
+    for (int i = 0; i < nrows; i++) {
+      oss << i << " : ";
+      for (int j = 0; j < non_zeros_per_row; j++) {
+        int col = cols[i * non_zeros_per_row + j];
+        if (col < 0) break;
+        oss << "(" << col << "," << std::scientific << std::setprecision(4) << vals[i * non_zeros_per_row + j] << "), ";
+      }
+      oss << std::endl;
+    }
+    return oss.str();
   }
 };
 

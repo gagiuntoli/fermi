@@ -43,8 +43,7 @@ int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
       for (size_t j = 0; j < n; j++) {
         size_t row = elem->nodeIndexes[i];
         size_t col = elem->nodeIndexes[j];
-        A.cols[row * A.non_zeros_per_row + j] = col;
-        A.vals[row * A.non_zeros_per_row + j] += Ae[i * n + j];
+        A.add(row, col, Ae[i * n + j]);
       }
     }
   }

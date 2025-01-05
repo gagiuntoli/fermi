@@ -95,6 +95,21 @@ TEST(EllpackTest, insert_and_replace) {
   EXPECT_DOUBLE_EQ(value, 2.0);
 }
 
+TEST(EllpackTest, add) {
+  // this is useful for finite elements
+  Ellpack matrix(10, 10, 3);
+  int err = matrix.add(0, 0, 1.0);
+  EXPECT_EQ(err, 0);
+  err = matrix.add(0, 0, 1.0);
+  EXPECT_EQ(err, 0);
+
+  double value;
+  bool found = matrix.get(value, 0, 0);
+
+  EXPECT_TRUE(found);
+  EXPECT_DOUBLE_EQ(value, 2.0);
+}
+
 TEST(EllpackTest, dot_product) {
   std::vector<double> x = {1.0, 2.0, 3.0};
   std::vector<double> y = {4.0, 5.0, 6.0};
