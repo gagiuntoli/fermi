@@ -38,7 +38,6 @@ class ShapeBase {
   virtual constexpr std::array<double, N> getWeights() const = 0;
   virtual constexpr ShapeArray getShapeFunctions() const = 0;
   virtual constexpr DShapeArray getDShapeFunctions() const = 0;
-  virtual DShapeArray getTransformedDShapeFunctions(const MatrixOperations<DIM>::Matrix& inverseJacobian) const = 0;
 
   const std::string toString() const {
     std::ostringstream oss;
@@ -102,11 +101,6 @@ class Segment2 : public ShapeBase<2, 1> {
       ds[0][0][gp] = -0.5;
       ds[1][0][gp] = +0.5;
     }
-    return ds;
-  }
-
-  DShapeArray getTransformedDShapeFunctions(const MatrixOperations<DIM>::Matrix& inverseJacobian) const override {
-    std::array<std::array<std::array<double, N>, DIM>, N> ds{};
     return ds;
   }
 };

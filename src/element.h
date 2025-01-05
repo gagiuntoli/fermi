@@ -65,19 +65,19 @@ struct ElementSegment2 : public ElementDiffusion<1> {
     size_t n = nodes.size();
     std::vector<double> Ae(n * n, 0.0);
     Segment2 segment2;
-    MatrixOperations<1>::Matrix inverseJacobian;
     double det;
 
     auto shapes = segment2.getShapeFunctions();
-    auto dshapes = segment2.getShapeFunctions();
+    auto dsh = segment2.getDShapeFunctions();
     auto wgp = segment2.getWeights();
     for (size_t gp = 0; gp < wgp.size(); gp++) {
-      computeInverseJacobian(inverseJacobian, det, gp);
-      auto dtshapes = segment2.getTransformedDShapeFunctions(inverseJacobian);
+      MatrixOperations<1>::Matrix ijac;
+      computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          double laplacian = dtshapes[i][0][gp] * dtshapes[j][0][gp];
-          Ae[n * i + j] += (-d * laplacian + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
+          auto dsh_i = dsh[i][0][gp] * ijac[0][0];
+          auto dsh_j = dsh[j][0][gp] * ijac[0][0];
+          Ae[n * i + j] += (+d * dsh_i * dsh_j + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
         }
       }
     }
@@ -88,13 +88,13 @@ struct ElementSegment2 : public ElementDiffusion<1> {
     size_t n = nodes.size();
     std::vector<double> Be(n * n, 0.0);
     Segment2 segment2;
-    MatrixOperations<1>::Matrix inverseJacobian;
-    double det;
 
     auto shapes = segment2.getShapeFunctions();
     auto wgp = segment2.getWeights();
     for (size_t gp = 0; gp < wgp.size(); gp++) {
-      computeInverseJacobian(inverseJacobian, det, gp);
+      double det;
+      MatrixOperations<1>::Matrix ijac;
+      computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
           Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;

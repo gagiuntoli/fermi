@@ -25,7 +25,7 @@
 #include <iostream>
 
 double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B) {
-  const size_t MAX_ITERS = 5;
+  const size_t MAX_ITERS = 15;
   size_t n = A.nrows;
   std::vector<double> source(n);
   std::vector<double> source_new(n);
@@ -56,7 +56,7 @@ double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B)
     std::cout << "i:" << iters << " keff: " << keff << std::endl;
 
     if (iters > MAX_ITERS) return keff_new;
-    // if (iters > MAX_ITERS || (std::abs(keff_new - keff) / keff) < 0.01) return keff_new;
+    // if (iters > MAX_ITERS || (std::abs(keff_new - keff) / keff) < 0.000001) return keff_new;
     keff = keff_new;
 
     double power = norm(phi, n);
