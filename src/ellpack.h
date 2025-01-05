@@ -53,6 +53,14 @@ struct Ellpack {
     return index;
   }
 
+  int deleteRow(size_t row) {
+    size_t start = row * non_zeros_per_row;
+    size_t end = (row + 1) * non_zeros_per_row;
+    std::fill(cols.begin() + start, cols.begin() + end, -1);
+    std::fill(vals.begin() + start, vals.begin() + end, 0.0);
+    return 0;
+  }
+
   int insert(size_t row, size_t col, double value) {
     int index = getIndex(row, col);
     if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty

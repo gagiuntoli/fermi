@@ -33,6 +33,10 @@ int main(int argc, char **argv) {
   Ellpack A(nnodes, nnodes, 3);
 
   assemblyA(A, mesh);
+  A.deleteRow(0);
+  A.deleteRow(nnodes - 1);
+  A.insert(0, 0, 1.0);
+  A.insert(nnodes - 1, nnodes - 1, 1.0);
 
   std::cout << A.toString() << std::endl;
 
