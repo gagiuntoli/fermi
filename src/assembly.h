@@ -28,7 +28,7 @@
 #include "mesh.h"
 
 template <size_t DIM>
-int assemblyA(ellpack_t &A, Mesh<DIM> &mesh) {
+int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
   std::fill(A.vals.begin(), A.vals.end(), 0.0);
   for (const auto &elem : mesh.elements) {
     // std::cout << elem->toString() << std::endl;

@@ -23,7 +23,79 @@
 
 #include <gtest/gtest.h>
 
-TEST(EllpackTest, DotProduct) {
+TEST(EllpackTest, set_1_value) {
+  Ellpack matrix(10, 10, 3);
+  int err = matrix.insert(0, 0, 1.0);
+  EXPECT_EQ(err, 0);
+
+  double value;
+  bool found = matrix.get(value, 0, 0);
+
+  EXPECT_TRUE(found);
+  EXPECT_DOUBLE_EQ(value, 1.0);
+}
+
+TEST(EllpackTest, set_2_values) {
+  Ellpack matrix(10, 10, 3);
+  int err = matrix.insert(0, 0, 1.0);
+  EXPECT_EQ(err, 0);
+  err = matrix.insert(0, 1, 2.0);
+  EXPECT_EQ(err, 0);
+
+  {
+    double value;
+    bool found = matrix.get(value, 0, 0);
+    EXPECT_TRUE(found);
+    EXPECT_DOUBLE_EQ(value, 1.0);
+  }
+  {
+    double value;
+    bool found = matrix.get(value, 0, 1);
+    EXPECT_TRUE(found);
+    EXPECT_DOUBLE_EQ(value, 2.0);
+  }
+}
+
+TEST(EllpackTest, value_not_found) {
+  Ellpack matrix(10, 10, 3);
+
+  double value;
+  bool found = matrix.get(value, 0, 0);
+
+  EXPECT_FALSE(found);
+}
+
+TEST(EllpackTest, insert_more_than_non_zeros_per_row) {
+  Ellpack matrix(10, 10, 3);
+  int err = matrix.insert(0, 0, 1.0);
+  EXPECT_EQ(err, 0);
+  err = matrix.insert(0, 1, 2.0);
+  EXPECT_EQ(err, 0);
+  err = matrix.insert(0, 2, 3.0);
+  EXPECT_EQ(err, 0);
+  err = matrix.insert(0, 3, 4.0);
+  EXPECT_EQ(err, 1);
+
+  double value;
+  bool found = matrix.get(value, 0, 3);
+  EXPECT_FALSE(found);
+}
+
+TEST(EllpackTest, insert_and_replace) {
+  Ellpack matrix(10, 10, 3);
+  int err = matrix.insert(0, 0, 1.0);
+  EXPECT_EQ(err, 0);
+  err = matrix.insert(0, 0, 2.0);
+  EXPECT_EQ(err, 0);
+
+  double value;
+  bool found = matrix.get(value, 0, 0);
+
+  EXPECT_TRUE(found);
+  EXPECT_DOUBLE_EQ(value, 2.0);
+}
+
+TEST(EllpackTest, dot_product) {
   std::vector<double> x = {1.0, 2.0, 3.0};
   std::vector<double> y = {4.0, 5.0, 6.0};
   double result = dot(y, x, 3);

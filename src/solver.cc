@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-double solver_keff(const ellpack_t &A, const ellpack_t &B, std::vector<size_t> dirichlet) {
+double solver_keff(const Ellpack &A, const Ellpack &B, std::vector<size_t> dirichlet) {
   const size_t MAX_ITERS = 100;
   size_t n = A.nrows;
   std::vector<double> phi(n, 1.0);

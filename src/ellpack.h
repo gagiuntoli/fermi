@@ -24,16 +24,54 @@
 
 #include <vector>
 
-typedef struct {
+struct Ellpack {
   size_t nrows;
   size_t ncols;
   size_t non_zeros_per_row;
-  std::vector<size_t> cols;
+  std::vector<int> cols;
   std::vector<double> vals;
-} ellpack_t;
 
-int ellpack_mvp(std::vector<double> y, ellpack_t matrix, std::vector<double> x);
-int ellpack_solve_cg(std::vector<double> x, ellpack_t matrix, std::vector<double> b);
+  Ellpack() = default;
+
+  Ellpack(size_t nrows_, size_t ncols_, size_t non_zeros_per_row_)
+      : nrows(nrows_),
+        ncols(ncols_),
+        non_zeros_per_row(non_zeros_per_row_),
+        cols(std::vector<int>(ncols * non_zeros_per_row, -1)),
+        vals(std::vector<double>(ncols * non_zeros_per_row, 0.0)) {}
+
+  size_t getIndex(size_t rowTarget, size_t colTarget) {
+    size_t index = rowTarget * non_zeros_per_row;
+    for (; index < (rowTarget + 1) * non_zeros_per_row; index++) {
+      if (cols[index] == -1 || cols[index] == colTarget) {
+        return index;
+      }
+    }
+    return index;
+  }
+
+  int insert(size_t row, size_t col, double value) {
+    int index = getIndex(row, col);
+    if (index < (row + 1) * non_zeros_per_row) {  // entry exists or it is empty
+      cols[index] = col;
+      vals[index] = value;
+      return 0;
+    }
+    return 1;
+  }
+
+  bool get(double &value, size_t row, size_t col) {
+    int index = getIndex(row, col);
+    if (index < (row + 1) * non_zeros_per_row && cols[index] == col) {  // value exists
+      value = vals[index];
+      return true;
+    }
+    return false;
+  }
+};
+
+int ellpack_mvp(std::vector<double> y, Ellpack matrix, std::vector<double> x);
+int ellpack_solve_cg(std::vector<double> x, Ellpack matrix, std::vector<double> b);
 double dot(std::vector<double> y, std::vector<double> x, size_t n);
 double norm(std::vector<double> x, size_t n);
 

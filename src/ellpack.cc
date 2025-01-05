@@ -28,7 +28,7 @@
 
 #include <vector>
 
-int ellpack_mvp(std::vector<double> y, ellpack_t matrix, std::vector<double> x) {
+int ellpack_mvp(std::vector<double> y, Ellpack matrix, std::vector<double> x) {
   for (size_t row = 0; row < matrix.nrows; row++) {
     double tmp = 0;
     for (size_t j = 0; j < matrix.non_zeros_per_row; j++) {
@@ -41,7 +41,7 @@ int ellpack_mvp(std::vector<double> y, ellpack_t matrix, std::vector<double> x) 
   return 0;
 }
 
-int ellpack_solve_cg(std::vector<double> x, ellpack_t matrix, std::vector<double> b) {
+int ellpack_solve_cg(std::vector<double> x, Ellpack matrix, std::vector<double> b) {
   int max_iters = 10000000;
   int n = matrix.nrows;
   std::vector<double> r(n);
