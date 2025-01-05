@@ -36,7 +36,6 @@ struct ElementDiffusion : public ElementBase<DIM> {
                    double d_)
       : ElementBase<DIM>(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
 
-  virtual std::vector<double> computeElementMatrix() const = 0;
   virtual int computeInverseJacobian(MatrixOperations<DIM>::Matrix &jacobian, double &det, size_t gp) const = 0;
 };
 

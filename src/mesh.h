@@ -36,6 +36,8 @@ struct ElementBase {
 
   ElementBase(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_) : nodeIndexes(nodeIndexes_), nodes(nodes_) {}
 
+  virtual std::vector<double> computeElementMatrix() const = 0;
+
   const std::string toString() const {
     std::ostringstream oss;
     for (const auto &node : nodeIndexes) {

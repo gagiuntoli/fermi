@@ -19,30 +19,36 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
+#ifndef ASSEMBLY_H
+#define ASSEMBLY_H
 
-#include "assembly.h"
-#include "fem.h"
-#include "mesh_fermi.h"
-#include "solver.h"
+#include <cassert>
 
-int main(int argc, char **argv) {
-  Mesh<1> mesh = mesh_create_structured_1d(10, 10.0);
+#include "ellpack.h"
+#include "mesh.h"
 
-  ellpack_t A;
-  A.nrows = mesh.nodes.size();
-  A.ncols = A.nrows;
-  A.non_zeros_per_row = 3;
-  A.cols = std::vector<size_t>(A.nrows * A.non_zeros_per_row);
-  A.vals = std::vector<double>(A.nrows * A.non_zeros_per_row);
-
-  assemblyA(A, mesh);
-
-  std::cout << mesh.toString() << std::endl;
-
-  Segment2 segment;
-  std::cout << segment.toString() << std::endl;
-
-  // solver_keff();
+template <size_t DIM>
+int assemblyA(ellpack_t &A, Mesh<DIM> &mesh) {
+  std::fill(A.vals.begin(), A.vals.end(), 0.0);
+  for (const auto &elem : mesh.elements) {
+    // std::cout << elem->toString() << std::endl;
+    auto Ae = elem->computeElementMatrix();
+    for (const auto &ae : Ae) {
+      std::cout << ae << ",";
+    }
+    std::cout << std::endl;
+    size_t n = elem->nodeIndexes.size();
+    assert(Ae.size() == n * n);
+    for (size_t i = 0; i < n; i++) {
+      for (size_t j = 0; j < n; j++) {
+        size_t row = elem->nodeIndexes[i];
+        size_t col = elem->nodeIndexes[j];
+        A.cols[row * A.non_zeros_per_row + j] = col;
+        A.vals[row * A.non_zeros_per_row + j] += Ae[i * n + j];
+      }
+    }
+  }
   return 0;
 }
+
+#endif
