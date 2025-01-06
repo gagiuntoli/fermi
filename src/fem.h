@@ -34,23 +34,23 @@ class ShapeBase {
   using ShapeArray = std::array<std::array<double, N>, N>;
   using DShapeArray = std::array<std::array<std::array<double, N>, DIM>, N>;
 
-  virtual constexpr std::array<Node, N> getGaussPoints() const = 0;
-  virtual constexpr std::array<double, N> getWeights() const = 0;
-  virtual constexpr ShapeArray getShapeFunctions() const = 0;
-  virtual constexpr DShapeArray getDShapeFunctions() const = 0;
+  virtual constexpr std::array<Node, N> gaussPoints() const = 0;
+  virtual constexpr std::array<double, N> weights() const = 0;
+  virtual constexpr ShapeArray sh() const = 0;
+  virtual constexpr DShapeArray dsh() const = 0;
 
   const std::string toString() const {
     std::ostringstream oss;
     oss << "Gauss Points:\n";
-    for (const auto& gp : getGaussPoints()) {
+    for (const auto& gp : gaussPoints()) {
       oss << "  " << gp.toString() << "\n";
     }
     oss << "Weights:\n";
-    for (const auto& w : getWeights()) {
+    for (const auto& w : weights()) {
       oss << "  " << w << "\n";
     }
     oss << "Shape Functions:\n";
-    const auto& shape = getShapeFunctions();
+    const auto& shape = sh();
     for (size_t i = 0; i < shape.size(); ++i) {
       oss << "  ";
       for (size_t j = 0; j < shape[i].size(); ++j) {
@@ -59,7 +59,7 @@ class ShapeBase {
       oss << "\n";
     }
     oss << "DShape Functions:\n";
-    const auto& dShape = getDShapeFunctions();
+    const auto& dShape = dsh();
     for (size_t i = 0; i < dShape.size(); ++i) {
       for (size_t j = 0; j < dShape[i].size(); ++j) {
         oss << "  ";
@@ -80,22 +80,52 @@ class Segment2 : public ShapeBase<2, 1> {
   static constexpr size_t N = 2;
   static constexpr size_t DIM = 1;
 
-  constexpr std::array<Node, N> getGaussPoints() const override {
+  constexpr std::array<Node, N> gaussPoints() const override {
     return {{{-0.577350269189626, 0, 0}, {+0.577350269189626, 0, 0}}};
   }
 
-  constexpr std::array<double, N> getWeights() const override { return {1.0, 1.0}; }
+  constexpr std::array<double, N> weights() const override { return {1.0, 1.0}; }
 
-  constexpr ShapeArray getShapeFunctions() const override {
+  constexpr ShapeArray sh() const override {
     std::array<std::array<double, N>, N> sh{};
     for (size_t gp = 0; gp < N; ++gp) {
-      sh[0][gp] = +0.5 * (1.0 - getGaussPoints()[gp].x);
-      sh[1][gp] = +0.5 * (1.0 + getGaussPoints()[gp].x);
+      sh[0][gp] = +0.5 * (1.0 - gaussPoints()[gp].x);
+      sh[1][gp] = +0.5 * (1.0 + gaussPoints()[gp].x);
     }
     return sh;
   }
 
-  constexpr DShapeArray getDShapeFunctions() const override {
+  constexpr DShapeArray dsh() const override {
+    std::array<std::array<std::array<double, N>, DIM>, N> ds{};
+    for (size_t gp = 0; gp < N; ++gp) {
+      ds[0][0][gp] = -0.5;
+      ds[1][0][gp] = +0.5;
+    }
+    return ds;
+  }
+};
+
+class Quad2 : public ShapeBase<2, 1> {
+ public:
+  static constexpr size_t N = 2;
+  static constexpr size_t DIM = 1;
+
+  constexpr std::array<Node, N> gaussPoints() const override {
+    return {{{-0.577350269189626, 0, 0}, {+0.577350269189626, 0, 0}}};
+  }
+
+  constexpr std::array<double, N> weights() const override { return {1.0, 1.0}; }
+
+  constexpr ShapeArray sh() const override {
+    std::array<std::array<double, N>, N> sh{};
+    for (size_t gp = 0; gp < N; ++gp) {
+      sh[0][gp] = +0.5 * (1.0 - gaussPoints()[gp].x);
+      sh[1][gp] = +0.5 * (1.0 + gaussPoints()[gp].x);
+    }
+    return sh;
+  }
+
+  constexpr DShapeArray dsh() const override {
     std::array<std::array<std::array<double, N>, DIM>, N> ds{};
     for (size_t gp = 0; gp < N; ++gp) {
       ds[0][0][gp] = -0.5;
