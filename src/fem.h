@@ -25,7 +25,7 @@
 #include <array>
 #include <cstdlib>
 
-#include "matrix_operations.h"
+#include "algebra.h"
 #include "node.h"
 
 template <size_t N, size_t DIM>

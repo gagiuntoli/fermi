@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "matrix_operations.h"
+#include "algebra.h"
 #include "node.h"
 
 template <size_t DIM>

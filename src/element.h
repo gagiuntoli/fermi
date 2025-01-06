@@ -38,26 +38,26 @@ struct ElementDiffusion : public ElementBase<DIM> {
 
   virtual std::vector<double> computeAe() const = 0;
   virtual std::vector<double> computeBe() const = 0;
-  virtual int computeInverseJacobian(MatrixOperations<DIM>::Matrix &ijac, double &det, size_t gp) const = 0;
+  virtual int computeInverseJacobian(Matrix<DIM> &ijac, double &det, size_t gp) const = 0;
 };
 
 struct ElementSegment2 : public ElementDiffusion<1> {
   using ElementDiffusion::ElementDiffusion;
 
-  int computeInverseJacobian(MatrixOperations<1>::Matrix &ijac, double &det, size_t gp) const {
+  int computeInverseJacobian(Matrix<1> &ijac, double &det, size_t gp) const {
     Segment2 segment2;
     auto dsh = segment2.dsh();
     size_t num_nodes = nodes.size();
-    MatrixOperations<1>::Matrix jac;
+    Matrix<1> jac;
     for (int i = 0; i < 1; i++) {
       for (int j = 0; j < 1; j++) {
-        jac[i][j] = 0.0;
+        jac.data[i][j] = 0.0;
         for (int n = 0; n < num_nodes; n++) {
-          jac[i][j] += dsh[n][i][gp] * nodes[n].x;
+          jac.data[i][j] += dsh[n][i][gp] * nodes[n].x;
         }
       }
     }
-    MatrixOperations<1>::inverse(ijac, jac, det);
+    jac.inverse(ijac, det);
     return 0;
   }
 
@@ -71,12 +71,12 @@ struct ElementSegment2 : public ElementDiffusion<1> {
     auto dsh = segment2.dsh();
     auto wgp = segment2.weights();
     for (size_t gp = 0; gp < wgp.size(); gp++) {
-      MatrixOperations<1>::Matrix ijac;
+      Matrix<1> ijac;
       computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          auto dsh_i = dsh[i][0][gp] * ijac[0][0];
-          auto dsh_j = dsh[j][0][gp] * ijac[0][0];
+          auto dsh_i = dsh[i][0][gp] * ijac.data[0][0];
+          auto dsh_j = dsh[j][0][gp] * ijac.data[0][0];
           Ae[n * i + j] += (+d * dsh_i * dsh_j + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
         }
       }
@@ -93,7 +93,7 @@ struct ElementSegment2 : public ElementDiffusion<1> {
     auto wgp = segment2.weights();
     for (size_t gp = 0; gp < wgp.size(); gp++) {
       double det;
-      MatrixOperations<1>::Matrix ijac;
+      Matrix<1> ijac;
       computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
@@ -108,20 +108,20 @@ struct ElementSegment2 : public ElementDiffusion<1> {
 struct Quad2D : public ElementDiffusion<2> {
   using ElementDiffusion::ElementDiffusion;
 
-  int computeInverseJacobian(MatrixOperations<2>::Matrix &ijac, double &det, size_t gp) const {
+  int computeInverseJacobian(Matrix<2> &ijac, double &det, size_t gp) const {
     Segment2 segment2;
     auto dsh = segment2.dsh();
     size_t num_nodes = nodes.size();
-    MatrixOperations<2>::Matrix jac;
+    Matrix<2> jac;
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 2; j++) {
-        jac[i][j] = 0.0;
+        jac.data[i][j] = 0.0;
         for (int n = 0; n < num_nodes; n++) {
-          jac[i][j] += dsh[n][0][gp] * nodes[n].x;
+          jac.data[i][j] += dsh[n][0][gp] * nodes[n].x;
         }
       }
     }
-    MatrixOperations<2>::inverse(ijac, jac, det);
+    jac.inverse(ijac, det);
     return 0;
   }
 
@@ -135,12 +135,12 @@ struct Quad2D : public ElementDiffusion<2> {
     auto dsh = segment2.dsh();
     auto wgp = segment2.weights();
     for (size_t gp = 0; gp < wgp.size(); gp++) {
-      MatrixOperations<2>::Matrix ijac;
+      Matrix<2> ijac;
       computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          auto dsh_i = dsh[i][0][gp] * ijac[0][0];
-          auto dsh_j = dsh[j][0][gp] * ijac[0][0];
+          auto dsh_i = dsh[i][0][gp] * ijac.data[0][0];
+          auto dsh_j = dsh[j][0][gp] * ijac.data[0][0];
           Ae[n * i + j] += (+d * dsh_i * dsh_j + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
         }
       }
@@ -157,7 +157,7 @@ struct Quad2D : public ElementDiffusion<2> {
     auto wgp = segment2.weights();
     for (size_t gp = 0; gp < wgp.size(); gp++) {
       double det;
-      MatrixOperations<2>::Matrix ijac;
+      Matrix<2> ijac;
       computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
