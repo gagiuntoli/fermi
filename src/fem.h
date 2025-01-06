@@ -73,6 +73,23 @@ class ShapeBase {
   }
 
   virtual ~ShapeBase() = default;
+
+  int computeInverseJacobian(Matrix<DIM>& ijac, double& det, std::vector<Node> nodes, size_t gp) const {
+    DShapeArray dsh_ = dsh();
+
+    size_t num_nodes = nodes.size();
+    Matrix<DIM> jac;
+    for (int i = 0; i < DIM; i++) {
+      for (int j = 0; j < DIM; j++) {
+        jac.data[i][j] = 0.0;
+        for (int n = 0; n < num_nodes; n++) {
+          jac.data[i][j] += dsh_[n][i][gp] * nodes[n].getCoor(j);
+        }
+      }
+    }
+    jac.inverse(ijac, det);
+    return 0;
+  }
 };
 
 class Segment2 : public ShapeBase<2, 1> {
@@ -105,16 +122,19 @@ class Segment2 : public ShapeBase<2, 1> {
   }
 };
 
-class Quad2 : public ShapeBase<2, 1> {
+class Quad2 : public ShapeBase<4, 2> {
  public:
-  static constexpr size_t N = 2;
-  static constexpr size_t DIM = 1;
+  static constexpr size_t N = 4;
+  static constexpr size_t DIM = 2;
 
   constexpr std::array<Node, N> gaussPoints() const override {
-    return {{{-0.577350269189626, 0, 0}, {+0.577350269189626, 0, 0}}};
+    return {{{-0.577350269189626, 0, 0},
+             {+0.577350269189626, 0, 0},
+             {+0.577350269189626, 0, 0},
+             {+0.577350269189626, 0, 0}}};
   }
 
-  constexpr std::array<double, N> weights() const override { return {1.0, 1.0}; }
+  constexpr std::array<double, N> weights() const override { return {1.0, 1.0, 1.0, 1.0}; }
 
   constexpr ShapeArray sh() const override {
     std::array<std::array<double, N>, N> sh{};

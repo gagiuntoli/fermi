@@ -33,6 +33,12 @@ struct Node {
     oss << x << "," << y << "," << z;
     return oss.str();
   }
+
+  double getCoor(size_t i) {
+    if (i == 0) return x;
+    if (i == 1) return y;
+    return z;
+  }
 };
 
 #endif
