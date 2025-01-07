@@ -23,7 +23,68 @@
 
 #include <cmath>
 
-double dot(const std::vector<double> &y, const std::vector<double> &x, size_t n) {
+template <>
+double Matrix<1>::determinant() {
+  return data[0][0];
+}
+
+template <>
+int Matrix<1>::inverse(Matrix& inverse, double& det) {
+  det = determinant();
+  if (std::abs(det) < 1e-10) return 1;
+  inverse = {{{1.0 / det}}};
+  return 0;
+}
+
+template <>
+double Matrix<2>::determinant() {
+  return data[0][0] * data[1][1] - data[0][1] * data[1][0];
+}
+
+template <>
+int Matrix<2>::inverse(Matrix& inverse, double& det) {
+  det = determinant();
+  if (std::abs(det) < 1e-10) return 1;
+
+  inverse.data[0][0] = data[1][1] / det;
+  inverse.data[0][1] = -data[0][1] / det;
+  inverse.data[1][0] = -data[1][0] / det;
+  inverse.data[1][1] = data[0][0] / det;
+  return 0;
+}
+
+template <>
+double Matrix<3>::determinant() {
+  return data[0][0] * (data[1][1] * data[2][2] - data[1][2] * data[2][1]) -
+         data[0][1] * (data[1][0] * data[2][2] - data[1][2] * data[2][0]) +
+         data[0][2] * (data[1][0] * data[2][1] - data[1][1] * data[2][0]);
+}
+
+template <>
+int Matrix<3>::inverse(Matrix& inverse, double& det) {
+  det = determinant();
+  if (std::abs(det) < 1e-10) return 1;
+
+  std::array<std::array<double, 3>, 3> cofactor;
+  cofactor[0][0] = data[1][1] * data[2][2] - data[2][1] * data[1][2];
+  cofactor[0][1] = -(data[1][0] * data[2][2] - data[2][0] * data[1][2]);
+  cofactor[0][2] = data[1][0] * data[2][1] - data[2][0] * data[1][1];
+  cofactor[1][0] = -(data[0][1] * data[2][2] - data[2][1] * data[0][2]);
+  cofactor[1][1] = data[0][0] * data[2][2] - data[2][0] * data[0][2];
+  cofactor[1][2] = -(data[0][0] * data[2][1] - data[2][0] * data[0][1]);
+  cofactor[2][0] = data[0][1] * data[1][2] - data[1][1] * data[0][2];
+  cofactor[2][1] = -(data[0][0] * data[1][2] - data[1][0] * data[0][2]);
+  cofactor[2][2] = data[0][0] * data[1][1] - data[1][0] * data[0][1];
+
+  for (size_t i = 0; i < 3; ++i) {
+    for (size_t j = 0; j < 3; ++j) {
+      inverse.data[j][i] = cofactor[i][j] / det;
+    }
+  }
+  return 0;
+}
+
+double dot(const std::vector<double>& y, const std::vector<double>& x, size_t n) {
   double result = 0.0;
   for (size_t i = 0; i < n; i++) {
     result += x[i] * y[i];
@@ -31,4 +92,4 @@ double dot(const std::vector<double> &y, const std::vector<double> &x, size_t n)
   return result;
 }
 
-double norm(const std::vector<double> &x, size_t n) { return sqrt(dot(x, x, n)); }
+double norm(const std::vector<double>& x, size_t n) { return sqrt(dot(x, x, n)); }
