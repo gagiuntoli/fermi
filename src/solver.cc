@@ -35,10 +35,10 @@ double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B)
   double keff = 1.0;
   size_t iters = 0;
   while (true) {
-    for (auto p : phi) {
-      std::cout << p << std::endl;
-    }
-    std::cout << std::endl;
+    // for (auto p : phi) {
+    //   std::cout << p << std::endl;
+    // }
+    // std::cout << std::endl;
     B.mvp(source, phi);
     double norm_source = 0;
     for (size_t i = 0; i < n; i++) {
@@ -55,7 +55,7 @@ double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B)
       norm_source_new += source_new[i];
     }
     double keff_new = keff * norm_source_new / norm_source;
-    std::cout << "i:" << iters << " keff: " << keff << std::endl;
+    // std::cout << "i:" << iters << " keff: " << keff << std::endl;
 
     if (iters > MAX_ITERS) return keff_new;
     // if (iters > MAX_ITERS || (std::abs(keff_new - keff) / keff) < 0.000001) return keff_new;

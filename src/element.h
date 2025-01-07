@@ -22,6 +22,7 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
+#include "algebra.h"
 #include "fem.h"
 #include "mesh.h"
 
@@ -46,7 +47,7 @@ struct ElementSegment2 : public ElementDiffusion<1> {
   std::vector<double> computeAe() const override {
     size_t n = nodes.size();
     std::vector<double> Ae(n * n, 0.0);
-    Segment2 segment2;
+    ShapeSegment2 segment2;
     double det;
 
     auto shapes = segment2.sh();
@@ -69,7 +70,7 @@ struct ElementSegment2 : public ElementDiffusion<1> {
   std::vector<double> computeBe() const override {
     size_t n = nodes.size();
     std::vector<double> Be(n * n, 0.0);
-    Segment2 segment2;
+    ShapeSegment2 segment2;
 
     auto shapes = segment2.sh();
     auto wgp = segment2.weights();
@@ -87,13 +88,13 @@ struct ElementSegment2 : public ElementDiffusion<1> {
   }
 };
 
-struct Quad2D : public ElementDiffusion<2> {
+struct Quad4 : public ElementDiffusion<2> {
   using ElementDiffusion::ElementDiffusion;
 
   std::vector<double> computeAe() const override {
     size_t n = nodes.size();
     std::vector<double> Ae(n * n, 0.0);
-    Quad2 quad4;
+    ShapeQuad4 quad4;
     double det;
 
     auto shapes = quad4.sh();
@@ -104,9 +105,13 @@ struct Quad2D : public ElementDiffusion<2> {
       quad4.computeInverseJacobian(ijac, det, nodes, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          auto dsh_i = dsh[i][0][gp] * ijac.data[0][0];
-          auto dsh_j = dsh[j][0][gp] * ijac.data[0][0];
-          Ae[n * i + j] += (+d * dsh_i * dsh_j + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
+          std::array<double, 2> dsh_gp_i = {dsh[i][0][gp], dsh[i][1][gp]};
+          std::array<double, 2> dsh_gp_j = {dsh[j][0][gp], dsh[j][1][gp]};
+          std::array<double, 2> dsh_gp_it = ijac.mvp(dsh_gp_i);
+          std::array<double, 2> dsh_gp_jt = ijac.mvp(dsh_gp_j);
+          Ae[n * i + j] += (+d * (dsh_gp_it[0] * dsh_gp_jt[0] + dsh_gp_it[1] * dsh_gp_jt[1]) +
+                            xs_a * shapes[i][gp] * shapes[j][gp]) *
+                           wgp[gp] * det;
         }
       }
     }
@@ -116,7 +121,7 @@ struct Quad2D : public ElementDiffusion<2> {
   std::vector<double> computeBe() const override {
     size_t n = nodes.size();
     std::vector<double> Be(n * n, 0.0);
-    Quad2 quad4;
+    ShapeQuad4 quad4;
 
     auto shapes = quad4.sh();
     auto wgp = quad4.weights();

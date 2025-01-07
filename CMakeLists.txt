@@ -6,14 +6,28 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    message(STATUS "AddressSanitizer enabled for Debug build.")
+    set(ASAN_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ASAN_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ASAN_FLAGS}")
+    # Optionally link the AddressSanitizer runtime
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ASAN_FLAGS}")
+endif()
+
 file(GLOB SOURCE_FILES src/*.cc)
 
 add_library(FermiLib STATIC ${SOURCE_FILES})
 
 target_include_directories(FermiLib PUBLIC src)
 
-add_executable(main_keff src/main/main_keff.cc)
-target_link_libraries(main_keff PRIVATE FermiLib)
+file(GLOB EXEC_FILES "src/main/main_*.cc")
+foreach(EXEC_FILE ${EXEC_FILES})
+    get_filename_component(EXEC_NAME ${EXEC_FILE} NAME_WE)
+    add_executable(${EXEC_NAME} ${EXEC_FILE})
+    target_link_libraries(${EXEC_NAME} PRIVATE FermiLib)
+    target_link_libraries(${EXEC_NAME} PRIVATE FermiLib)
+endforeach()
 
 file(GLOB TEST_FILES "src/*_test.cc")
 include(GoogleTest)

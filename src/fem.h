@@ -92,7 +92,7 @@ class ShapeBase {
   }
 };
 
-class Segment2 : public ShapeBase<2, 1> {
+class ShapeSegment2 : public ShapeBase<2, 1> {
  public:
   static constexpr size_t N = 2;
   static constexpr size_t DIM = 1;
@@ -122,34 +122,46 @@ class Segment2 : public ShapeBase<2, 1> {
   }
 };
 
-class Quad2 : public ShapeBase<4, 2> {
+class ShapeQuad4 : public ShapeBase<4, 2> {
  public:
+  static constexpr size_t NGP = 4;
   static constexpr size_t N = 4;
   static constexpr size_t DIM = 2;
 
   constexpr std::array<Node, N> gaussPoints() const override {
-    return {{{-0.577350269189626, 0, 0},
-             {+0.577350269189626, 0, 0},
-             {+0.577350269189626, 0, 0},
-             {+0.577350269189626, 0, 0}}};
+    return {{{-0.577350269189626, -0.577350269189626, 0},
+             {-0.577350269189626, +0.577350269189626, 0},
+             {+0.577350269189626, -0.577350269189626, 0},
+             {+0.577350269189626, +0.577350269189626, 0}}};
   }
 
   constexpr std::array<double, N> weights() const override { return {1.0, 1.0, 1.0, 1.0}; }
 
   constexpr ShapeArray sh() const override {
     std::array<std::array<double, N>, N> sh{};
-    for (size_t gp = 0; gp < N; ++gp) {
-      sh[0][gp] = +0.5 * (1.0 - gaussPoints()[gp].x);
-      sh[1][gp] = +0.5 * (1.0 + gaussPoints()[gp].x);
+    for (size_t gp = 0; gp < NGP; ++gp) {
+      sh[0][gp] = (1.0 - gaussPoints()[gp].x) * (1.0 - gaussPoints()[gp].y) * 0.25;
+      sh[1][gp] = (1.0 - gaussPoints()[gp].x) * (1.0 + gaussPoints()[gp].y) * 0.25;
+      sh[2][gp] = (1.0 + gaussPoints()[gp].x) * (1.0 - gaussPoints()[gp].y) * 0.25;
+      sh[3][gp] = (1.0 + gaussPoints()[gp].x) * (1.0 + gaussPoints()[gp].y) * 0.25;
     }
     return sh;
   }
 
   constexpr DShapeArray dsh() const override {
     std::array<std::array<std::array<double, N>, DIM>, N> ds{};
-    for (size_t gp = 0; gp < N; ++gp) {
-      ds[0][0][gp] = -0.5;
-      ds[1][0][gp] = +0.5;
+    for (size_t gp = 0; gp < NGP; ++gp) {
+      ds[0][0][gp] = -1.0 * (1.0 - gaussPoints()[gp].y) * 0.25;
+      ds[0][1][gp] = -1.0 * (1.0 - gaussPoints()[gp].x) * 0.25;
+
+      ds[1][0][gp] = -1.0 * (1.0 + gaussPoints()[gp].y) * 0.25;
+      ds[1][1][gp] = +1.0 * (1.0 - gaussPoints()[gp].x) * 0.25;
+
+      ds[2][0][gp] = +1.0 * (1.0 - gaussPoints()[gp].y) * 0.25;
+      ds[2][1][gp] = -1.0 * (1.0 + gaussPoints()[gp].x) * 0.25;
+
+      ds[3][0][gp] = +1.0 * (1.0 + gaussPoints()[gp].y) * 0.25;
+      ds[3][1][gp] = +1.0 * (1.0 + gaussPoints()[gp].x) * 0.25;
     }
     return ds;
   }

@@ -35,6 +35,16 @@ class Matrix {
 
   double determinant();
   int inverse(Matrix& inverse, double& det);
+
+  std::array<double, N> mvp(const std::array<double, N>& x) const {
+    std::array<double, N> y = {};
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        y[i] += data[i][j] * x[j];
+      }
+    }
+    return y;
+  }
 };
 
 template <>
@@ -68,6 +78,16 @@ class Matrix<2> {
     inverse.data[1][0] = -data[1][0] / det;
     inverse.data[1][1] = data[0][0] / det;
     return 0;
+  }
+
+  std::array<double, 2> mvp(const std::array<double, 2>& x) const {
+    std::array<double, 2> y = {};
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 2; j++) {
+        y[i] += data[i][j] * x[j];
+      }
+    }
+    return y;
   }
 };
 

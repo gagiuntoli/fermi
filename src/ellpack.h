@@ -40,8 +40,8 @@ struct Ellpack {
       : nrows(nrows_),
         ncols(ncols_),
         non_zeros_per_row(non_zeros_per_row_),
-        cols(std::vector<int>(ncols * non_zeros_per_row, -1)),
-        vals(std::vector<double>(ncols * non_zeros_per_row, 0.0)) {}
+        cols(std::vector<int>(ncols_ * non_zeros_per_row, -1)),
+        vals(std::vector<double>(ncols_ * non_zeros_per_row, 0.0)) {}
 
   size_t getIndex(size_t rowTarget, size_t colTarget) const;
   int deleteRow(size_t row);

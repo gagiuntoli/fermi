@@ -46,7 +46,7 @@ Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
   return Mesh<1>{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-Mesh<2> mesh_create_structured_2d_quads(size_t nx, size_t ny, double lx, double ly) {
+Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double ly) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -59,12 +59,12 @@ Mesh<2> mesh_create_structured_2d_quads(size_t nx, size_t ny, double lx, double 
   std::vector<std::shared_ptr<ElementBase<2>>> elements;
   for (size_t i = 0; i < (nx - 1); i++) {
     for (size_t j = 0; j < (ny - 1); j++) {
-      std::vector<size_t> nodeIndexes = {i, i + 1, i * ny, i * ny + 1};
+      std::vector<size_t> nodeIndexes = {i * ny + j, i * ny + j + 1, (i + 1) * ny + j, (i + 1) * ny + j + 1};
       std::vector<Node> elemNodes;
       for (const size_t& index : nodeIndexes) {
         elemNodes.push_back(nodes[index]);
       }
-      elements.push_back(std::make_shared<Quad2D>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+      elements.push_back(std::make_shared<Quad4>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
     }
   }
 
