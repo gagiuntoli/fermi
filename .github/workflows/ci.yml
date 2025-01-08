@@ -9,7 +9,6 @@ on:
     branches: [ "master" ]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
@@ -25,7 +24,7 @@ jobs:
 
     - name: Check syntax
       run: |
-        files=$(find src include -name '*.cpp' -o -name '*.hpp')
+        files=$(find src -name '*.cc' -o -name '*.h')
         issues=$(clang-format -style=file -output-replacements-xml $files | grep -c '<replacement ' || true)
         if [ $issues -gt 0 ]; then
           echo "Found formatting issues. Exiting."

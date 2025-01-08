@@ -16,6 +16,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 file(GLOB SOURCE_FILES src/*.cc)
+list(FILTER SOURCE_FILES EXCLUDE REGEX ".*_test\\.cc")
 
 add_library(FermiLib STATIC ${SOURCE_FILES})
 
@@ -30,6 +31,7 @@ foreach(EXEC_FILE ${EXEC_FILES})
 endforeach()
 
 file(GLOB TEST_FILES "src/*_test.cc")
+add_subdirectory(lib/googletest)
 include(GoogleTest)
 
 foreach(TEST_FILE ${TEST_FILES})
