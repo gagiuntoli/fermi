@@ -19,6 +19,10 @@ file(GLOB SOURCE_FILES src/*.cc)
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*_test\\.cc")
 
 add_library(FermiLib STATIC ${SOURCE_FILES})
+target_link_libraries(FermiLib PRIVATE sparsex)
+
+set(SPARSEX_DISABLE_TESTS ON)
+add_subdirectory(lib/sparsex)
 
 target_include_directories(FermiLib PUBLIC src)
 
@@ -26,8 +30,7 @@ file(GLOB EXEC_FILES "src/main/main_*.cc")
 foreach(EXEC_FILE ${EXEC_FILES})
     get_filename_component(EXEC_NAME ${EXEC_FILE} NAME_WE)
     add_executable(${EXEC_NAME} ${EXEC_FILE})
-    target_link_libraries(${EXEC_NAME} PRIVATE FermiLib)
-    target_link_libraries(${EXEC_NAME} PRIVATE FermiLib)
+    target_link_libraries(${EXEC_NAME} PRIVATE FermiLib sparsex)
 endforeach()
 
 file(GLOB TEST_FILES "src/*_test.cc")
