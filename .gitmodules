@@ -3,4 +3,4 @@
 	url = https://github.com/google/googletest.git
 [submodule "lib/sparsex"]
 	path = lib/sparsex
-	url = git@github.com:gagiuntoli/sparsex.git
+	url = https://github.com/gagiuntoli/sparsex.git
