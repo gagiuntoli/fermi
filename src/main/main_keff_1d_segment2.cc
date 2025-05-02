@@ -22,7 +22,6 @@
 #include <iostream>
 
 #include "assembly.h"
-#include "fem.h"
 #include "mesh_fermi.h"
 #include "solver.h"
 
@@ -48,9 +47,6 @@ int main(int argc, char **argv) {
   B.deleteRow(nnodes - 1);
   B.insert(0, 0, 1.0);
   B.insert(nnodes - 1, nnodes - 1, 1.0);
-
-  std::cout << A.toString() << std::endl;
-  std::cout << B.toString() << std::endl;
 
   double keff = solver_keff(phi, A, B);
   std::cout << "keff: " << keff << std::endl;

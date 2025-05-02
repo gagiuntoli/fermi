@@ -37,6 +37,7 @@ int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
 
       size_t n = elem->nodeIndexes.size();
       assert(Ae.size() == n * n);
+
       for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
           size_t row = elem->nodeIndexes[i];
@@ -57,6 +58,7 @@ int assemblyB(Ellpack &B, Mesh<DIM> &mesh) {
   for (const auto &elem_ : mesh.elements) {
     if (auto elem = std::dynamic_pointer_cast<ElementDiffusion<DIM>>(elem_)) {
       auto Be = elem->computeBe();
+
       size_t n = elem->nodeIndexes.size();
       assert(Be.size() == n * n);
 

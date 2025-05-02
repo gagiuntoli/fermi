@@ -30,8 +30,6 @@ int main(int argc, char **argv) {
   size_t NX = 15, NY = 15;
   Mesh<2> mesh = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
 
-  // std::cout << mesh.toString() << std::endl;
-
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 9);
   Ellpack B(nnodes, nnodes, 9);
@@ -69,14 +67,7 @@ int main(int argc, char **argv) {
     B.insert(0, i * NY + (NY - 1), 1.0);
   }
 
-  // std::cout << A.toString() << std::endl;
-  // std::cout << B.toString() << std::endl;
-
   double keff = solver_keff(phi, A, B);
-  // std::cout << "keff: " << keff << std::endl;
-
-  for (int i = 0; i < nnodes; i++) {
-    std::cout << mesh.nodes[i].x << " " << mesh.nodes[i].y << " " << phi[i] << std::endl;
-  }
+  std::cout << "keff: " << keff << std::endl;
   return 0;
 }
