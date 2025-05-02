@@ -24,9 +24,8 @@
 
 #include "element.h"
 #include "mesh.h"
-#include "mesh_fermi.h"
 
-Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
+inline Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
   std::vector<Node> nodes;
   double h = length / (npoints - 1);
   for (size_t i = 0; i < npoints; i++) {
@@ -46,7 +45,7 @@ Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
   return Mesh<1>{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double ly) {
+inline Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double ly) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -69,6 +68,43 @@ Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double 
   }
 
   return Mesh<2>{.nodes = std::move(nodes), .elements = std::move(elements)};
+}
+
+inline Mesh<3> mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, double lx, double ly, double lz) {
+  std::vector<Node> nodes;
+  double hx = lx / (nx - 1);
+  double hy = ly / (ny - 1);
+  double hz = lz / (nz - 1);
+  for (size_t i = 0; i < nx; i++) {
+    for (size_t j = 0; j < ny; j++) {
+      for (size_t k = 0; k < nz; k++) {
+        nodes.push_back({i * hx, j * hy, k * hz});
+      }
+    }
+  }
+
+  std::vector<std::shared_ptr<ElementBase<3>>> elements;
+  for (size_t i = 0; i < (nx - 1); i++) {
+    for (size_t j = 0; j < (ny - 1); j++) {
+      for (size_t k = 0; k < (nz - 1); k++) {
+        std::vector<size_t> nodeIndexes = {i * ny + j + k * (nx * ny),
+                                           i * ny + j + 1 + k * (nx * ny),
+                                           (i + 1) * ny + j + k * (nx * ny),
+                                           (i + 1) * ny + j + 1 + k * (nx * ny),  //
+                                           i * ny + j + (k + 1) * (nx * ny),
+                                           i * ny + j + 1 + (k + 1) * (nx * ny),
+                                           (i + 1) * ny + j + (k + 1) * (nx * ny),
+                                           (i + 1) * ny + j + 1 + (k + 1) * (nx * ny)};
+        std::vector<Node> elemNodes;
+        for (const size_t& index : nodeIndexes) {
+          elemNodes.push_back(nodes[index]);
+        }
+        elements.push_back(std::make_shared<Hexa8>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+      }
+    }
+  }
+
+  return Mesh<3>{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
 #endif

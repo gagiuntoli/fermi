@@ -139,4 +139,56 @@ struct Quad4 : public ElementDiffusion<2> {
   }
 };
 
+struct Hexa8 : public ElementDiffusion<3> {
+  using ElementDiffusion::ElementDiffusion;
+
+  std::vector<double> computeAe() const override {
+    size_t n = nodes.size();
+    std::vector<double> Ae(n * n, 0.0);
+    ShapeHexa8 hexa8;
+    double det;
+
+    auto shapes = hexa8.sh();
+    auto dsh = hexa8.dsh();
+    auto wgp = hexa8.weights();
+    for (size_t gp = 0; gp < wgp.size(); gp++) {
+      Matrix<3> ijac;
+      hexa8.computeInverseJacobian(ijac, det, nodes, gp);
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          std::array<double, 3> dsh_gp_i = {dsh[i][0][gp], dsh[i][1][gp], dsh[i][2][gp]};
+          std::array<double, 3> dsh_gp_j = {dsh[j][0][gp], dsh[j][1][gp], dsh[j][2][gp]};
+          std::array<double, 3> dsh_gp_it = ijac.mvp(dsh_gp_i);
+          std::array<double, 3> dsh_gp_jt = ijac.mvp(dsh_gp_j);
+          Ae[n * i + j] +=
+              (+d * (dsh_gp_it[0] * dsh_gp_jt[0] + dsh_gp_it[1] * dsh_gp_jt[1] + dsh_gp_it[2] * dsh_gp_jt[2]) +
+               xs_a * shapes[i][gp] * shapes[j][gp]) *
+              wgp[gp] * det;
+        }
+      }
+    }
+    return Ae;
+  }
+
+  std::vector<double> computeBe() const override {
+    size_t n = nodes.size();
+    std::vector<double> Be(n * n, 0.0);
+    ShapeHexa8 hexa8;
+
+    auto shapes = hexa8.sh();
+    auto wgp = hexa8.weights();
+    for (size_t gp = 0; gp < wgp.size(); gp++) {
+      double det;
+      Matrix<3> ijac;
+      hexa8.computeInverseJacobian(ijac, det, nodes, gp);
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
+        }
+      }
+    }
+    return Be;
+  }
+};
+
 #endif
