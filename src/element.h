@@ -88,6 +88,57 @@ struct ElementSegment2 : public ElementDiffusion<1> {
   }
 };
 
+struct Tria3 : public ElementDiffusion<2> {
+  using ElementDiffusion::ElementDiffusion;
+
+  std::vector<double> computeAe() const override {
+    size_t n = nodes.size();
+    std::vector<double> Ae(n * n, 0.0);
+    ShapeTria3 tria3;
+    double det;
+
+    auto shapes = tria3.sh();
+    auto dsh = tria3.dsh();
+    auto wgp = tria3.weights();
+    for (size_t gp = 0; gp < wgp.size(); gp++) {
+      Matrix<2> ijac;
+      tria3.computeInverseJacobian(ijac, det, nodes, gp);
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          std::array<double, 2> dsh_gp_i = {dsh[i][0][gp], dsh[i][1][gp]};
+          std::array<double, 2> dsh_gp_j = {dsh[j][0][gp], dsh[j][1][gp]};
+          std::array<double, 2> dsh_gp_it = ijac.mvp(dsh_gp_i);
+          std::array<double, 2> dsh_gp_jt = ijac.mvp(dsh_gp_j);
+          Ae[n * i + j] += (+d * (dsh_gp_it[0] * dsh_gp_jt[0] + dsh_gp_it[1] * dsh_gp_jt[1]) +
+                            xs_a * shapes[i][gp] * shapes[j][gp]) *
+                           wgp[gp] * det;
+        }
+      }
+    }
+    return Ae;
+  }
+
+  std::vector<double> computeBe() const override {
+    size_t n = nodes.size();
+    std::vector<double> Be(n * n, 0.0);
+    ShapeTria3 tria3;
+
+    auto shapes = tria3.sh();
+    auto wgp = tria3.weights();
+    for (size_t gp = 0; gp < wgp.size(); gp++) {
+      double det;
+      Matrix<2> ijac;
+      tria3.computeInverseJacobian(ijac, det, nodes, gp);
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
+        }
+      }
+    }
+    return Be;
+  }
+};
+
 struct Quad4 : public ElementDiffusion<2> {
   using ElementDiffusion::ElementDiffusion;
 

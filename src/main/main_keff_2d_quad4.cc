@@ -22,12 +22,11 @@
 #include <iostream>
 
 #include "assembly.h"
-#include "fem.h"
 #include "mesh_fermi.h"
 #include "solver.h"
 
 int main(int argc, char **argv) {
-  size_t NX = 15, NY = 15;
+  size_t NX = 100, NY = 100;
   Mesh<2> mesh = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
 
   size_t nnodes = mesh.nodes.size();
@@ -45,6 +44,7 @@ int main(int argc, char **argv) {
     B.deleteRow(i);
     B.insert(0, i, 1.0);
   }
+
   for (int i = 0; i < NX; i++) {
     phi[i * NY] = 0.0;
     A.deleteRow(i * NY);
@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
     B.deleteRow(i * NY);
     B.insert(0, i * NY, 1.0);
   }
+
   for (int i = 0; i < NY; i++) {
     phi[nnodes - NY + i] = 0.0;
     A.deleteRow(nnodes - NY + i);
@@ -59,6 +60,7 @@ int main(int argc, char **argv) {
     B.deleteRow(nnodes - NY + i);
     B.insert(nnodes - NY + i, nnodes - NY + 1, 1.0);
   }
+
   for (int i = 0; i < NX; i++) {
     phi[i * NY + (NY - 1)] = 0.0;
     A.deleteRow(i * NY + (NY - 1));

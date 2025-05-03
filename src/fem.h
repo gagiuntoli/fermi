@@ -41,24 +41,24 @@ class ShapeBase {
 
   const std::string toString() const {
     std::ostringstream oss;
-    oss << "Gauss Points:\n";
+    oss << "Gauss Points:" << std::endl;
     for (const auto& gp : gaussPoints()) {
-      oss << "  " << gp.toString() << "\n";
+      oss << "  " << gp.toString() << "" << std::endl;
     }
-    oss << "Weights:\n";
+    oss << "Weights:" << std::endl;
     for (const auto& w : weights()) {
-      oss << "  " << w << "\n";
+      oss << "  " << w << "" << std::endl;
     }
-    oss << "Shape Functions:\n";
+    oss << "Shape Functions:" << std::endl;
     const auto& shape = sh();
     for (size_t i = 0; i < shape.size(); ++i) {
       oss << "  ";
       for (size_t j = 0; j < shape[i].size(); ++j) {
         oss << shape[i][j] << " ";
       }
-      oss << "\n";
+      oss << "" << std::endl;
     }
-    oss << "DShape Functions:\n";
+    oss << "DShape Functions:" << std::endl;
     const auto& dShape = dsh();
     for (size_t i = 0; i < dShape.size(); ++i) {
       for (size_t j = 0; j < dShape[i].size(); ++j) {
@@ -66,7 +66,7 @@ class ShapeBase {
         for (size_t k = 0; k < dShape[i][j].size(); ++k) {
           oss << dShape[i][j][k] << " ";
         }
-        oss << "\n";
+        oss << std::endl;
       }
     }
     return oss.str();
@@ -88,6 +88,7 @@ class ShapeBase {
       }
     }
     jac.inverse(ijac, det);
+    if (det < 0.0) det *= -1;
     return 0;
   }
 };
@@ -117,6 +118,48 @@ class ShapeSegment2 : public ShapeBase<2, 1> {
     for (size_t gp = 0; gp < N; ++gp) {
       ds[0][0][gp] = -0.5;
       ds[1][0][gp] = +0.5;
+    }
+    return ds;
+  }
+};
+
+class ShapeTria3 : public ShapeBase<3, 2> {
+ public:
+  static constexpr size_t NGP = 3;
+  static constexpr size_t N = 3;
+  static constexpr size_t DIM = 2;
+
+  constexpr std::array<Node, N> gaussPoints() const override {
+    return {{
+        {+0.166666667, +0.166666667, 0},
+        {+0.666666667, +0.166666667, 0},
+        {+0.166666667, +0.666666667, 0},
+    }};
+  }
+
+  constexpr std::array<double, N> weights() const override { return {0.166666667, 0.166666667, 0.166666667}; }
+
+  constexpr ShapeArray sh() const override {
+    std::array<std::array<double, N>, N> sh{};
+    for (size_t gp = 0; gp < NGP; ++gp) {
+      sh[0][gp] = 1.0 - gaussPoints()[gp].x - gaussPoints()[gp].y;
+      sh[1][gp] = gaussPoints()[gp].x;
+      sh[2][gp] = gaussPoints()[gp].y;
+    }
+    return sh;
+  }
+
+  constexpr DShapeArray dsh() const override {
+    std::array<std::array<std::array<double, N>, DIM>, N> ds{};
+    for (size_t gp = 0; gp < NGP; ++gp) {
+      ds[0][0][gp] = -1.0;
+      ds[0][1][gp] = -1.0;
+
+      ds[1][0][gp] = +1.0;
+      ds[1][1][gp] = +0.0;
+
+      ds[2][0][gp] = +0.0;
+      ds[2][1][gp] = +1.0;
     }
     return ds;
   }
