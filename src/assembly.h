@@ -25,8 +25,8 @@
 #include <cassert>
 
 #include "element.h"
-#include "ellpack.h"
 #include "mesh.h"
+#include "sparsex/src/ellpack.h"
 
 template <size_t DIM>
 int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {

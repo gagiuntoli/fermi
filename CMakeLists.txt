@@ -24,7 +24,7 @@ target_link_libraries(fermi PRIVATE sparsex)
 set(SPARSEX_DISABLE_TESTS ON)
 add_subdirectory(lib/sparsex)
 
-target_include_directories(fermi PUBLIC src)
+target_include_directories(fermi PUBLIC src lib)
 
 file(GLOB EXEC_FILES "src/main/main_*.cc")
 foreach(EXEC_FILE ${EXEC_FILES})

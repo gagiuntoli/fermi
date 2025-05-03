@@ -22,7 +22,7 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
-#include "ellpack.h"
+#include "sparsex/src/ellpack.h"
 
 double solver_keff(std::vector<double> &phi, const Ellpack &A, const Ellpack &B);
 
