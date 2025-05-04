@@ -26,7 +26,6 @@
 #include <string>
 #include <vector>
 
-#include "algebra.h"
 #include "node.h"
 
 template <size_t DIM>
@@ -51,6 +50,10 @@ template <size_t DIM>
 struct Mesh {
   std::vector<Node> nodes;
   std::vector<std::shared_ptr<ElementBase<DIM>>> elements;
+
+  static inline size_t nodeNumeration(size_t i, size_t j, size_t k, size_t NX, size_t NY, size_t NZ) {
+    return i * NY + j + k * (NX * NY);
+  }
 
   const std::string toString() const {
     std::ostringstream oss;

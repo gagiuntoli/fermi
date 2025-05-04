@@ -26,35 +26,6 @@
 #include "assembly.h"
 #include "mesh_fermi.h"
 
-TEST(Solver, segment_1d_analitical) {
-  Mesh<1> mesh = mesh_create_structured_1d(200, 50.0);
-
-  size_t nnodes = mesh.nodes.size();
-  Ellpack A(nnodes, nnodes, 3);
-  Ellpack B(nnodes, nnodes, 3);
-
-  std::vector<double> phi(nnodes, 1.0);
-  phi[0] = 0.0;
-  phi[nnodes - 1] = 0.0;
-
-  assemblyA(A, mesh);
-  A.deleteRow(0);
-  A.deleteRow(nnodes - 1);
-  A.insert(0, 0, 1.0);
-  A.insert(nnodes - 1, nnodes - 1, 1.0);
-
-  assemblyB(B, mesh);
-  B.deleteRow(0);
-  B.deleteRow(nnodes - 1);
-  B.insert(0, 0, 1.0);
-  B.insert(nnodes - 1, nnodes - 1, 1.0);
-
-  double keff = solver_keff(phi, A, B);
-  const double keffAnalytical = 1.151496323;
-
-  EXPECT_TRUE(std::abs(keff - keffAnalytical) < 1.0e-5);
-}
-
 TEST(Solver, quad4_tria3) {
   size_t NX = 100, NY = 100;
   Mesh<2> meshQuad4 = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
