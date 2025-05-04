@@ -22,31 +22,35 @@
 #include <iostream>
 
 #include "assembly.h"
-#include "mesh_fermi.h"
+#include "mesh.h"
 #include "solver.h"
 
 int main(int argc, char **argv) {
-  Mesh mesh = mesh_create_structured_1d(100, 50.0);
+  const size_t NX = 100;
+  Mesh mesh = Mesh::create1Dlinear(NX, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 3);
   Ellpack B(nnodes, nnodes, 3);
 
   std::vector<double> phi(nnodes, 1.0);
-  phi[0] = 0.0;
-  phi[nnodes - 1] = 0.0;
 
   assemblyA(A, mesh);
-  A.deleteRow(0);
-  A.deleteRow(nnodes - 1);
-  A.insert(0, 0, 1.0);
-  A.insert(nnodes - 1, nnodes - 1, 1.0);
-
   assemblyB(B, mesh);
-  B.deleteRow(0);
-  B.deleteRow(nnodes - 1);
-  B.insert(0, 0, 1.0);
-  B.insert(nnodes - 1, nnodes - 1, 1.0);
+
+  int index = Mesh::getIndexStructured(0, 0, 0, NX, 0, 0);
+  phi[index] = 0.0;
+  A.deleteRow(index);
+  A.insert(index, index, 1.0);
+  B.deleteRow(index);
+  B.insert(index, index, 1.0);
+
+  index = Mesh::getIndexStructured(NX - 1, 0, 0, NX, 0, 0);
+  phi[index] = 0.0;
+  A.deleteRow(index);
+  A.insert(index, index, 1.0);
+  B.deleteRow(index);
+  B.insert(index, index, 1.0);
 
   double keff = solver_keff(phi, A, B);
   std::cout << "keff: " << keff << std::endl;

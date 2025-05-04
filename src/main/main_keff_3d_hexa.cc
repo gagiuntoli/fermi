@@ -23,12 +23,11 @@
 
 #include "assembly.h"
 #include "mesh.h"
-#include "mesh_fermi.h"
 #include "solver.h"
 
 int main(int argc, char **argv) {
   size_t NX = 30, NY = 30, NZ = 30;
-  Mesh mesh = mesh_create_structured_3d_hexa8(NX, NY, NZ, 50.0, 50.0, 50.0);
+  Mesh mesh = Mesh::create3DlinearHexa8(NX, NY, NZ, 50.0, 50.0, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 27);
@@ -38,10 +37,11 @@ int main(int argc, char **argv) {
   assemblyB(B, mesh);
 
   std::vector<double> phi(nnodes, 1.0);
+
   // z = 0
   for (int i = 0; i < NX; i++) {
     for (int j = 0; j < NY; j++) {
-      int index = Mesh::nodeNumeration(i, j, 0, NX, NY, NZ);
+      int index = Mesh::getIndexStructured(i, j, 0, NX, NY, NZ);
       phi[index] = 0.0;
       A.deleteRow(index);
       A.insert(index, index, 1.0);
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   // z = NZ - 1
   for (int i = 0; i < NX; i++) {
     for (int j = 0; j < NY; j++) {
-      int index = Mesh::nodeNumeration(i, j, NZ - 1, NX, NY, NZ);
+      int index = Mesh::getIndexStructured(i, j, NZ - 1, NX, NY, NZ);
       phi[index] = 0.0;
       A.deleteRow(index);
       A.insert(index, index, 1.0);
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   // x = 0
   for (int k = 0; k < NZ; k++) {
     for (int j = 0; j < NY; j++) {
-      int index = Mesh::nodeNumeration(0, j, k, NX, NY, NZ);
+      int index = Mesh::getIndexStructured(0, j, k, NX, NY, NZ);
       phi[index] = 0.0;
       A.deleteRow(index);
       A.insert(index, index, 1.0);
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
   // x = NX - 1
   for (int k = 0; k < NZ; k++) {
     for (int j = 0; j < NY; j++) {
-      int index = Mesh::nodeNumeration(NX - 1, j, k, NX, NY, NZ);
+      int index = Mesh::getIndexStructured(NX - 1, j, k, NX, NY, NZ);
       phi[index] = 0.0;
       A.deleteRow(index);
       A.insert(index, index, 1.0);
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
   // y = 0
   for (int i = 0; i < NX; i++) {
     for (int k = 0; k < NZ; k++) {
-      int index = Mesh::nodeNumeration(i, 0, k, NX, NY, NZ);
+      int index = Mesh::getIndexStructured(i, 0, k, NX, NY, NZ);
       phi[index] = 0.0;
       A.deleteRow(index);
       A.insert(index, index, 1.0);
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
   // y = NY - 1
   for (int i = 0; i < NX; i++) {
     for (int k = 0; k < NZ; k++) {
-      int index = Mesh::nodeNumeration(i, NY - 1, k, NX, NY, NZ);
+      int index = Mesh::getIndexStructured(i, NY - 1, k, NX, NY, NZ);
       phi[index] = 0.0;
       A.deleteRow(index);
       A.insert(index, index, 1.0);

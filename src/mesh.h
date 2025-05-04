@@ -49,9 +49,14 @@ struct Mesh {
   std::vector<Node> nodes;
   std::vector<std::shared_ptr<ElementBase>> elements;
 
-  static inline size_t nodeNumeration(size_t i, size_t j, size_t k, size_t NX, size_t NY, size_t NZ) {
-    return i * NY + j + k * (NX * NY);
+  static inline size_t getIndexStructured(size_t i, size_t j, size_t k, size_t NX, size_t NY, size_t NZ) {
+    return i + j * NX + k * (NX * NY);
   }
+
+  static Mesh create1Dlinear(size_t nx, double length);
+  static Mesh create2DlinearQuad4(size_t nx, size_t ny, double lx, double ly);
+  static Mesh create2DlinearTria3(size_t nx, size_t ny, double lx, double ly);
+  static Mesh create3DlinearHexa8(size_t nx, size_t ny, size_t nz, double lx, double ly, double lz);
 
   const std::string toString() const {
     std::ostringstream oss;

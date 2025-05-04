@@ -1,39 +1,16 @@
-/*
- *  This source code is part of Fermi: a finite element code
- *  to solve the neutron diffusion problem for nuclear reactor
- *  designs.
- *
- *  Copyright (C) - 2019 - Guido Giuntoli <gagiuntoli@gmail.com>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published
- *  by the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
-#ifndef MESH_FERMI_H
-#define MESH_FERMI_H
-
-#include "element.h"
 #include "mesh.h"
 
-inline Mesh mesh_create_structured_1d(size_t npoints, double length) {
+#include "element.h"
+
+Mesh Mesh::create1Dlinear(size_t nx, double lx) {
   std::vector<Node> nodes;
-  double h = length / (npoints - 1);
-  for (size_t i = 0; i < npoints; i++) {
+  double h = lx / (nx - 1);
+  for (size_t i = 0; i < nx; i++) {
     nodes.push_back({i * h, 0, 0});
   }
 
   std::vector<std::shared_ptr<ElementBase>> elements;
-  for (size_t i = 0; i < npoints - 1; i++) {
+  for (size_t i = 0; i < nx - 1; i++) {
     std::vector<size_t> nodeIndexes = {i, i + 1};
     std::vector<Node> elemNodes;
     for (const size_t& index : nodeIndexes) {
@@ -45,7 +22,7 @@ inline Mesh mesh_create_structured_1d(size_t npoints, double length) {
   return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-inline Mesh mesh_create_structured_2d_tria3(size_t nx, size_t ny, double lx, double ly) {
+Mesh Mesh::create2DlinearTria3(size_t nx, size_t ny, double lx, double ly) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -77,7 +54,7 @@ inline Mesh mesh_create_structured_2d_tria3(size_t nx, size_t ny, double lx, dou
   return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-inline Mesh mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double ly) {
+Mesh Mesh::create2DlinearQuad4(size_t nx, size_t ny, double lx, double ly) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -102,7 +79,7 @@ inline Mesh mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, dou
   return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-inline Mesh mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, double lx, double ly, double lz) {
+Mesh Mesh::create3DlinearHexa8(size_t nx, size_t ny, size_t nz, double lx, double ly, double lz) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -138,5 +115,3 @@ inline Mesh mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, dou
 
   return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
-
-#endif

@@ -22,12 +22,12 @@
 #include <iostream>
 
 #include "assembly.h"
-#include "mesh_fermi.h"
+#include "mesh.h"
 #include "solver.h"
 
 int main(int argc, char **argv) {
   size_t NX = 100, NY = 100;
-  Mesh mesh = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
+  Mesh mesh = Mesh::create2DlinearQuad4(NX, NY, 50.0, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 9);
@@ -37,36 +37,45 @@ int main(int argc, char **argv) {
   assemblyB(B, mesh);
 
   std::vector<double> phi(nnodes, 1.0);
-  for (int i = 0; i < NY; i++) {
-    phi[i] = 0.0;
-    A.deleteRow(i);
-    A.insert(0, i, 1.0);
-    B.deleteRow(i);
-    B.insert(0, i, 1.0);
-  }
 
+  // Y = 0
   for (int i = 0; i < NX; i++) {
-    phi[i * NY] = 0.0;
-    A.deleteRow(i * NY);
-    A.insert(0, i * NY, 1.0);
-    B.deleteRow(i * NY);
-    B.insert(0, i * NY, 1.0);
+    size_t index = Mesh::getIndexStructured(i, 0, 0, NX, NY, 0);
+    phi[index] = 0.0;
+    A.deleteRow(index);
+    A.insert(index, index, 1.0);
+    B.deleteRow(index);
+    B.insert(index, index, 1.0);
   }
 
-  for (int i = 0; i < NY; i++) {
-    phi[nnodes - NY + i] = 0.0;
-    A.deleteRow(nnodes - NY + i);
-    A.insert(nnodes - NY + i, nnodes - NY + 1, 1.0);
-    B.deleteRow(nnodes - NY + i);
-    B.insert(nnodes - NY + i, nnodes - NY + 1, 1.0);
-  }
-
+  // Y = NY - 1
   for (int i = 0; i < NX; i++) {
-    phi[i * NY + (NY - 1)] = 0.0;
-    A.deleteRow(i * NY + (NY - 1));
-    A.insert(0, i * NY + (NY - 1), 1.0);
-    B.deleteRow(i * NY + (NY - 1));
-    B.insert(0, i * NY + (NY - 1), 1.0);
+    size_t index = Mesh::getIndexStructured(i, NY - 1, 0, NX, NY, 0);
+    phi[index] = 0.0;
+    A.deleteRow(index);
+    A.insert(index, index, 1.0);
+    B.deleteRow(index);
+    B.insert(index, index, 1.0);
+  }
+
+  // X = 0
+  for (int j = 0; j < NY; j++) {
+    size_t index = Mesh::getIndexStructured(0, j, 0, NX, NY, 0);
+    phi[index] = 0.0;
+    A.deleteRow(index);
+    A.insert(index, index, 1.0);
+    B.deleteRow(index);
+    B.insert(index, index, 1.0);
+  }
+
+  // X = NX - 1
+  for (int j = 0; j < NY; j++) {
+    size_t index = Mesh::getIndexStructured(NX - 1, j, 0, NX, NY, 0);
+    phi[index] = 0.0;
+    A.deleteRow(index);
+    A.insert(index, index, 1.0);
+    B.deleteRow(index);
+    B.insert(index, index, 1.0);
   }
 
   double keff = solver_keff(phi, A, B);

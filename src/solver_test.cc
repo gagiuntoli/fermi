@@ -24,96 +24,116 @@
 #include <gtest/gtest.h>
 
 #include "assembly.h"
-#include "mesh_fermi.h"
+#include "mesh.h"
 
 TEST(Solver, quad4_tria3) {
   size_t NX = 100, NY = 100;
-  Mesh meshQuad4 = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
-  Mesh meshTria3 = mesh_create_structured_2d_tria3(NX, NY, 1.0, 1.0);
+  Mesh meshQuad4 = Mesh::create2DlinearQuad4(NX, NY, 1.0, 1.0);
+  Mesh meshTria3 = Mesh::create2DlinearTria3(NX, NY, 1.0, 1.0);
+  double keffQuad4, keffTria3;
 
-  size_t nnodesQuad4 = meshQuad4.nodes.size();
-  Ellpack AQuad4(nnodesQuad4, nnodesQuad4, 9);
-  Ellpack BQuad4(nnodesQuad4, nnodesQuad4, 9);
+  {
+    Ellpack A(NX * NY, NX * NY, 9);
+    Ellpack B(NX * NY, NX * NY, 9);
 
-  assemblyA(AQuad4, meshQuad4);
-  assemblyB(BQuad4, meshQuad4);
+    assemblyA(A, meshQuad4);
+    assemblyB(B, meshQuad4);
 
-  std::vector<double> phi(nnodesQuad4, 1.0);
-  for (int i = 0; i < NY; i++) {
-    phi[i] = 0.0;
-    AQuad4.deleteRow(i);
-    AQuad4.insert(0, i, 1.0);
-    BQuad4.deleteRow(i);
-    BQuad4.insert(0, i, 1.0);
+    std::vector<double> phi(NX * NY, 1.0);
+
+    // Y = 0
+    for (int i = 0; i < NX; i++) {
+      size_t index = Mesh::getIndexStructured(i, 0, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    // Y = NY - 1
+    for (int i = 0; i < NX; i++) {
+      size_t index = Mesh::getIndexStructured(i, NY - 1, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    // X = 0
+    for (int j = 0; j < NY; j++) {
+      size_t index = Mesh::getIndexStructured(0, j, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    // X = NX - 1
+    for (int j = 0; j < NY; j++) {
+      size_t index = Mesh::getIndexStructured(NX - 1, j, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    keffQuad4 = solver_keff(phi, A, B);
   }
 
-  for (int i = 0; i < NX; i++) {
-    phi[i * NY] = 0.0;
-    AQuad4.deleteRow(i * NY);
-    AQuad4.insert(0, i * NY, 1.0);
-    BQuad4.deleteRow(i * NY);
-    BQuad4.insert(0, i * NY, 1.0);
+  {
+    Ellpack A(NX * NY, NX * NY, 7);
+    Ellpack B(NX * NY, NX * NY, 7);
+
+    assemblyA(A, meshTria3);
+    assemblyB(B, meshTria3);
+
+    std::vector<double> phi(NX * NY, 1.0);
+
+    for (int i = 0; i < NX; i++) {
+      size_t index = Mesh::getIndexStructured(i, 0, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    // Y = NY - 1
+    for (int i = 0; i < NX; i++) {
+      size_t index = Mesh::getIndexStructured(i, NY - 1, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    // X = 0
+    for (int j = 0; j < NY; j++) {
+      size_t index = Mesh::getIndexStructured(0, j, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    // X = NX - 1
+    for (int j = 0; j < NY; j++) {
+      size_t index = Mesh::getIndexStructured(NX - 1, j, 0, NX, NY, 0);
+      phi[index] = 0.0;
+      A.deleteRow(index);
+      A.insert(index, index, 1.0);
+      B.deleteRow(index);
+      B.insert(index, index, 1.0);
+    }
+
+    keffTria3 = solver_keff(phi, A, B);
   }
-
-  for (int i = 0; i < NY; i++) {
-    phi[nnodesQuad4 - NY + i] = 0.0;
-    AQuad4.deleteRow(nnodesQuad4 - NY + i);
-    AQuad4.insert(nnodesQuad4 - NY + i, nnodesQuad4 - NY + 1, 1.0);
-    BQuad4.deleteRow(nnodesQuad4 - NY + i);
-    BQuad4.insert(nnodesQuad4 - NY + i, nnodesQuad4 - NY + 1, 1.0);
-  }
-
-  for (int i = 0; i < NX; i++) {
-    phi[i * NY + (NY - 1)] = 0.0;
-    AQuad4.deleteRow(i * NY + (NY - 1));
-    AQuad4.insert(0, i * NY + (NY - 1), 1.0);
-    BQuad4.deleteRow(i * NY + (NY - 1));
-    BQuad4.insert(0, i * NY + (NY - 1), 1.0);
-  }
-
-  double keffQuad4 = solver_keff(phi, AQuad4, BQuad4);
-
-  size_t nnodesTria3 = meshTria3.nodes.size();
-  Ellpack ATria3(nnodesTria3, nnodesTria3, 9);
-  Ellpack BTria3(nnodesTria3, nnodesTria3, 9);
-
-  assemblyA(ATria3, meshTria3);
-  assemblyB(BTria3, meshTria3);
-
-  std::vector<double> phiTria3(nnodesTria3, 1.0);
-  for (int i = 0; i < NY; i++) {
-    phiTria3[i] = 0.0;
-    ATria3.deleteRow(i);
-    ATria3.insert(0, i, 1.0);
-    BTria3.deleteRow(i);
-    BTria3.insert(0, i, 1.0);
-  }
-
-  for (int i = 0; i < NX; i++) {
-    phiTria3[i * NY] = 0.0;
-    ATria3.deleteRow(i * NY);
-    ATria3.insert(0, i * NY, 1.0);
-    BTria3.deleteRow(i * NY);
-    BTria3.insert(0, i * NY, 1.0);
-  }
-
-  for (int i = 0; i < NY; i++) {
-    phiTria3[nnodesTria3 - NY + i] = 0.0;
-    ATria3.deleteRow(nnodesTria3 - NY + i);
-    ATria3.insert(nnodesTria3 - NY + i, nnodesTria3 - NY + 1, 1.0);
-    BTria3.deleteRow(nnodesTria3 - NY + i);
-    BTria3.insert(nnodesTria3 - NY + i, nnodesTria3 - NY + 1, 1.0);
-  }
-
-  for (int i = 0; i < NX; i++) {
-    phiTria3[i * NY + (NY - 1)] = 0.0;
-    ATria3.deleteRow(i * NY + (NY - 1));
-    ATria3.insert(0, i * NY + (NY - 1), 1.0);
-    BTria3.deleteRow(i * NY + (NY - 1));
-    BTria3.insert(0, i * NY + (NY - 1), 1.0);
-  }
-
-  double keffTria3 = solver_keff(phiTria3, ATria3, BTria3);
 
   EXPECT_TRUE(std::abs(keffTria3 - keffQuad4) < 1.0e-4);
 }
