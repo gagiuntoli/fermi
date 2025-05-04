@@ -28,8 +28,8 @@
 
 TEST(Solver, quad4_tria3) {
   size_t NX = 100, NY = 100;
-  Mesh<2> meshQuad4 = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
-  Mesh<2> meshTria3 = mesh_create_structured_2d_tria3(NX, NY, 1.0, 1.0);
+  Mesh meshQuad4 = mesh_create_structured_2d_quad4(NX, NY, 1.0, 1.0);
+  Mesh meshTria3 = mesh_create_structured_2d_tria3(NX, NY, 1.0, 1.0);
 
   size_t nnodesQuad4 = meshQuad4.nodes.size();
   Ellpack AQuad4(nnodesQuad4, nnodesQuad4, 9);

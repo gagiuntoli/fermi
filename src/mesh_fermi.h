@@ -25,14 +25,14 @@
 #include "element.h"
 #include "mesh.h"
 
-inline Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
+inline Mesh mesh_create_structured_1d(size_t npoints, double length) {
   std::vector<Node> nodes;
   double h = length / (npoints - 1);
   for (size_t i = 0; i < npoints; i++) {
     nodes.push_back({i * h, 0, 0});
   }
 
-  std::vector<std::shared_ptr<ElementBase<1>>> elements;
+  std::vector<std::shared_ptr<ElementBase>> elements;
   for (size_t i = 0; i < npoints - 1; i++) {
     std::vector<size_t> nodeIndexes = {i, i + 1};
     std::vector<Node> elemNodes;
@@ -42,10 +42,10 @@ inline Mesh<1> mesh_create_structured_1d(size_t npoints, double length) {
     elements.push_back(std::make_shared<ElementSegment2>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
   }
 
-  return Mesh<1>{.nodes = std::move(nodes), .elements = std::move(elements)};
+  return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-inline Mesh<2> mesh_create_structured_2d_tria3(size_t nx, size_t ny, double lx, double ly) {
+inline Mesh mesh_create_structured_2d_tria3(size_t nx, size_t ny, double lx, double ly) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -55,7 +55,7 @@ inline Mesh<2> mesh_create_structured_2d_tria3(size_t nx, size_t ny, double lx, 
     }
   }
 
-  std::vector<std::shared_ptr<ElementBase<2>>> elements;
+  std::vector<std::shared_ptr<ElementBase>> elements;
   for (size_t i = 0; i < (nx - 1); i++) {
     for (size_t j = 0; j < (ny - 1); j++) {
       std::vector<size_t> nodeIndexes = {i * ny + j, (i + 1) * ny + j, (i + 1) * ny + j + 1};
@@ -74,10 +74,10 @@ inline Mesh<2> mesh_create_structured_2d_tria3(size_t nx, size_t ny, double lx, 
     }
   }
 
-  return Mesh<2>{.nodes = std::move(nodes), .elements = std::move(elements)};
+  return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-inline Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double ly) {
+inline Mesh mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, double ly) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -87,7 +87,7 @@ inline Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, 
     }
   }
 
-  std::vector<std::shared_ptr<ElementBase<2>>> elements;
+  std::vector<std::shared_ptr<ElementBase>> elements;
   for (size_t i = 0; i < (nx - 1); i++) {
     for (size_t j = 0; j < (ny - 1); j++) {
       std::vector<size_t> nodeIndexes = {i * ny + j, i * ny + j + 1, (i + 1) * ny + j, (i + 1) * ny + j + 1};
@@ -99,10 +99,10 @@ inline Mesh<2> mesh_create_structured_2d_quad4(size_t nx, size_t ny, double lx, 
     }
   }
 
-  return Mesh<2>{.nodes = std::move(nodes), .elements = std::move(elements)};
+  return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
-inline Mesh<3> mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, double lx, double ly, double lz) {
+inline Mesh mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, double lx, double ly, double lz) {
   std::vector<Node> nodes;
   double hx = lx / (nx - 1);
   double hy = ly / (ny - 1);
@@ -115,7 +115,7 @@ inline Mesh<3> mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, 
     }
   }
 
-  std::vector<std::shared_ptr<ElementBase<3>>> elements;
+  std::vector<std::shared_ptr<ElementBase>> elements;
   for (size_t i = 0; i < (nx - 1); i++) {
     for (size_t j = 0; j < (ny - 1); j++) {
       for (size_t k = 0; k < (nz - 1); k++) {
@@ -136,7 +136,7 @@ inline Mesh<3> mesh_create_structured_3d_hexa8(size_t nx, size_t ny, size_t nz, 
     }
   }
 
-  return Mesh<3>{.nodes = std::move(nodes), .elements = std::move(elements)};
+  return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
 }
 
 #endif

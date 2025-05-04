@@ -26,8 +26,7 @@
 #include "fem.h"
 #include "mesh.h"
 
-template <size_t DIM>
-struct ElementDiffusion : public ElementBase<DIM> {
+struct ElementDiffusion : public ElementBase {
   double xs_a;
   double xs_f;
   double nu;
@@ -35,13 +34,13 @@ struct ElementDiffusion : public ElementBase<DIM> {
 
   ElementDiffusion(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_, double xs_a_, double xs_f_, double nu_,
                    double d_)
-      : ElementBase<DIM>(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
+      : ElementBase(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
 
   virtual std::vector<double> computeAe() const = 0;
   virtual std::vector<double> computeBe() const = 0;
 };
 
-struct ElementSegment2 : public ElementDiffusion<1> {
+struct ElementSegment2 : public ElementDiffusion {
   using ElementDiffusion::ElementDiffusion;
 
   std::vector<double> computeAe() const override {
@@ -88,7 +87,7 @@ struct ElementSegment2 : public ElementDiffusion<1> {
   }
 };
 
-struct Tria3 : public ElementDiffusion<2> {
+struct Tria3 : public ElementDiffusion {
   using ElementDiffusion::ElementDiffusion;
 
   std::vector<double> computeAe() const override {
@@ -139,7 +138,7 @@ struct Tria3 : public ElementDiffusion<2> {
   }
 };
 
-struct Quad4 : public ElementDiffusion<2> {
+struct Quad4 : public ElementDiffusion {
   using ElementDiffusion::ElementDiffusion;
 
   std::vector<double> computeAe() const override {
@@ -190,7 +189,7 @@ struct Quad4 : public ElementDiffusion<2> {
   }
 };
 
-struct Hexa8 : public ElementDiffusion<3> {
+struct Hexa8 : public ElementDiffusion {
   using ElementDiffusion::ElementDiffusion;
 
   std::vector<double> computeAe() const override {

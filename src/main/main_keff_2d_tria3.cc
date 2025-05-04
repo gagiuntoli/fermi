@@ -27,7 +27,7 @@
 
 int main(int argc, char **argv) {
   size_t NX = 100, NY = 100;
-  Mesh<2> mesh = mesh_create_structured_2d_tria3(NX, NY, 1.0, 1.0);
+  Mesh mesh = mesh_create_structured_2d_tria3(NX, NY, 1.0, 1.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 7);

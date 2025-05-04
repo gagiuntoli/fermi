@@ -26,7 +26,7 @@
 #include "solver.h"
 
 int main(int argc, char **argv) {
-  Mesh<1> mesh = mesh_create_structured_1d(100, 50.0);
+  Mesh mesh = mesh_create_structured_1d(100, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 3);

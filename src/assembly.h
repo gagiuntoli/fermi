@@ -28,11 +28,10 @@
 #include "mesh.h"
 #include "sparsex/src/ellpack.h"
 
-template <size_t DIM>
-int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
+inline int assemblyA(Ellpack &A, Mesh &mesh) {
   std::fill(A.vals.begin(), A.vals.end(), 0.0);
   for (const auto &elem_ : mesh.elements) {
-    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion<DIM>>(elem_)) {
+    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion>(elem_)) {
       auto Ae = elem->computeAe();
 
       size_t n = elem->nodeIndexes.size();
@@ -52,11 +51,10 @@ int assemblyA(Ellpack &A, Mesh<DIM> &mesh) {
   return 0;
 }
 
-template <size_t DIM>
-int assemblyB(Ellpack &B, Mesh<DIM> &mesh) {
+inline int assemblyB(Ellpack &B, Mesh &mesh) {
   std::fill(B.vals.begin(), B.vals.end(), 0.0);
   for (const auto &elem_ : mesh.elements) {
-    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion<DIM>>(elem_)) {
+    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion>(elem_)) {
       auto Be = elem->computeBe();
 
       size_t n = elem->nodeIndexes.size();
@@ -70,7 +68,8 @@ int assemblyB(Ellpack &B, Mesh<DIM> &mesh) {
         }
       }
     } else {
-      return 1;
+      assert(false);
+      exit(1);
     }
   }
   return 0;

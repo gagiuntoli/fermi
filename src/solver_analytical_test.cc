@@ -26,7 +26,7 @@
 #include "solver.h"
 
 TEST(AnalyticalSolution, 1d_lineal_segment) {
-  Mesh<1> mesh = mesh_create_structured_1d(200, 50.0);
+  Mesh mesh = mesh_create_structured_1d(200, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 3);
@@ -56,7 +56,7 @@ TEST(AnalyticalSolution, 1d_lineal_segment) {
 
 TEST(AnalyticalSolution, 2d_lineal_quad) {
   size_t NX = 200, NY = 200;
-  Mesh<2> mesh = mesh_create_structured_2d_quad4(NX, NY, 50.0, 50.0);
+  Mesh mesh = mesh_create_structured_2d_quad4(NX, NY, 50.0, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 9);
@@ -110,7 +110,7 @@ TEST(AnalyticalSolution, 2d_lineal_quad) {
 
 TEST(AnalyticalSolution, 3d_lineal_hexagon) {
   size_t NX = 30, NY = 30, NZ = 30;
-  Mesh<3> mesh = mesh_create_structured_3d_hexa8(NX, NY, NZ, 50.0, 50.0, 50.0);
+  Mesh mesh = mesh_create_structured_3d_hexa8(NX, NY, NZ, 50.0, 50.0, 50.0);
 
   size_t nnodes = mesh.nodes.size();
   Ellpack A(nnodes, nnodes, 27);
