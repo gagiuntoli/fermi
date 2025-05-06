@@ -24,9 +24,109 @@
 
 #include <array>
 #include <cstdlib>
+#include <iomanip>
 
 #include "algebra.h"
 #include "node.h"
+
+inline const size_t MAX_NGP = 8;
+inline const size_t MAX_SHAPES = 8;
+
+typedef std::array<std::array<double, MAX_NGP>, MAX_SHAPES> Shapes;
+typedef std::array<std::array<std::array<double, MAX_NGP>, 3>, MAX_SHAPES> Derivatives;
+
+class Shape {
+ public:
+  constexpr Shape(const std::array<Node, MAX_NGP>& gps_, const std::array<double, MAX_NGP>& wgs_, size_t ngp_,
+                  Shapes sh_, Derivatives dsh_, size_t nsh_)
+      : gps(gps_), wgs(wgs_), ngp(ngp_), sh(sh_), dsh(dsh_), nsh(nsh_) {}
+  const std::array<Node, MAX_NGP> gps;
+  const std::array<double, MAX_NGP> wgs;
+  const size_t ngp;
+  const Shapes sh;
+  const Derivatives dsh;
+  const size_t nsh;
+
+  std::string toString() const {
+    std::ostringstream oss;
+    oss << "gps:" << std::endl;
+    for (size_t i = 0; i < ngp; i++) {
+      oss << gps[i].toString() << std::endl;
+    }
+
+    oss << "wgs:" << std::endl;
+    for (size_t i = 0; i < ngp; i++) {
+      oss << wgs[i] << std::endl;
+    }
+
+    oss << "shapes:" << std::endl;
+    oss << std::setw(5) << std::setprecision(5) << std::fixed;
+    for (size_t i = 0; i < nsh; i++) {
+      for (size_t gp = 0; gp < ngp; gp++) {
+        oss << sh[i][gp] << (gp != ngp - 1 ? "," : "");
+      }
+      oss << std::endl;
+    }
+
+    oss << "dshapes" << std::endl;
+    for (size_t i = 0; i < nsh; i++) {
+      for (size_t d = 0; d < 3; d++) {
+        oss << "sh: " << i << " d: " << d << " ";
+        for (size_t gp = 0; gp < ngp; gp++) {
+          oss << dsh[i][d][gp] << (gp != ngp - 1 ? "," : "");
+        }
+        oss << (d != 2 ? "\n" : "");
+      }
+      oss << (i != nsh - 1 ? "\n" : "");
+    }
+    return oss.str();
+  }
+};
+
+class Segment2 : public Shape {
+ public:
+  constexpr Segment2() : Shape(makeGPS(), makeWGS(), 2, makeShapes(), makeDerivatives(), 2) {}
+
+  std::string toString() const {
+    std::ostringstream oss;
+    oss << "Segment Linear" << std::endl;
+    oss << Shape::toString();
+    return oss.str();
+  }
+
+ private:
+  constexpr std::array<Node, MAX_NGP> makeGPS() {
+    std::array<Node, MAX_NGP> arr{};
+    arr[0] = {-0.577350269189626, 0, 0};
+    arr[1] = {+0.577350269189626, 0, 0};
+    return arr;
+  }
+
+  constexpr std::array<double, MAX_NGP> makeWGS() {
+    std::array<double, MAX_NGP> arr{};
+    arr[0] = 1.0;
+    arr[1] = 1.0;
+    return arr;
+  }
+
+  constexpr Shapes makeShapes() {
+    Shapes sh{};
+    for (size_t gp = 0; gp < 2; gp++) {
+      sh[0][gp] = +0.5 * (1.0 - gps[gp].x);
+      sh[1][gp] = +0.5 * (1.0 + gps[gp].x);
+    }
+    return sh;
+  }
+
+  constexpr Derivatives makeDerivatives() {
+    Derivatives ds{};
+    for (size_t gp = 0; gp < 2; gp++) {
+      ds[0][0][gp] = -0.5;
+      ds[1][0][gp] = +0.5;
+    }
+    return ds;
+  }
+};
 
 template <size_t N, size_t DIM>
 class ShapeBase {
