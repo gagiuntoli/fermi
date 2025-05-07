@@ -24,28 +24,23 @@
 
 #include <cassert>
 
-#include "element.h"
 #include "mesh.h"
 #include "sparsex/src/ellpack.h"
 
 inline int assemblyA(Ellpack &A, Mesh &mesh) {
   std::fill(A.vals.begin(), A.vals.end(), 0.0);
-  for (const auto &elem_ : mesh.elements) {
-    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion>(elem_)) {
-      auto Ae = elem->computeAe();
+  for (const auto &elem : mesh.elements) {
+    auto Ae = elem->computeAe();
 
-      size_t n = elem->nodeIndexes.size();
-      assert(Ae.size() == n * n);
+    size_t n = elem->nodeIndexes.size();
+    assert(Ae.size() == n * n);
 
-      for (size_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < n; j++) {
-          size_t row = elem->nodeIndexes[i];
-          size_t col = elem->nodeIndexes[j];
-          A.add(row, col, Ae[i * n + j]);
-        }
+    for (size_t i = 0; i < n; i++) {
+      for (size_t j = 0; j < n; j++) {
+        size_t row = elem->nodeIndexes[i];
+        size_t col = elem->nodeIndexes[j];
+        A.add(row, col, Ae[i * n + j]);
       }
-    } else {
-      return 1;
     }
   }
   return 0;
@@ -53,23 +48,18 @@ inline int assemblyA(Ellpack &A, Mesh &mesh) {
 
 inline int assemblyB(Ellpack &B, Mesh &mesh) {
   std::fill(B.vals.begin(), B.vals.end(), 0.0);
-  for (const auto &elem_ : mesh.elements) {
-    if (auto elem = std::dynamic_pointer_cast<ElementDiffusion>(elem_)) {
-      auto Be = elem->computeBe();
+  for (const auto &elem : mesh.elements) {
+    auto Be = elem->computeBe();
 
-      size_t n = elem->nodeIndexes.size();
-      assert(Be.size() == n * n);
+    size_t n = elem->nodeIndexes.size();
+    assert(Be.size() == n * n);
 
-      for (size_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < n; j++) {
-          size_t row = elem->nodeIndexes[i];
-          size_t col = elem->nodeIndexes[j];
-          B.add(row, col, Be[i * n + j]);
-        }
+    for (size_t i = 0; i < n; i++) {
+      for (size_t j = 0; j < n; j++) {
+        size_t row = elem->nodeIndexes[i];
+        size_t col = elem->nodeIndexes[j];
+        B.add(row, col, Be[i * n + j]);
       }
-    } else {
-      assert(false);
-      exit(1);
     }
   }
   return 0;

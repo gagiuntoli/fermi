@@ -1,6 +1,7 @@
 #include "mesh.h"
 
 #include "element.h"
+#include "shape.h"
 
 Mesh Mesh::create1Dlinear(size_t nx, double lx) {
   std::vector<Node> nodes;
@@ -16,7 +17,8 @@ Mesh Mesh::create1Dlinear(size_t nx, double lx) {
     for (const size_t& index : nodeIndexes) {
       elemNodes.push_back(nodes[index]);
     }
-    elements.push_back(std::make_shared<ElementSegment2>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+    elements.push_back(std::make_shared<ElementDiffusion<1>>(std::make_shared<Segment2>(), elemNodes, nodeIndexes, 0.03,
+                                                             0.04, 1.0, 1.2));
   }
 
   return Mesh{.nodes = std::move(nodes), .elements = std::move(elements)};
@@ -40,14 +42,16 @@ Mesh Mesh::create2DlinearTria3(size_t nx, size_t ny, double lx, double ly) {
       for (const size_t& index : nodeIndexes) {
         elemNodes.push_back(nodes[index]);
       }
-      elements.push_back(std::make_shared<Tria3>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+      elements.push_back(std::make_shared<ElementDiffusion<2>>(std::make_shared<Triangle3>(), elemNodes, nodeIndexes,
+                                                               0.03, 0.04, 1.0, 1.2));
 
       nodeIndexes = {i * ny + j, i * ny + j + 1, (i + 1) * ny + j + 1};
       elemNodes.clear();
       for (const size_t& index : nodeIndexes) {
         elemNodes.push_back(nodes[index]);
       }
-      elements.push_back(std::make_shared<Tria3>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+      elements.push_back(std::make_shared<ElementDiffusion<2>>(std::make_shared<Triangle3>(), elemNodes, nodeIndexes,
+                                                               0.03, 0.04, 1.0, 1.2));
     }
   }
 
@@ -72,7 +76,8 @@ Mesh Mesh::create2DlinearQuad4(size_t nx, size_t ny, double lx, double ly) {
       for (const size_t& index : nodeIndexes) {
         elemNodes.push_back(nodes[index]);
       }
-      elements.push_back(std::make_shared<Quad4>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+      elements.push_back(std::make_shared<ElementDiffusion<2>>(std::make_shared<Quadrilateral4>(), elemNodes,
+                                                               nodeIndexes, 0.03, 0.04, 1.0, 1.2));
     }
   }
 
@@ -108,7 +113,8 @@ Mesh Mesh::create3DlinearHexa8(size_t nx, size_t ny, size_t nz, double lx, doubl
         for (const size_t& index : nodeIndexes) {
           elemNodes.push_back(nodes[index]);
         }
-        elements.push_back(std::make_shared<Hexa8>(elemNodes, nodeIndexes, 0.03, 0.04, 1.0, 1.2));
+        elements.push_back(std::make_shared<ElementDiffusion<3>>(std::make_shared<Hexagon8>(), elemNodes, nodeIndexes,
+                                                                 0.03, 0.04, 1.0, 1.2));
       }
     }
   }

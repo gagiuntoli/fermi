@@ -63,6 +63,15 @@ double Matrix<3>::determinant();
 template <>
 int Matrix<3>::inverse(Matrix& inverse, double& det);
 
+template <size_t N>
+double dot(const std::array<double, N>& y, const std::array<double, N>& x) {
+  double result = 0;
+  for (int i = 0; i < N; i++) {
+    result += x[i] * y[i];
+  }
+  return result;
+}
+
 double dot(const std::vector<double>& y, const std::vector<double>& x, size_t n);
 double norm(const std::vector<double>& x, size_t n);
 

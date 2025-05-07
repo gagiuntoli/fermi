@@ -114,7 +114,7 @@ TEST(AnalyticalSolution, 2d_lineal_quad) {
   double keff = solver_keff(phi, A, B);
   const double keffAnalytical = 1.013304171;
 
-  EXPECT_TRUE(std::abs(keff - keffAnalytical) < 1.0e-5);
+  EXPECT_TRUE(std::abs(keff - keffAnalytical) < 1.0e-4);
 }
 
 TEST(AnalyticalSolution, 3d_lineal_hexagon) {

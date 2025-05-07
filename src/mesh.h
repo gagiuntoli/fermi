@@ -27,12 +27,16 @@
 #include <vector>
 
 #include "node.h"
+#include "shape.h"
 
 struct ElementBase {
   std::vector<size_t> nodeIndexes;
   std::vector<Node> nodes;
+  std::shared_ptr<Shape> shape;
 
-  ElementBase(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_) : nodeIndexes(nodeIndexes_), nodes(nodes_) {}
+  ElementBase(std::shared_ptr<Shape> shape, std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_)
+      : shape(shape), nodes(nodes_), nodeIndexes(nodeIndexes_) {}
+
   virtual ~ElementBase() = default;
 
   const std::string toString() const {
@@ -43,6 +47,9 @@ struct ElementBase {
     auto result = oss.str();
     return std::string(result.begin(), result.end() - 1);
   }
+
+  virtual std::vector<double> computeAe() const = 0;
+  virtual std::vector<double> computeBe() const = 0;
 };
 
 struct Mesh {

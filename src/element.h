@@ -23,43 +23,56 @@
 #define ELEMENT_H
 
 #include "algebra.h"
-#include "fem.h"
 #include "mesh.h"
 
+template <size_t DIM>
 struct ElementDiffusion : public ElementBase {
   double xs_a;
   double xs_f;
   double nu;
   double d;
 
-  ElementDiffusion(std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_, double xs_a_, double xs_f_, double nu_,
-                   double d_)
-      : ElementBase(nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
+  ElementDiffusion(std::shared_ptr<Shape> shape_, std::vector<Node> nodes_, std::vector<size_t> nodeIndexes_,
+                   double xs_a_, double xs_f_, double nu_, double d_)
+      : ElementBase(shape_, nodes_, nodeIndexes_), xs_a(xs_a_), xs_f(xs_f_), nu(nu_), d(d_) {}
 
-  virtual std::vector<double> computeAe() const = 0;
-  virtual std::vector<double> computeBe() const = 0;
-};
-
-struct ElementSegment2 : public ElementDiffusion {
-  using ElementDiffusion::ElementDiffusion;
+  int computeInverseJacobian(Matrix<DIM>& ijac, double& det, size_t gp) const {
+    size_t num_nodes = nodes.size();
+    Matrix<DIM> jac;
+    for (int i = 0; i < DIM; i++) {
+      for (int j = 0; j < DIM; j++) {
+        jac.data[i][j] = 0.0;
+        for (int n = 0; n < num_nodes; n++) {
+          jac.data[i][j] += shape->dsh[n][i][gp] * nodes[n].getCoor(j);
+        }
+      }
+    }
+    jac.inverse(ijac, det);
+    if (det < 0.0) det *= -1;
+    return 0;
+  }
 
   std::vector<double> computeAe() const override {
-    size_t n = nodes.size();
+    const size_t n = nodes.size();
     std::vector<double> Ae(n * n, 0.0);
-    ShapeSegment2 segment2;
-    double det;
-
-    auto shapes = segment2.sh();
-    auto dsh = segment2.dsh();
-    auto wgp = segment2.weights();
+    auto sh = shape->sh;
+    auto dsh = shape->dsh;
+    auto wgp = shape->wgs;
     for (size_t gp = 0; gp < wgp.size(); gp++) {
-      Matrix<1> ijac;
-      segment2.computeInverseJacobian(ijac, det, nodes, gp);
+      Matrix<DIM> ijac;
+      double det;
+      computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          auto dsh_i = dsh[i][0][gp] * ijac.data[0][0];
-          auto dsh_j = dsh[j][0][gp] * ijac.data[0][0];
-          Ae[n * i + j] += (+d * dsh_i * dsh_j + xs_a * shapes[i][gp] * shapes[j][gp]) * wgp[gp] * det;
+          std::array<double, DIM> dsh_gp_i, dsh_gp_j;
+          for (int d = 0; d < DIM; d++) {
+            dsh_gp_i[d] = dsh[i][d][gp];
+            dsh_gp_j[d] = dsh[j][d][gp];
+          }
+          std::array<double, DIM> dsh_gp_it = ijac.mvp(dsh_gp_i);
+          std::array<double, DIM> dsh_gp_jt = ijac.mvp(dsh_gp_j);
+          double dotProd = dot<DIM>(dsh_gp_it, dsh_gp_jt);
+          Ae[n * i + j] += (+d * dotProd + xs_a * sh[i][gp] * sh[j][gp]) * wgp[gp] * det;
         }
       }
     }
@@ -69,171 +82,15 @@ struct ElementSegment2 : public ElementDiffusion {
   std::vector<double> computeBe() const override {
     size_t n = nodes.size();
     std::vector<double> Be(n * n, 0.0);
-    ShapeSegment2 segment2;
-
-    auto shapes = segment2.sh();
-    auto wgp = segment2.weights();
+    auto sh = shape->sh;
+    auto wgp = shape->wgs;
     for (size_t gp = 0; gp < wgp.size(); gp++) {
       double det;
-      Matrix<1> ijac;
-      segment2.computeInverseJacobian(ijac, det, nodes, gp);
+      Matrix<DIM> ijac;
+      computeInverseJacobian(ijac, det, gp);
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
-        }
-      }
-    }
-    return Be;
-  }
-};
-
-struct Tria3 : public ElementDiffusion {
-  using ElementDiffusion::ElementDiffusion;
-
-  std::vector<double> computeAe() const override {
-    size_t n = nodes.size();
-    std::vector<double> Ae(n * n, 0.0);
-    ShapeTria3 tria3;
-    double det;
-
-    auto shapes = tria3.sh();
-    auto dsh = tria3.dsh();
-    auto wgp = tria3.weights();
-    for (size_t gp = 0; gp < wgp.size(); gp++) {
-      Matrix<2> ijac;
-      tria3.computeInverseJacobian(ijac, det, nodes, gp);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          std::array<double, 2> dsh_gp_i = {dsh[i][0][gp], dsh[i][1][gp]};
-          std::array<double, 2> dsh_gp_j = {dsh[j][0][gp], dsh[j][1][gp]};
-          std::array<double, 2> dsh_gp_it = ijac.mvp(dsh_gp_i);
-          std::array<double, 2> dsh_gp_jt = ijac.mvp(dsh_gp_j);
-          Ae[n * i + j] += (+d * (dsh_gp_it[0] * dsh_gp_jt[0] + dsh_gp_it[1] * dsh_gp_jt[1]) +
-                            xs_a * shapes[i][gp] * shapes[j][gp]) *
-                           wgp[gp] * det;
-        }
-      }
-    }
-    return Ae;
-  }
-
-  std::vector<double> computeBe() const override {
-    size_t n = nodes.size();
-    std::vector<double> Be(n * n, 0.0);
-    ShapeTria3 tria3;
-
-    auto shapes = tria3.sh();
-    auto wgp = tria3.weights();
-    for (size_t gp = 0; gp < wgp.size(); gp++) {
-      double det;
-      Matrix<2> ijac;
-      tria3.computeInverseJacobian(ijac, det, nodes, gp);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
-        }
-      }
-    }
-    return Be;
-  }
-};
-
-struct Quad4 : public ElementDiffusion {
-  using ElementDiffusion::ElementDiffusion;
-
-  std::vector<double> computeAe() const override {
-    size_t n = nodes.size();
-    std::vector<double> Ae(n * n, 0.0);
-    ShapeQuad4 quad4;
-    double det;
-
-    auto shapes = quad4.sh();
-    auto dsh = quad4.dsh();
-    auto wgp = quad4.weights();
-    for (size_t gp = 0; gp < wgp.size(); gp++) {
-      Matrix<2> ijac;
-      quad4.computeInverseJacobian(ijac, det, nodes, gp);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          std::array<double, 2> dsh_gp_i = {dsh[i][0][gp], dsh[i][1][gp]};
-          std::array<double, 2> dsh_gp_j = {dsh[j][0][gp], dsh[j][1][gp]};
-          std::array<double, 2> dsh_gp_it = ijac.mvp(dsh_gp_i);
-          std::array<double, 2> dsh_gp_jt = ijac.mvp(dsh_gp_j);
-          Ae[n * i + j] += (+d * (dsh_gp_it[0] * dsh_gp_jt[0] + dsh_gp_it[1] * dsh_gp_jt[1]) +
-                            xs_a * shapes[i][gp] * shapes[j][gp]) *
-                           wgp[gp] * det;
-        }
-      }
-    }
-    return Ae;
-  }
-
-  std::vector<double> computeBe() const override {
-    size_t n = nodes.size();
-    std::vector<double> Be(n * n, 0.0);
-    ShapeQuad4 quad4;
-
-    auto shapes = quad4.sh();
-    auto wgp = quad4.weights();
-    for (size_t gp = 0; gp < wgp.size(); gp++) {
-      double det;
-      Matrix<2> ijac;
-      quad4.computeInverseJacobian(ijac, det, nodes, gp);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
-        }
-      }
-    }
-    return Be;
-  }
-};
-
-struct Hexa8 : public ElementDiffusion {
-  using ElementDiffusion::ElementDiffusion;
-
-  std::vector<double> computeAe() const override {
-    size_t n = nodes.size();
-    std::vector<double> Ae(n * n, 0.0);
-    ShapeHexa8 hexa8;
-    double det;
-
-    auto shapes = hexa8.sh();
-    auto dsh = hexa8.dsh();
-    auto wgp = hexa8.weights();
-    for (size_t gp = 0; gp < wgp.size(); gp++) {
-      Matrix<3> ijac;
-      hexa8.computeInverseJacobian(ijac, det, nodes, gp);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          std::array<double, 3> dsh_gp_i = {dsh[i][0][gp], dsh[i][1][gp], dsh[i][2][gp]};
-          std::array<double, 3> dsh_gp_j = {dsh[j][0][gp], dsh[j][1][gp], dsh[j][2][gp]};
-          std::array<double, 3> dsh_gp_it = ijac.mvp(dsh_gp_i);
-          std::array<double, 3> dsh_gp_jt = ijac.mvp(dsh_gp_j);
-          Ae[n * i + j] +=
-              (+d * (dsh_gp_it[0] * dsh_gp_jt[0] + dsh_gp_it[1] * dsh_gp_jt[1] + dsh_gp_it[2] * dsh_gp_jt[2]) +
-               xs_a * shapes[i][gp] * shapes[j][gp]) *
-              wgp[gp] * det;
-        }
-      }
-    }
-    return Ae;
-  }
-
-  std::vector<double> computeBe() const override {
-    size_t n = nodes.size();
-    std::vector<double> Be(n * n, 0.0);
-    ShapeHexa8 hexa8;
-
-    auto shapes = hexa8.sh();
-    auto wgp = hexa8.weights();
-    for (size_t gp = 0; gp < wgp.size(); gp++) {
-      double det;
-      Matrix<3> ijac;
-      hexa8.computeInverseJacobian(ijac, det, nodes, gp);
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          Be[n * i + j] += nu * xs_f * shapes[i][gp] * shapes[j][gp] * wgp[gp] * det;
+          Be[n * i + j] += nu * xs_f * sh[i][gp] * sh[j][gp] * wgp[gp] * det;
         }
       }
     }

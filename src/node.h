@@ -34,7 +34,7 @@ struct Node {
     return oss.str();
   }
 
-  double getCoor(size_t i) {
+  double getCoor(size_t i) const {
     if (i == 0) return x;
     if (i == 1) return y;
     return z;
