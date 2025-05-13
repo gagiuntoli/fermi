@@ -6,15 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    message(STATUS "AddressSanitizer enabled for Debug build.")
-    set(ASAN_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ASAN_FLAGS}")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ASAN_FLAGS}")
-    # Optionally link the AddressSanitizer runtime
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ASAN_FLAGS}")
-endif()
-
 file(GLOB SOURCE_FILES src/*.cc)
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*_test\\.cc")
 

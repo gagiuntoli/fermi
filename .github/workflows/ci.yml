@@ -30,14 +30,20 @@ jobs:
         fi
         echo "No syntax issues."
 
-    - name: Create build directory
-      run: mkdir -p build
+    - name: Configure CMake Debug
+      run: cmake -B build-debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++
 
-    - name: Configure CMake
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++
+    - name: Build Debug
+      run: cmake --build build-debug --parallel 4
 
-    - name: Build
-      run: cmake --build build --parallel 4
+    - name: Test Debug
+      run: ctest --test-dir build-debug --output-on-failure
 
-    - name: Test
-      run: ctest --test-dir build --output-on-failure
+    - name: Configure CMake Release
+      run: cmake -B build-release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
+
+    - name: Build Release
+      run: cmake --build build-release --parallel 4
+
+    - name: Test Release
+      run: ctest --test-dir build-release --output-on-failure
