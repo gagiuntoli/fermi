@@ -203,10 +203,9 @@ class Quadrilateral4 : public Shape {
 
   constexpr std::array<double, MAX_NGP> makeWGS() {
     std::array<double, MAX_NGP> arr{};
-    arr[0] = 1.0;
-    arr[1] = 1.0;
-    arr[2] = 1.0;
-    arr[3] = 1.0;
+    for (size_t gp = 0; gp < 4; gp++) {
+      arr[gp] = 1.0;
+    }
     return arr;
   }
 
@@ -267,14 +266,9 @@ class Hexagon8 : public Shape {
 
   constexpr std::array<double, MAX_NGP> makeWGS() {
     std::array<double, MAX_NGP> arr{};
-    arr[0] = 1.0;
-    arr[1] = 1.0;
-    arr[2] = 1.0;
-    arr[3] = 1.0;
-    arr[4] = 1.0;
-    arr[5] = 1.0;
-    arr[6] = 1.0;
-    arr[7] = 1.0;
+    for (size_t gp = 0; gp < 8; gp++) {
+      arr[gp] = 1.0;
+    }
     return arr;
   }
 

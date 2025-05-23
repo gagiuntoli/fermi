@@ -101,14 +101,15 @@ Mesh Mesh::create3DlinearHexa8(size_t nx, size_t ny, size_t nz, double lx, doubl
   for (size_t i = 0; i < (nx - 1); i++) {
     for (size_t j = 0; j < (ny - 1); j++) {
       for (size_t k = 0; k < (nz - 1); k++) {
-        std::vector<size_t> nodeIndexes = {i * ny + j + k * (nx * ny),
-                                           i * ny + j + 1 + k * (nx * ny),
-                                           (i + 1) * ny + j + k * (nx * ny),
-                                           (i + 1) * ny + j + 1 + k * (nx * ny),  //
-                                           i * ny + j + (k + 1) * (nx * ny),
-                                           i * ny + j + 1 + (k + 1) * (nx * ny),
-                                           (i + 1) * ny + j + (k + 1) * (nx * ny),
-                                           (i + 1) * ny + j + 1 + (k + 1) * (nx * ny)};
+        std::vector<size_t> nodeIndexes = {//
+                                           Mesh::getIndexStructured(i, j, k, nx, ny, nz),
+                                           Mesh::getIndexStructured(i, j + 1, k, nx, ny, nz),
+                                           Mesh::getIndexStructured(i + 1, j, k, nx, ny, nz),
+                                           Mesh::getIndexStructured(i + 1, j + 1, k, nx, ny, nz),
+                                           Mesh::getIndexStructured(i, j, k + 1, nx, ny, nz),
+                                           Mesh::getIndexStructured(i, j + 1, k + 1, nx, ny, nz),
+                                           Mesh::getIndexStructured(i + 1, j, k + 1, nx, ny, nz),
+                                           Mesh::getIndexStructured(i + 1, j + 1, k + 1, nx, ny, nz)};
         std::vector<Node> elemNodes;
         for (const size_t& index : nodeIndexes) {
           elemNodes.push_back(nodes[index]);

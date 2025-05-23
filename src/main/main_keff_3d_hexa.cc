@@ -26,7 +26,7 @@
 #include "solver.h"
 
 int main(int argc, char **argv) {
-  size_t NX = 30, NY = 30, NZ = 30;
+  size_t NX = 51, NY = 51, NZ = 51;
   Mesh mesh = Mesh::create3DlinearHexa8(NX, NY, NZ, 50.0, 50.0, 50.0);
 
   size_t nnodes = mesh.nodes.size();
